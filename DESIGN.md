@@ -131,7 +131,7 @@ spacing:
   gutter: 24px
   margin-mobile: 16px
   margin-desktop: 64px
-  max-width: 1280px
+  max-width: 100vw
 breakpoints:
   mobile: 640px
   tablet: 768px
