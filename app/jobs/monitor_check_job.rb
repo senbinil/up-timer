@@ -40,6 +40,6 @@ class MonitorCheckJob < ApplicationJob
     http.use_ssl = uri.scheme == "https"
     http.start { |conn| conn.get(uri.request_uri) }
   rescue StandardError => e
-    OpenStruct.new(code: nil, message: e.message)
+    Struct.new(:code, :message).new(nil, e.message)
   end
 end
