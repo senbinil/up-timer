@@ -6,11 +6,21 @@
 
   <div class="card">
     <%= form_with model: @preference, url: settings_path, method: :patch, class: "space-y-8" do |form| %>
-      <% if @preference.errors.any? %>
+      <% if @preference.errors.any? || @account.errors.any? %>
         <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
-          <% @preference.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+          <% (@preference.errors.full_messages + @account.errors.full_messages).each do |msg| %><p><%= msg %></p><% end %>
         </div>
       <% end %>
+
+      <div class="space-y-1.5">
+        <%= fields_for :account, @account do |af| %>
+          <%= af.label :name, "Display Name", class: "input-label block" %>
+          <p class="text-[10px] text-slate-400 font-mono mb-2">Shown in the dashboard header.</p>
+          <%= af.text_field :name, value: @account.name, class: "input-field w-64" %>
+        <% end %>
+      </div>
+
+      <hr class="border-divider" />
 
       <div class="space-y-1.5">
         <%= form.label :dashboard_limit, "Dashboard Nodes Limit", class: "input-label block" %>
