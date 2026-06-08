@@ -62,4 +62,9 @@
       <p class="text-xs text-slate-400 py-8 text-center">No checks recorded yet.</p>
     <% end %>
   </div>
+
+  <div class="flex gap-3">
+    <%= link_to "Back to Nodes", nodes_path, class: "btn btn-secondary text-xs" %>
+    <%= button_to "Delete Node", node_path(@node), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo_confirm: "Delete this node and all its checks?" } } %>
+  </div>
 </div>

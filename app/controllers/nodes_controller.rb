@@ -24,6 +24,12 @@ class NodesController < ApplicationController
     @checks = @node.monitor_checks.order(checked_at: :desc).limit(50)
   end
 
+  def destroy
+    @node = UptimeMonitor.find(params[:id])
+    @node.destroy
+    redirect_to nodes_path, notice: "Node deleted."
+  end
+
   private
 
   def authenticate
