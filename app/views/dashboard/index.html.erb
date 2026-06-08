@@ -27,6 +27,11 @@
           <p class="text-lg md:text-2xl font-semibold <%= @stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:error_rate] %>%</p>
         </div>
       </div>
+
+      <div class="flex items-center gap-2 pt-3 border-t border-divider text-[10px] text-slate-400 font-mono">
+        <%= lucide_icon "archive", size: 12, class: "flex-shrink-0" %>
+        <span>Check data retained for 30 days. Resolved incidents cleared after 90 days.</span>
+      </div>
     </div>
 
   <%# ═══════════════════════════════════════════════
