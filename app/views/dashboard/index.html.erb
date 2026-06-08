@@ -73,15 +73,12 @@
             <span class="font-mono text-slate-400">30 Days</span>
             <span class="font-mono font-semibold text-primary-container">100%</span>
           </div>
-          <div class="flex items-end gap-[2px] h-10">
-            <% 24.times do %>
-              <div class="flex-1 bg-primary-container/70 rounded-sm" style="height: <%= rand(40..100) %>%"></div>
-            <% end %>
-          </div>
+          <%= bar_chart random_chart_data, height: "40px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
         </div>
       </div>
+    </div>
 
-      <%# ── Card 2.2: Primary DB ── %>
+    <%# ── Card 2.2: Primary DB ── %>
       <div class="card space-y-4">
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3">
@@ -112,15 +109,12 @@
             <span class="font-mono text-slate-400">30 Days</span>
             <span class="font-mono font-semibold text-error">98.2%</span>
           </div>
-          <div class="flex items-end gap-[2px] h-10">
-            <% 24.times do |i| %>
-              <div class="flex-1 rounded-sm <%= [20, 15].include?(i) ? 'bg-error' : 'bg-primary-container/70' %>" style="height: <%= [20, 15].include?(i) ? rand(30..50) : rand(60..100) %>%"></div>
-            <% end %>
-          </div>
+          <%= bar_chart db_chart_data, height: "40px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
         </div>
       </div>
+    </div>
 
-      <%# ── Card 2.3: Authentication ── %>
+    <%# ── Card 2.3: Authentication ── %>
       <div class="card space-y-4">
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3">
@@ -151,15 +145,12 @@
             <span class="font-mono text-slate-400">30 Days</span>
             <span class="font-mono font-semibold text-primary-container">100%</span>
           </div>
-          <div class="flex items-end gap-[2px] h-10">
-            <% 24.times do %>
-              <div class="flex-1 bg-primary-container/70 rounded-sm" style="height: <%= rand(70..100) %>%"></div>
-            <% end %>
-          </div>
+          <%= bar_chart random_chart_data, height: "40px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
         </div>
       </div>
     </div>
   </div>
+</div>
 
   <%# ═══════════════════════════════════════════════
      Row 3: Recent Alerts Table

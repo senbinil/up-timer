@@ -43,6 +43,9 @@ gem "tailwindcss-rails"
 # Authentication [https://github.com/janko/rodauth-rails]
 gem "rodauth-rails"
 
+# Charting [https://chartkick.com]
+gem "chartkick"
+
 group :development, :test do
   # Debugging with Pry [https://github.com/pry/pry]
   gem "pry-rails"
