@@ -8,6 +8,7 @@ class DashboardController < ApplicationController
     @chart_data = generate_chart_data
     @nodes = UptimeMonitor.all.order(created_at: :desc)
     @services = @nodes.first(3)
+    @alerts = Alert.recent.limit(5)
   end
 
   private

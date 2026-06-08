@@ -20,7 +20,7 @@
         </div>
         <div>
           <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Nodes</p>
-          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">1,402</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @nodes.size %></p>
         </div>
         <div>
           <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Error Rate</p>
@@ -86,7 +86,7 @@
   <div class="card space-y-0">
     <div class="flex items-center justify-between pb-4 border-b border-divider">
       <h2 class="text-lg font-semibold text-navy font-[Hanken_Grotesk]">Recent Alerts</h2>
-      <span class="text-xs text-primary-container hover:underline cursor-pointer font-medium">View All</span>
+      <%= link_to "View All", alerts_path, class: "text-xs text-primary-container hover:underline font-medium" %>
     </div>
 
     <%# ── Column Headers ── %>
@@ -97,37 +97,20 @@
       <span class="text-right">Time</span>
     </div>
 
-    <%# ── Row 1: Critical ── %>
-    <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
-      <span class="chip chip-error text-[10px]">● Critical</span>
-      <div class="flex justify-between md:block">
-        <span class="text-sm font-semibold text-navy">Primary DB</span>
-        <span class="text-[10px] text-slate-400 font-mono md:hidden">10 mins ago</span>
-      </div>
-      <span class="text-xs text-slate-400 truncate hidden md:block">Connection pool exhaustion warning threshold reached (98%)</span>
-      <span class="text-xs text-slate-400 font-mono text-right hidden md:block">10 mins ago</span>
-    </div>
-
-    <%# ── Row 2: Info ── %>
-    <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
-      <span class="chip chip-success text-[10px]">● Info</span>
-      <div class="flex justify-between md:block">
-        <span class="text-sm font-semibold text-navy">API Gateway</span>
-        <span class="text-[10px] text-slate-400 font-mono md:hidden">2 hours ago</span>
-      </div>
-      <span class="text-xs text-slate-400 truncate hidden md:block">Automated scaling event triggered. Added 4 nodes in us-east-1.</span>
-      <span class="text-xs text-slate-400 font-mono text-right hidden md:block">2 hours ago</span>
-    </div>
-
-    <%# ── Row 3: Info ── %>
-    <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
-      <span class="chip chip-success text-[10px]">● Info</span>
-      <div class="flex justify-between md:block">
-        <span class="text-sm font-semibold text-navy">Storage Cluster</span>
-        <span class="text-[10px] text-slate-400 font-mono md:hidden">5 hours ago</span>
-      </div>
-      <span class="text-xs text-slate-400 truncate hidden md:block">Routine backup completed successfully across all regions.</span>
-      <span class="text-xs text-slate-400 font-mono text-right hidden md:block">5 hours ago</span>
-    </div>
+    <% if @alerts.any? %>
+      <% @alerts.each do |alert| %>
+        <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
+          <span class="<%= severity_chip_class(alert.severity) %> text-[10px]"><%= alert.severity %></span>
+          <div class="flex justify-between md:block">
+            <span class="text-sm font-semibold text-navy"><%= alert.monitor&.name || "System" %></span>
+            <span class="text-[10px] text-slate-400 font-mono md:hidden"><%= time_ago_in_words(alert.created_at) %> ago</span>
+          </div>
+          <span class="text-xs text-slate-400 truncate hidden md:block"><%= alert.message %></span>
+          <span class="text-xs text-slate-400 font-mono text-right hidden md:block"><%= time_ago_in_words(alert.created_at) %> ago</span>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="py-8 text-center text-xs text-slate-400">No alerts yet.</div>
+    <% end %>
   </div>
 </div>
