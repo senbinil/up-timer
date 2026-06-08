@@ -47,8 +47,8 @@
       <span>Recent Checks</span>
       <div class="flex items-center gap-2">
         <span class="text-[10px] text-slate-400 font-mono">Show:</span>
-        <%= form_with url: node_path(@node), method: :get, data: { turbo_frame: "node_checks" }, class: "inline" do |f| %>
-          <%= select_tag :per_page, options_for_select([10, 25, 50, 100], params[:per_page] || 25), onchange: "this.form.requestSubmit()", class: "text-[10px] font-mono border border-[#e2e8f0] rounded-default px-1.5 py-0.5 bg-white cursor-pointer" %>
+        <% [10, 25, 50, 100].each do |n| %>
+          <%= link_to n, node_path(@node, per_page: n), data: { turbo_frame: "node_checks" }, class: "text-[10px] font-mono px-1.5 py-0.5 rounded-default border #{(params[:per_page].to_i == n || (params[:per_page].blank? && n == 25)) ? 'border-primary-container bg-primary-container/10 text-primary-container' : 'border-[#e2e8f0] text-slate-400 hover:text-navy'} transition-colors" %>
         <% end %>
         <span class="text-[10px] text-slate-400 font-mono">per page</span>
       </div>

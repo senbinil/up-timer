@@ -22,7 +22,8 @@ class NodesController < ApplicationController
 
   def show
     @node = UptimeMonitor.find(params[:id])
-    @pagy, @checks = pagy(@node.monitor_checks.order(checked_at: :desc), limit: 25)
+    limit = (params[:per_page] || 25).to_i.clamp(10, 100)
+    @pagy, @checks = pagy(@node.monitor_checks.order(checked_at: :desc), limit: limit)
   end
 
   def destroy
