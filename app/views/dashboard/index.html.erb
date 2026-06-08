@@ -23,7 +23,7 @@
           <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:total] %></p>
         </div>
         <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Error Rate</p>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Downtime</p>
           <p class="text-lg md:text-2xl font-semibold <%= @stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:error_rate] %>%</p>
         </div>
       </div>
