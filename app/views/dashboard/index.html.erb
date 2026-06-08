@@ -1,0 +1,116 @@
+<div class="space-y-6">
+  <%# ═══════════════════════════════════════════════
+     Row 1: Global Fleet Status (Full Width)
+     ═══════════════════════════════════════════════ %>
+  <div class="card space-y-5">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+        <span class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Global Fleet Status</span>
+      </div>
+
+      <div>
+        <h2 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Operational</h2>
+        <p class="text-body-md text-slate-400 mt-1">All core systems are functioning within normal parameters. Last deployment completed successfully 4 hours ago.</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 pt-4 border-t border-divider">
+        <div>
+          <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">99.98%</p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Nodes</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @nodes.size %></p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Error Rate</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">0.02%</p>
+        </div>
+      </div>
+    </div>
+
+  <%# ═══════════════════════════════════════════════
+     Row 2: Active Services (3-Column)
+     ═══════════════════════════════════════════════ %>
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-navy font-[Hanken_Grotesk]">Active Services</h2>
+      <div class="flex items-center gap-4 text-xs text-slate-400 font-mono">
+        <span class="cursor-pointer hover:text-navy">Filter</span>
+        <span class="cursor-pointer hover:text-navy">Sort &#9776;</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @services.each do |node| %>
+        <%= link_to node_path(node), class: "card space-y-4 block hover:border-primary-container/30 transition-colors" do %>
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-default bg-primary-container/10 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-primary-container" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-sm font-semibold text-navy truncate"><%= node.name %></h3>
+                <p class="text-[11px] text-slate-400 font-mono truncate"><%= node.url %></p>
+              </div>
+            </div>
+            <span class="w-2 h-2 rounded-full <%= node.status == "up" ? "bg-primary-container" : "bg-error" %> flex-shrink-0 mt-1.5"></span>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-divider">
+            <div class="flex justify-between text-xs">
+              <span class="font-mono text-slate-400">Interval</span>
+              <span class="font-mono font-semibold text-navy"><%= node.check_interval %>s</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="font-mono text-slate-400">Timeout</span>
+              <span class="font-mono font-semibold text-navy"><%= node.timeout %>s</span>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-divider">
+            <div class="flex justify-between text-xs mb-2">
+              <span class="font-mono text-slate-400">Status</span>
+              <span class="font-mono font-semibold <%= node.status == "up" ? "text-primary-container" : "text-error" %>"><%= node.status&.upcase %></span>
+            </div>
+            <%= column_chart random_chart_data, height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ═══════════════════════════════════════════════
+     Row 3: Recent Alerts Table
+     ═══════════════════════════════════════════════ %>
+  <div class="card space-y-0">
+    <div class="flex items-center justify-between pb-4 border-b border-divider">
+      <h2 class="text-lg font-semibold text-navy font-[Hanken_Grotesk]">Recent Alerts</h2>
+      <%= link_to "View All", alerts_path, class: "text-xs text-primary-container hover:underline font-medium" %>
+    </div>
+
+    <%# ── Column Headers ── %>
+    <div class="hidden md:grid grid-cols-[100px_120px_1fr_100px] gap-4 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+      <span>Severity</span>
+      <span>Service</span>
+      <span>Message</span>
+      <span class="text-right">Time</span>
+    </div>
+
+    <% if @alerts.any? %>
+      <% @alerts.each do |alert| %>
+        <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
+          <span class="<%= severity_chip_class(alert.severity) %> text-[10px]"><%= alert.severity %></span>
+          <div class="flex justify-between md:block">
+            <span class="text-sm font-semibold text-navy"><%= alert.monitor&.name || "System" %></span>
+            <span class="text-[10px] text-slate-400 font-mono md:hidden"><%= time_ago_in_words(alert.created_at) %> ago</span>
+          </div>
+          <span class="text-xs text-slate-400 truncate hidden md:block"><%= alert.message %></span>
+          <span class="text-xs text-slate-400 font-mono text-right hidden md:block"><%= time_ago_in_words(alert.created_at) %> ago</span>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="py-8 text-center text-xs text-slate-400">No alerts yet.</div>
+    <% end %>
+  </div>
+</div>

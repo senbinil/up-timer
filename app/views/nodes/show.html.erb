@@ -1,0 +1,65 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <%= link_to nodes_path, class: "text-slate-400 hover:text-navy transition-colors" do %>
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+    <% end %>
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Node Detail</p>
+      <h1 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]"><%= @node.name %></h1>
+    </div>
+  </div>
+
+  <%# ── Node Info Cards ── %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Status</p>
+      <span class="<%= @node.status == "up" ? "chip chip-success" : "chip chip-error" %> mt-2 text-[10px]"><%= @node.status %></span>
+    </div>
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">URL</p>
+      <p class="text-sm font-mono text-navy mt-1 break-all"><%= @node.url %></p>
+    </div>
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Check Interval</p>
+      <p class="text-lg font-semibold text-navy mt-1"><%= @node.check_interval %>s</p>
+    </div>
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Timeout</p>
+      <p class="text-lg font-semibold text-navy mt-1"><%= @node.timeout %>s</p>
+    </div>
+  </div>
+
+  <%# ── Response Time Chart ── %>
+  <div class="card space-y-3">
+    <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Response Time (ms)</h2>
+    <% if @checks.any? %>
+      <% chart_data = @checks.first(24).reverse.map { |c| [c.checked_at.strftime("%H:%M"), c.response_time] }.to_h %>
+      <%= column_chart chart_data, height: "200px", colors: ["#2563eb"], library: { scales: { y: { beginAtZero: true } } } %>
+    <% else %>
+      <p class="text-xs text-slate-400 py-8 text-center">No check data yet.</p>
+    <% end %>
+  </div>
+
+  <%# ── Recent Checks Table ── %>
+  <div class="card space-y-0">
+    <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk] pb-4 border-b border-divider">Recent Checks</h2>
+    <% if @checks.any? %>
+      <div class="hidden md:grid grid-cols-[80px_100px_1fr_160px] gap-4 px-1 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+        <span>Status</span>
+        <span>Code</span>
+        <span>Response</span>
+        <span class="text-right">Checked At</span>
+      </div>
+      <% @checks.each do |check| %>
+        <div class="md:grid md:grid-cols-[80px_100px_1fr_160px] gap-4 px-1 py-2 items-center list-row">
+          <span class="<%= check.status == "up" ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= check.status %></span>
+          <span class="text-xs font-mono <%= check.status_code && check.status_code >= 400 ? "text-error" : "text-navy" %>"><%= check.status_code || "-" %></span>
+          <span class="text-xs text-slate-400 font-mono"><%= check.response_time ? "#{check.response_time}ms" : "-" %></span>
+          <span class="text-xs text-slate-400 font-mono md:text-right"><%= check.checked_at.strftime("%b %d, %H:%M:%S") %></span>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-xs text-slate-400 py-8 text-center">No checks recorded yet.</p>
+    <% end %>
+  </div>
+</div>

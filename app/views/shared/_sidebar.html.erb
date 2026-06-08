@@ -1,0 +1,46 @@
+<aside data-sidebar-target="sidebar" class="w-60 flex-col bg-white border-r border-[#e2e8f0] h-screen sticky top-0 shrink-0 hidden lg:flex z-30">
+  <%# ── Brand Header ── %>
+  <div class="px-5 py-5 border-b border-[#e2e8f0]">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-primary-container rounded-default flex items-center justify-center flex-shrink-0">
+        <span class="text-white font-semibold text-sm">O</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-semibold text-navy leading-tight">UpTimer</h2>
+        <p class="text-[10px] uppercase tracking-[0.05em] text-slate-400 font-mono">Operational Hub</p>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Navigation Links ── %>
+  <nav class="flex-1 px-3 py-3 space-y-0.5">
+    <% nav_items = [
+      { icon: "grid", label: "Status", path: dashboard_path },
+      { icon: "server", label: "Nodes", path: nodes_path },
+      { icon: "bell", label: "Alerts", path: alerts_path },
+      { icon: "file", label: "Logs", path: "#" }
+    ] %>
+    <% nav_items.each do |item| %>
+      <%= link_to item[:path], data: { action: "click->sidebar#close" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-navy hover:bg-surface-container-low'}" do %>
+        <%= lucide_icon item[:icon], size: 16, class: "flex-shrink-0" %>
+        <span><%= item[:label] %></span>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <%# ── Sidebar Footer ── %>
+  <div class="px-4 pb-3 mt-auto">
+    <hr class="border-divider mb-3" />
+    <div class="space-y-0.5 mb-3">
+      <%= link_to "#", class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
+        <%= lucide_icon "settings", size: 16, class: "flex-shrink-0" %>
+        <span>Settings</span>
+      <% end %>
+
+      <%= link_to "#", class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
+        <%= lucide_icon "help-circle", size: 16, class: "flex-shrink-0" %>
+        <span>Help</span>
+      <% end %>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,37 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <%= link_to alerts_path, class: "text-slate-400 hover:text-navy transition-colors" do %>
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+    <% end %>
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Alert Detail</p>
+      <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]"><%= @alert.message.truncate(40) %></h1>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Severity</p>
+      <span class="<%= severity_chip_class(@alert.severity) %> mt-2 text-[10px]"><%= @alert.severity %></span>
+    </div>
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Node</p>
+      <p class="text-sm text-navy mt-1"><%= @alert.monitor&.name || "Unassigned" %></p>
+    </div>
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Status</p>
+      <span class="<%= @alert.resolved? ? 'chip chip-success' : 'chip chip-error' %> mt-2 text-[10px]"><%= @alert.resolved? ? "resolved" : "active" %></span>
+    </div>
+  </div>
+
+  <div class="card space-y-2">
+    <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Message</p>
+    <p class="text-body-md text-navy"><%= @alert.message %></p>
+    <p class="text-xs text-slate-400 font-mono">Created <%= time_ago_in_words(@alert.created_at) %> ago</p>
+  </div>
+
+  <div class="flex gap-3">
+    <%= link_to "Edit", edit_alert_path(@alert), class: "btn btn-secondary text-xs" %>
+    <%= button_to "Delete", alert_path(@alert), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo_confirm: "Delete this alert?" } } %>
+  </div>
+</div>
