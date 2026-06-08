@@ -9,22 +9,22 @@
       </div>
 
       <div>
-        <h2 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Operational</h2>
-        <p class="text-body-md text-slate-400 mt-1">All core systems are functioning within normal parameters. Last deployment completed successfully 4 hours ago.</p>
+        <h2 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk] capitalize"><%= @stats[:status] %></h2>
+        <p class="text-body-md text-slate-400 mt-1"><%= @stats[:up_count] %> of <%= @stats[:total] %> nodes healthy<% if @stats[:down_count] > 0 %>, <%= @stats[:down_count] %> degraded<% end %>.</p>
       </div>
 
       <div class="grid grid-cols-3 gap-4 pt-4 border-t border-divider">
         <div>
           <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
-          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">99.98%</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:uptime] %>%</p>
         </div>
         <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Nodes</p>
-          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @nodes.size %></p>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Nodes</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:total] %></p>
         </div>
         <div>
           <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Error Rate</p>
-          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">0.02%</p>
+          <p class="text-lg md:text-2xl font-semibold <%= @stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:error_rate] %>%</p>
         </div>
       </div>
     </div>
