@@ -7,8 +7,10 @@
   </div>
 
   <div class="flex items-center gap-2 md:gap-3">
-    <%= link_to "#", class: "btn btn-primary text-xs py-1.5 px-3" do %>
-      Create Node &plus;
+    <% unless controller_name == "nodes" && action_name == "new" %>
+      <%= link_to new_node_path, class: "btn btn-primary text-xs py-1.5 px-3" do %>
+        Create Node &plus;
+      <% end %>
     <% end %>
 
     <button class="flex items-center gap-1 text-xs md:text-xs text-slate-400 hover:text-navy transition-colors cursor-pointer">

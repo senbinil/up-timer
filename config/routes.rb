@@ -13,4 +13,6 @@ Rails.application.routes.draw do
   root to: "rodauth#login"
 
   get "dashboard", to: "dashboard#index", as: :dashboard
+
+  resources :nodes, only: [ :index, :new, :create ]
 end
