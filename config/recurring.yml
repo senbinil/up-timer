@@ -2,6 +2,9 @@ development:
     monitor_scheduler:
         class: MonitorSchedulerJob
         schedule: every 30 seconds
+    data_retention:
+        class: DataRetentionJob
+        schedule: every day at 3am
 
 production:
     clear_solid_queue_finished_jobs:
@@ -10,3 +13,6 @@ production:
     monitor_scheduler:
         class: MonitorSchedulerJob
         schedule: every 30 seconds
+    data_retention:
+        class: DataRetentionJob
+        schedule: every day at 3am
