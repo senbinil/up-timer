@@ -5,7 +5,6 @@ class DashboardController < ApplicationController
 
   def index
     @page_title = "Dashboard"
-    @chart_data = generate_chart_data
     @nodes = UptimeMonitor.all.order(created_at: :desc)
     @services = @nodes.first(3)
     @alerts = Alert.recent.limit(5)
@@ -13,17 +12,12 @@ class DashboardController < ApplicationController
 
   private
 
-  def generate_chart_data
-    24.times.map { |i| [ "Day #{i + 1}", rand(60..100) ] }.to_h
-  end
-  helper_method :random_chart_data, :db_chart_data
+  helper_method :chart_data_for
 
-  def random_chart_data
-    @chart_data ||= generate_chart_data
-  end
-
-  def db_chart_data
-    24.times.map { |i| [ "Day #{i + 1}", [ 15, 20 ].include?(i) ? rand(30..50) : rand(70..100) ] }.to_h
+  def chart_data_for(node)
+    node.monitor_checks.order(checked_at: :desc).limit(24).reverse.map { |c|
+      [ c.checked_at.strftime("%H:%M"), c.response_time ]
+    }.to_h
   end
 
   def authenticate

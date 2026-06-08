@@ -59,12 +59,12 @@
 
           <div class="space-y-2 pt-2 border-t border-divider">
             <div class="flex justify-between text-xs">
-              <span class="font-mono text-slate-400">Interval</span>
-              <span class="font-mono font-semibold text-navy"><%= node.check_interval %>s</span>
+              <span class="font-mono text-slate-400">Response</span>
+              <span class="font-mono font-semibold text-navy"><%= node.monitor_checks.last&.response_time ? "#{node.monitor_checks.last.response_time}ms" : "-" %></span>
             </div>
             <div class="flex justify-between text-xs">
-              <span class="font-mono text-slate-400">Timeout</span>
-              <span class="font-mono font-semibold text-navy"><%= node.timeout %>s</span>
+              <span class="font-mono text-slate-400">Last Check</span>
+              <span class="font-mono font-semibold text-navy"><%= node.monitor_checks.last ? time_ago_in_words(node.monitor_checks.last.checked_at) : "never" %></span>
             </div>
           </div>
 
@@ -73,7 +73,7 @@
               <span class="font-mono text-slate-400">Status</span>
               <span class="font-mono font-semibold <%= node.status == "up" ? "text-primary-container" : "text-error" %>"><%= node.status&.upcase %></span>
             </div>
-            <%= column_chart random_chart_data, height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
+            <%= column_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
           </div>
         <% end %>
       <% end %>
