@@ -41,8 +41,18 @@
   </div>
 
   <%# ── Recent Checks Table ── %>
+  <%= turbo_frame_tag "node_checks" do %>
   <div class="card space-y-0">
-    <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk] pb-4 border-b border-divider">Recent Checks</h2>
+    <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk] pb-4 border-b border-divider flex items-center justify-between">
+      <span>Recent Checks</span>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] text-slate-400 font-mono">Show:</span>
+        <% [10, 25, 50, 100].each do |n| %>
+          <%= link_to n, node_path(@node, per_page: n), data: { turbo_frame: "node_checks" }, class: "text-[10px] font-mono px-1.5 py-0.5 rounded-default border #{(params[:per_page].to_i == n || (params[:per_page].blank? && n == 25)) ? 'border-primary-container bg-primary-container/10 text-primary-container' : 'border-[#e2e8f0] text-slate-400 hover:text-navy'} transition-colors" %>
+        <% end %>
+        <span class="text-[10px] text-slate-400 font-mono">per page</span>
+      </div>
+    </h2>
     <% if @checks.any? %>
       <div class="hidden md:grid grid-cols-[80px_100px_1fr_160px] gap-4 px-1 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
         <span>Status</span>
@@ -62,6 +72,13 @@
       <p class="text-xs text-slate-400 py-8 text-center">No checks recorded yet.</p>
     <% end %>
   </div>
+
+  <% if @pagy.pages > 1 %>
+    <div class="flex justify-center pt-4">
+      <%== @pagy.series_nav %>
+    </div>
+    <% end %>
+  <% end %>
 
   <div class="flex gap-3">
     <%= link_to "Back to Nodes", nodes_path, class: "btn btn-secondary text-xs" %>

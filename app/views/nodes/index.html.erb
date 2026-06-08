@@ -36,4 +36,10 @@
       <p class="text-xs mt-1">Click "Create Node" to start monitoring.</p>
     </div>
   <% end %>
+
+  <% if @pagy.pages > 1 %>
+    <div class="flex justify-center pt-4">
+      <%== @pagy.series_nav %>
+    </div>
+  <% end %>
 </div>
