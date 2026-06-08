@@ -46,14 +46,43 @@ Authentication is handled by Rodauth. Default routes:
 
 After login, users are redirected to `/dashboard`.
 
-## Background Jobs
+## Background Jobs & Scheduler
 
-SolidQueue runs the following:
+SolidQueue powers all background processing with a recurring schedule defined in `config/recurring.yml`.
 
-| Job | Schedule | Description |
+### Recurring Schedule
+
+| Task | Environment | Frequency |
 |---|---|---|
-| `MonitorSchedulerJob` | Every 30 seconds | Finds due monitors and enqueues health checks |
-| `MonitorCheckJob` | On-demand | Performs HTTP GET to monitor URL, records result |
+| `MonitorSchedulerJob` | dev + prod | Every 30 seconds |
+| `DataRetentionJob` | dev + prod | Every day at 3am |
+| `SolidQueue::Job.clear_finished_in_batches` | prod only | Every hour at minute 12 |
+
+### Jobs
+
+| Job | File | Purpose |
+|---|---|---|
+| `MonitorSchedulerJob` | `app/jobs/monitor_scheduler_job.rb` | Iterates all monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval` |
+| `MonitorCheckJob` | `app/jobs/monitor_check_job.rb` | Performs an HTTP GET against a monitor's URL; records response time, status code, and `up`/`down` state; manages `Incident` lifecycle (creates on first failure, resolves all open incidents on recovery) |
+| `DataRetentionJob` | `app/jobs/data_retention_job.rb` | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days |
+
+### Flow
+
+```mermaid
+flowchart TD
+    A[Solid Queue Recurring Schedule] -->|"every 30s"| B[MonitorSchedulerJob]
+    A -->|"daily at 3am"| D[DataRetentionJob]
+    A -->|"hourly :12"| E[Clear finished jobs<br/>prod only]
+
+    B -->|"performs for each<br/>due monitor"| C[MonitorCheckJob]
+    C -->|"HTTP GET"| F[Target URL]
+    C -->|"records"| G[MonitorCheck]
+    C -->|"updates status"| H[UptimeMonitor]
+    C -->|"creates/resolves"| I[Incident]
+
+    D -->|"deletes >30d"| G
+    D -->|"deletes >90d resolved"| I
+```
 
 Start the worker with `bin/jobs` (already included in `bin/dev`).
 
