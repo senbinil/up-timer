@@ -1,0 +1,24 @@
+<div class="max-w-lg mx-auto space-y-6">
+  <div class="space-y-2">
+    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Settings</p>
+    <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]">Preferences</h1>
+  </div>
+
+  <div class="card">
+    <%= form_with model: @preference, url: settings_path, method: :patch, class: "space-y-8" do |form| %>
+      <% if @preference.errors.any? %>
+        <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
+          <% @preference.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+        </div>
+      <% end %>
+
+      <div class="space-y-1.5">
+        <%= form.label :dashboard_limit, "Dashboard Nodes Limit", class: "input-label block" %>
+        <p class="text-[10px] text-slate-400 font-mono mb-2">Number of service cards shown on the dashboard.</p>
+        <%= form.number_field :dashboard_limit, min: 1, max: 20, class: "input-field w-24" %>
+      </div>
+
+      <%= form.button class: "btn btn-primary" do %>Save<% end %>
+    <% end %>
+  </div>
+</div>

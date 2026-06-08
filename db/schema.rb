@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_094050) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_094053) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -209,6 +209,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_094050) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "user_preferences", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "dashboard_limit", default: 3, null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_user_preferences_on_account_id", unique: true
+  end
+
   add_foreign_key "account_login_change_keys", "accounts", column: "id"
   add_foreign_key "account_password_reset_keys", "accounts", column: "id"
   add_foreign_key "account_remember_keys", "accounts", column: "id"
@@ -222,4 +230,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_094050) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "user_preferences", "accounts"
 end
