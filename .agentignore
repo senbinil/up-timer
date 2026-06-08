@@ -1,0 +1,128 @@
+# ==========================================
+# Agent Ignore Rules
+# ==========================================
+
+# Dependencies
+node_modules/
+vendor/bundle/
+vendor/cache/
+.bundle/
+
+# Ruby
+coverage/
+tmp/
+log/
+storage/
+
+# Rails generated files
+db/schema.rb
+db/structure.sql
+
+# Build outputs
+dist/
+build/
+public/assets/
+public/packs/
+public/packs-test/
+
+# Frontend caches
+.next/
+.nuxt/
+.vite/
+.parcel-cache/
+
+# Docker
+docker-data/
+volumes/
+
+# Logs
+*.log
+logs/
+
+# Runtime files
+tmp/
+pids/
+*.pid
+
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+capybara/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+.credentials
+credentials.yml.enc
+config/master.key
+
+# Keys & Certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Kubernetes
+*.kubeconfig
+
+# Generated documentation
+yardoc/
+doc/
+
+# AI / Agent generated output
+.ai/
+.agent/
+.tmp_ai/
+
+# Binary files
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Media
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Large assets
+*.psd
+*.ai
+*.sketch
+
+# Database dumps
+*.sql
+*.dump
+*.bak
+
+# Ignore entire directories used for backups
+backup/
+backups/
+archive/
+
+# Kamal
+.kamal/
+kamal-secrets/
+
+# Do not modify git internals
+.git/

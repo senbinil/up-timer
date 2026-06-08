@@ -212,3 +212,15 @@ Example:
 
 ```bash
 rvm use ruby-4.0.5@up-timer
+
+# .agentignore Compliance
+
+The agent MUST respect `.agentignore`.
+
+Rules:
+
+- Do not read ignored files unless explicitly requested.
+- Do not modify ignored files unless explicitly requested.
+- Do not include ignored files in plans, diffs, commits, or summaries.
+- Treat ignored files as out-of-scope.
+- If a task requires an ignored file, request user approval before accessing it.
