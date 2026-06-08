@@ -46,6 +46,9 @@ gem "rodauth-rails"
 # Charting [https://chartkick.com]
 gem "chartkick"
 
+# Pagination [https://github.com/ddnexus/pagy]
+gem "pagy"
+
 group :development, :test do
   # Debugging with Pry [https://github.com/pry/pry]
   gem "pry-rails"

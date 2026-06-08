@@ -4,7 +4,7 @@ class AlertsController < ApplicationController
   before_action :set_alert, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @alerts = Alert.recent
+    @pagy, @alerts = pagy(Alert.recent, limit: 15)
   end
 
   def show

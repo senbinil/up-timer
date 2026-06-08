@@ -3,7 +3,7 @@ class NodesController < ApplicationController
   before_action :authenticate
 
   def index
-    @nodes = UptimeMonitor.ranked
+    @pagy, @nodes = pagy(UptimeMonitor.ranked, limit: 15)
   end
 
   def new
@@ -22,7 +22,7 @@ class NodesController < ApplicationController
 
   def show
     @node = UptimeMonitor.find(params[:id])
-    @checks = @node.monitor_checks.order(checked_at: :desc).limit(50)
+    @pagy, @checks = pagy(@node.monitor_checks.order(checked_at: :desc), limit: 25)
   end
 
   def destroy

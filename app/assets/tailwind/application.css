@@ -329,3 +329,11 @@
     padding: var(--ds-spacing-sm) var(--ds-spacing-md);
     border-radius: var(--radius-default);
 }
+
+/* Pagination (Pagy) */
+.pagy { display: flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 12px; }
+.pagy a, .pagy .page { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: var(--radius-default); text-decoration: none; transition: background-color 0.15s ease; }
+.pagy a { color: var(--color-slate-400); cursor: pointer; }
+.pagy a:hover { background-color: var(--color-surface-container-low); color: var(--color-navy); }
+.pagy .current { background-color: var(--color-primary-container); color: var(--color-on-primary); font-weight: 600; }
+.pagy .gap { color: var(--color-slate-400); cursor: default; }

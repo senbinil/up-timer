@@ -63,6 +63,12 @@
     <% end %>
   </div>
 
+  <% if @pagy.pages > 1 %>
+    <div class="flex justify-center pt-4">
+      <%== pagy_nav(@pagy) %>
+    </div>
+  <% end %>
+
   <div class="flex gap-3">
     <%= link_to "Back to Nodes", nodes_path, class: "btn btn-secondary text-xs" %>
     <%= button_to "Delete Node", node_path(@node), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo_confirm: "Delete this node and all its checks?" } } %>

@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include Pagy::Frontend
   def severity_chip_class(severity)
     case severity
     when "critical" then "chip chip-error"

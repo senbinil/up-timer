@@ -45,4 +45,10 @@
       </div>
     </div>
   <% end %>
+
+  <% if @pagy.pages > 1 %>
+    <div class="flex justify-center pt-4">
+      <%== pagy_nav(@pagy) %>
+    </div>
+  <% end %>
 </div>
