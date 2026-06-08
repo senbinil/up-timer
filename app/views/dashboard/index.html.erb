@@ -9,22 +9,22 @@
       </div>
 
       <div>
-        <h2 class="text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Operational</h2>
+        <h2 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Operational</h2>
         <p class="text-body-md text-slate-400 mt-1">All core systems are functioning within normal parameters. Last deployment completed successfully 4 hours ago.</p>
       </div>
 
       <div class="grid grid-cols-3 gap-4 pt-4 border-t border-divider">
         <div>
           <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
-          <p class="text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">99.98%</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">99.98%</p>
         </div>
         <div>
-          <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Nodes</p>
-          <p class="text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">1,402</p>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Nodes</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">1,402</p>
         </div>
         <div>
-          <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Error Rate</p>
-          <p class="text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">0.02%</p>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Error Rate</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1">0.02%</p>
         </div>
       </div>
     </div>
@@ -171,7 +171,7 @@
     </div>
 
     <%# ── Column Headers ── %>
-    <div class="grid grid-cols-[100px_120px_1fr_100px] gap-4 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+    <div class="hidden md:grid grid-cols-[100px_120px_1fr_100px] gap-4 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
       <span>Severity</span>
       <span>Service</span>
       <span>Message</span>
@@ -179,27 +179,36 @@
     </div>
 
     <%# ── Row 1: Critical ── %>
-    <div class="grid grid-cols-[100px_120px_1fr_100px] gap-4 px-1 py-3 items-center list-row">
+    <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
       <span class="chip chip-error text-[10px]">● Critical</span>
-      <span class="text-sm font-semibold text-navy">Primary DB</span>
-      <span class="text-xs text-slate-400 truncate">Connection pool exhaustion warning threshold reached (98%)</span>
-      <span class="text-xs text-slate-400 font-mono text-right">10 mins ago</span>
+      <div class="flex justify-between md:block">
+        <span class="text-sm font-semibold text-navy">Primary DB</span>
+        <span class="text-[10px] text-slate-400 font-mono md:hidden">10 mins ago</span>
+      </div>
+      <span class="text-xs text-slate-400 truncate hidden md:block">Connection pool exhaustion warning threshold reached (98%)</span>
+      <span class="text-xs text-slate-400 font-mono text-right hidden md:block">10 mins ago</span>
     </div>
 
     <%# ── Row 2: Info ── %>
-    <div class="grid grid-cols-[100px_120px_1fr_100px] gap-4 px-1 py-3 items-center list-row">
+    <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
       <span class="chip chip-success text-[10px]">● Info</span>
-      <span class="text-sm font-semibold text-navy">API Gateway</span>
-      <span class="text-xs text-slate-400 truncate">Automated scaling event triggered. Added 4 nodes in us-east-1.</span>
-      <span class="text-xs text-slate-400 font-mono text-right">2 hours ago</span>
+      <div class="flex justify-between md:block">
+        <span class="text-sm font-semibold text-navy">API Gateway</span>
+        <span class="text-[10px] text-slate-400 font-mono md:hidden">2 hours ago</span>
+      </div>
+      <span class="text-xs text-slate-400 truncate hidden md:block">Automated scaling event triggered. Added 4 nodes in us-east-1.</span>
+      <span class="text-xs text-slate-400 font-mono text-right hidden md:block">2 hours ago</span>
     </div>
 
     <%# ── Row 3: Info ── %>
-    <div class="grid grid-cols-[100px_120px_1fr_100px] gap-4 px-1 py-3 items-center list-row">
+    <div class="md:grid md:grid-cols-[100px_120px_1fr_100px] gap-2 md:gap-4 px-1 py-3 items-center list-row">
       <span class="chip chip-success text-[10px]">● Info</span>
-      <span class="text-sm font-semibold text-navy">Storage Cluster</span>
-      <span class="text-xs text-slate-400 truncate">Routine backup completed successfully across all regions.</span>
-      <span class="text-xs text-slate-400 font-mono text-right">5 hours ago</span>
+      <div class="flex justify-between md:block">
+        <span class="text-sm font-semibold text-navy">Storage Cluster</span>
+        <span class="text-[10px] text-slate-400 font-mono md:hidden">5 hours ago</span>
+      </div>
+      <span class="text-xs text-slate-400 truncate hidden md:block">Routine backup completed successfully across all regions.</span>
+      <span class="text-xs text-slate-400 font-mono text-right hidden md:block">5 hours ago</span>
     </div>
   </div>
 </div>
