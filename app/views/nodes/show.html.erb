@@ -41,8 +41,18 @@
   </div>
 
   <%# ── Recent Checks Table ── %>
+  <%= turbo_frame_tag "node_checks" do %>
   <div class="card space-y-0">
-    <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk] pb-4 border-b border-divider">Recent Checks</h2>
+    <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk] pb-4 border-b border-divider flex items-center justify-between">
+      <span>Recent Checks</span>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] text-slate-400 font-mono">Show:</span>
+        <%= form_with url: node_path(@node), method: :get, data: { turbo_frame: "node_checks" }, class: "inline" do |f| %>
+          <%= select_tag :per_page, options_for_select([10, 25, 50, 100], params[:per_page] || 25), onchange: "this.form.requestSubmit()", class: "text-[10px] font-mono border border-[#e2e8f0] rounded-default px-1.5 py-0.5 bg-white cursor-pointer" %>
+        <% end %>
+        <span class="text-[10px] text-slate-400 font-mono">per page</span>
+      </div>
+    </h2>
     <% if @checks.any? %>
       <div class="hidden md:grid grid-cols-[80px_100px_1fr_160px] gap-4 px-1 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
         <span>Status</span>
@@ -65,8 +75,9 @@
 
   <% if @pagy.pages > 1 %>
     <div class="flex justify-center pt-4">
-      <%== pagy_nav(@pagy) %>
+      <%== @pagy.series_nav %>
     </div>
+    <% end %>
   <% end %>
 
   <div class="flex gap-3">
