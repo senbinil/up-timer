@@ -5,8 +5,8 @@ class DashboardController < ApplicationController
 
   def index
     @page_title = "Dashboard"
-    @nodes = UptimeMonitor.all.order(created_at: :desc)
-    @services = @nodes.first(3)
+    @nodes = UptimeMonitor.ranked
+    @services = @nodes.top(3)
     @alerts = Alert.recent.limit(5)
     @stats = fleet_stats
   end

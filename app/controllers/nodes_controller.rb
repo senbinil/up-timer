@@ -3,7 +3,7 @@ class NodesController < ApplicationController
   before_action :authenticate
 
   def index
-    @nodes = UptimeMonitor.all.order(created_at: :desc)
+    @nodes = UptimeMonitor.ranked
   end
 
   def new
@@ -29,6 +29,18 @@ class NodesController < ApplicationController
     @node = UptimeMonitor.find(params[:id])
     @node.destroy
     redirect_to nodes_path, notice: "Node deleted."
+  end
+
+  def move_up
+    node = UptimeMonitor.find(params[:id])
+    node.update!(position: node.position + 1)
+    redirect_to nodes_path
+  end
+
+  def move_down
+    node = UptimeMonitor.find(params[:id])
+    node.update!(position: node.position - 1)
+    redirect_to nodes_path
   end
 
   private

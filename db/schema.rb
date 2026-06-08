@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_094043) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_094050) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -80,10 +80,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_094043) do
     t.integer "check_interval", null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.integer "position", default: 0, null: false
     t.string "status", default: "unknown", null: false
     t.integer "timeout", null: false
     t.datetime "updated_at", null: false
     t.string "url", null: false
+    t.index ["position"], name: "index_monitors_on_position"
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
