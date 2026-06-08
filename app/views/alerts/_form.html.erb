@@ -1,0 +1,36 @@
+<%= form_with model: @alert, class: "space-y-8" do |form| %>
+  <% if @alert.errors.any? %>
+    <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
+      <strong><%= pluralize(@alert.errors.count, "error") %>:</strong>
+      <ul class="mt-1 list-disc list-inside">
+        <% @alert.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="space-y-1.5">
+      <%= form.label :severity, class: "input-label block" %>
+      <%= form.select :severity, [["Info", "info"], ["Warning", "warning"], ["Critical", "critical"]], {}, class: "input-field" %>
+    </div>
+    <div class="space-y-1.5">
+      <%= form.label :monitor_id, "Node", class: "input-label block" %>
+      <%= form.collection_select :monitor_id, @monitors, :id, :name, { include_blank: "None" }, class: "input-field" %>
+    </div>
+  </div>
+
+  <div class="space-y-1.5">
+    <%= form.label :message, class: "input-label block" %>
+    <%= form.text_area :message, rows: 4, required: true, class: "input-field" %>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= form.check_box :resolved, class: "rounded border-[#e2e8f0] text-primary-container focus:ring-primary-container" %>
+    <%= form.label :resolved, class: "text-xs text-slate-400" %>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.button class: "btn btn-primary flex-1 justify-center" do %>Save<% end %>
+    <%= link_to "Cancel", alerts_path, class: "btn btn-secondary flex-1 justify-center" %>
+  </div>
+<% end %>

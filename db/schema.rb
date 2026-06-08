@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_080000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_094042) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -40,6 +40,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_080000) do
     t.string "password_hash"
     t.integer "status", default: 1, null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true, where: "status IN (1, 2)"
+  end
+
+  create_table "alerts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "message", null: false
+    t.integer "monitor_id"
+    t.boolean "resolved", default: false, null: false
+    t.string "severity", default: "info", null: false
+    t.datetime "updated_at", null: false
+    t.index ["monitor_id"], name: "index_alerts_on_monitor_id"
+    t.index ["resolved"], name: "index_alerts_on_resolved"
+    t.index ["severity"], name: "index_alerts_on_severity"
   end
 
   create_table "incidents", force: :cascade do |t|
@@ -78,6 +90,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_080000) do
   add_foreign_key "account_password_reset_keys", "accounts", column: "id"
   add_foreign_key "account_remember_keys", "accounts", column: "id"
   add_foreign_key "account_verification_keys", "accounts", column: "id"
+  add_foreign_key "alerts", "monitors"
   add_foreign_key "incidents", "monitors"
   add_foreign_key "monitor_checks", "monitors"
 end
