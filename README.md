@@ -1,7 +1,8 @@
 # UpTimer
 
-Uptime monitoring dashboard for tracking service health, response times, and incidents.
 <img width="1883" height="857" alt="image" src="https://github.com/user-attachments/assets/33061149-684f-4b00-b354-9aaf5895e651" />
+
+Uptime monitoring dashboard for tracking service health, response times, and incidents.
 
 ## Prerequisites
 
