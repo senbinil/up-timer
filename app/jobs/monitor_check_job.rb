@@ -8,17 +8,9 @@ class MonitorCheckJob < ApplicationJob
     monitor = UptimeMonitor.find_by(id: monitor_id)
     return unless monitor
 
+    url = monitor.url
     start = Time.current
-    response = begin
-      uri = URI.parse(monitor.url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.open_timeout = monitor.timeout
-      http.read_timeout = monitor.timeout
-      http.use_ssl = uri.scheme == "https"
-      http.start { |conn| conn.get(uri.request_uri) }
-    rescue StandardError => e
-      OpenStruct.new(code: nil, message: e.message)
-    end
+    response = perform_check(url, monitor.timeout)
 
     status = response.code.to_i.between?(200, 399) ? "up" : "down"
     response_time = ((Time.current - start) * 1000).round(2)
@@ -36,5 +28,18 @@ class MonitorCheckJob < ApplicationJob
     elsif status == "up"
       monitor.incidents.where(resolved_at: nil).update_all(resolved_at: Time.current)
     end
+  end
+
+  private
+
+  def perform_check(url, timeout)
+    uri = URI(url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.open_timeout = timeout
+    http.read_timeout = timeout
+    http.use_ssl = uri.scheme == "https"
+    http.start { |conn| conn.get(uri.request_uri) }
+  rescue StandardError => e
+    OpenStruct.new(code: nil, message: e.message)
   end
 end
