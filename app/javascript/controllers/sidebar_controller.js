@@ -10,4 +10,9 @@ export default class extends Controller {
   close() {
     this.sidebarTarget.classList.add("hidden")
   }
+
+  openHelp(e) {
+    e.preventDefault()
+    document.getElementById("help-modal")?.showModal()
+  }
 }
