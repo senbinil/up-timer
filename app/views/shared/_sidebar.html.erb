@@ -36,7 +36,7 @@
         <span>Settings</span>
       <% end %>
 
-      <%= link_to "#", class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
+      <%= link_to "#", data: { action: "click->sidebar#openHelp" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
         <%= lucide_icon "help-circle", size: 16, class: "flex-shrink-0" %>
         <span>Help</span>
       <% end %>

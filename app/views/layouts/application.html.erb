@@ -22,7 +22,7 @@
     <script>lucide.createIcons();</script>
   </head>
 
-  <body class="font-body min-h-screen flex flex-col">
+  <body class="font-body min-h-screen flex flex-col" data-controller="sidebar">
     <%= render "shared/header" %>
 
     <% if notice %>
@@ -37,5 +37,6 @@
     </main>
 
     <%= render "shared/footer" %>
+    <%= render "shared/help_modal" %>
   </body>
 </html>

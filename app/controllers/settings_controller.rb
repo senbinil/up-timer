@@ -3,13 +3,22 @@ class SettingsController < ApplicationController
   before_action :authenticate
 
   def show
+    @account = current_account
     @preference = current_account.preference
   end
 
   def update
+    @account = current_account
     @preference = current_account.preference
-    if @preference.update(preference_params)
-      redirect_to settings_path, notice: "Settings updated."
+
+    updated = @preference.update(preference_params)
+    updated &= @account.update(name: params[:account][:name]) if params[:account][:name].present?
+
+    if updated
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to settings_path, notice: "Settings updated." }
+      end
     else
       render :show, status: :unprocessable_entity
     end
