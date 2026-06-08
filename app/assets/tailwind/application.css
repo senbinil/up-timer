@@ -92,14 +92,12 @@
     --radius-full: 9999px;
 
     /* ── Spacing ── */
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
     --spacing-gutter: 24px;
-    --spacing-margin-mobile: 16px;
-    --spacing-margin-desktop: 64px;
+
+    /* ── Container Widths (restore Tailwind defaults overridden by spacing) ── */
+    --container-md: 28rem;
+    --container-lg: 32rem;
+    --container-xl: 36rem;
 
     /* ── Breakpoints ── */
     --breakpoint-mobile: 640px;
@@ -148,6 +146,18 @@
    Base Styles
    ============================================= */
 
+:root {
+    /* Design system spacing (not in @theme to avoid overriding Tailwind's scale) */
+    --ds-spacing-xs: 4px;
+    --ds-spacing-sm: 8px;
+    --ds-spacing-md: 16px;
+    --ds-spacing-lg: 24px;
+    --ds-spacing-xl: 32px;
+    --ds-spacing-gutter: 24px;
+    --ds-spacing-margin-mobile: 16px;
+    --ds-spacing-margin-desktop: 64px;
+}
+
 @layer base {
     html {
         font-family: var(--font-body);
@@ -158,8 +168,7 @@
     }
 
     body {
-        max-width: 1280px;
-        margin: 0 auto;
+        /* Full viewport width — no max-width cap */
     }
 
     h1,
@@ -186,8 +195,8 @@
 @utility btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--ds-spacing-sm);
+    padding: var(--ds-spacing-sm) var(--ds-spacing-md);
     font-family: var(--font-body);
     font-size: var(--text-body-md);
     font-weight: 500;
@@ -228,7 +237,7 @@
 
 @utility input-field {
     width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--ds-spacing-sm) var(--ds-spacing-md);
     font-family: var(--font-body);
     font-size: var(--text-body-md);
     background-color: #ffffff;
@@ -251,22 +260,22 @@
     letter-spacing: var(--text-label-caps--letter-spacing);
     text-transform: uppercase;
     color: var(--color-slate-400);
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: var(--ds-spacing-xs);
 }
 
 @utility card {
     background-color: #ffffff;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
+    padding: var(--ds-spacing-lg);
 }
 
 @utility chip {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
+    gap: var(--ds-spacing-xs);
     height: 24px;
-    padding: 0 var(--spacing-sm);
+    padding: 0 var(--ds-spacing-sm);
     font-family: var(--font-mono);
     font-size: var(--text-label-caps);
     font-weight: var(--text-label-caps--font-weight);
@@ -309,7 +318,7 @@
     background-color: var(--color-success-container);
     border: 1px solid var(--color-success);
     color: var(--color-on-success-container);
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--ds-spacing-sm) var(--ds-spacing-md);
     border-radius: var(--radius-default);
 }
 
@@ -317,6 +326,6 @@
     background-color: var(--color-error-container);
     border: 1px solid var(--color-error);
     color: var(--color-on-error-container);
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--ds-spacing-sm) var(--ds-spacing-md);
     border-radius: var(--radius-default);
 }
