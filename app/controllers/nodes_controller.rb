@@ -13,7 +13,8 @@ class NodesController < ApplicationController
   def create
     @node = UptimeMonitor.new(node_params)
     if @node.save
-      redirect_to nodes_path, notice: "Node created successfully."
+      MonitorCheckJob.perform_later(@node.id)
+      redirect_to nodes_path, notice: "Node created. First check in progress."
     else
       render :new, status: :unprocessable_entity
     end
