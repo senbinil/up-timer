@@ -3,7 +3,7 @@ class NodesController < ApplicationController
   before_action :authenticate
 
   def index
-    @nodes = UptimeMonitor.all.order(created_at: :desc)
+    @nodes = UptimeMonitor.ranked
   end
 
   def new
@@ -13,7 +13,8 @@ class NodesController < ApplicationController
   def create
     @node = UptimeMonitor.new(node_params)
     if @node.save
-      redirect_to nodes_path, notice: "Node created successfully."
+      MonitorCheckJob.perform_later(@node.id)
+      redirect_to nodes_path, notice: "Node created. First check in progress."
     else
       render :new, status: :unprocessable_entity
     end
@@ -22,6 +23,24 @@ class NodesController < ApplicationController
   def show
     @node = UptimeMonitor.find(params[:id])
     @checks = @node.monitor_checks.order(checked_at: :desc).limit(50)
+  end
+
+  def destroy
+    @node = UptimeMonitor.find(params[:id])
+    @node.destroy
+    redirect_to nodes_path, notice: "Node deleted."
+  end
+
+  def move_up
+    node = UptimeMonitor.find(params[:id])
+    node.update!(position: node.position + 1)
+    redirect_to nodes_path
+  end
+
+  def move_down
+    node = UptimeMonitor.find(params[:id])
+    node.update!(position: node.position - 1)
+    redirect_to nodes_path
   end
 
   private

@@ -5,25 +5,45 @@ class DashboardController < ApplicationController
 
   def index
     @page_title = "Dashboard"
-    @chart_data = generate_chart_data
-    @nodes = UptimeMonitor.all.order(created_at: :desc)
-    @services = @nodes.first(3)
+    @nodes = UptimeMonitor.ranked
+    @services = @nodes.top(current_dashboard_limit)
     @alerts = Alert.recent.limit(5)
+    @stats = fleet_stats
   end
 
   private
 
-  def generate_chart_data
-    24.times.map { |i| [ "Day #{i + 1}", rand(60..100) ] }.to_h
+  def current_dashboard_limit
+    account = Account.find_by(id: rodauth.session_value)
+    account&.preference&.dashboard_limit || 3
   end
-  helper_method :random_chart_data, :db_chart_data
+  helper_method :current_dashboard_limit
 
-  def random_chart_data
-    @chart_data ||= generate_chart_data
+  helper_method :chart_data_for, :fleet_stats
+
+  def fleet_stats
+    total = @nodes.size
+    up_count = @nodes.where(status: "up").count
+    down_count = total - up_count
+
+    all_checks = MonitorCheck.where(monitor_id: @nodes.pluck(:id))
+    total_checks = all_checks.count
+    up_checks = all_checks.where(status: "up").count
+
+    {
+      status: down_count == 0 ? "operational" : (up_count > 0 ? "degraded" : "down"),
+      up_count: up_count,
+      down_count: down_count,
+      total: total,
+      uptime: total_checks > 0 ? (up_checks.to_f / total_checks * 100).round(2) : 100,
+      error_rate: total_checks > 0 ? ((total_checks - up_checks).to_f / total_checks * 100).round(2) : 0
+    }
   end
 
-  def db_chart_data
-    24.times.map { |i| [ "Day #{i + 1}", [ 15, 20 ].include?(i) ? rand(30..50) : rand(70..100) ] }.to_h
+  def chart_data_for(node)
+    node.monitor_checks.order(checked_at: :desc).limit(24).reverse.map { |c|
+      [ c.checked_at.strftime("%H:%M"), c.response_time ]
+    }.to_h
   end
 
   def authenticate

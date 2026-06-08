@@ -208,7 +208,7 @@ When entering a Ruby/Rails project:
 
 2. Activate both the Ruby version and gemset.
 
-Example:
+use:
 
 ```bash
 rvm use ruby-4.0.5@up-timer

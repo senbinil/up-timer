@@ -1,34 +1,48 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]">Alerts</h1>
-    <%= link_to "New Alert +", new_alert_path, class: "btn btn-primary text-xs py-1.5 px-3" %>
+    <div>
+      <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]">Alerts</h1>
+      <p class="text-xs text-slate-400 font-mono mt-1">Monitor system events and incidents</p>
+    </div>
+    <%= link_to new_alert_path, class: "btn btn-primary text-xs py-1.5 px-3" do %>
+      New Alert &plus;
+    <% end %>
   </div>
 
   <% if @alerts.any? %>
-    <div class="card space-y-0">
-      <div class="hidden md:grid grid-cols-[80px_100px_1fr_120px_80px] gap-4 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
-        <span>Severity</span>
-        <span>Node</span>
-        <span>Message</span>
-        <span>Time</span>
-        <span></span>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <% @alerts.each do |alert| %>
-        <div class="md:grid md:grid-cols-[80px_100px_1fr_120px_80px] gap-4 px-1 py-3 items-center list-row">
-          <span class="<%= severity_chip_class(alert.severity) %> text-[10px]"><%= alert.severity %></span>
-          <span class="text-xs text-slate-400 font-mono"><%= alert.monitor&.name || "-" %></span>
-          <span class="text-xs text-slate-400 truncate"><%= alert.message %></span>
-          <span class="text-[10px] text-slate-400 font-mono"><%= time_ago_in_words(alert.created_at) %> ago</span>
-          <div class="flex items-center gap-2">
-            <%= link_to "View", alert_path(alert), class: "text-[10px] text-primary-container hover:underline" %>
+        <%= link_to alert_path(alert), class: "card space-y-4 block hover:border-primary-container/30 transition-colors group" do %>
+          <div class="flex items-start justify-between">
+            <span class="<%= severity_chip_class(alert.severity) %> text-[10px]"><%= alert.severity %></span>
+            <% if alert.resolved? %>
+              <span class="chip chip-success text-[10px]">Resolved</span>
+            <% else %>
+              <span class="w-2 h-2 rounded-full <%= alert.severity == 'critical' ? 'bg-error animate-pulse' : 'bg-warning' %> flex-shrink-0" title="Active"></span>
+            <% end %>
           </div>
-        </div>
+
+          <div class="flex-1">
+            <p class="text-sm font-medium text-navy leading-snug line-clamp-2 group-hover:text-primary-container transition-colors"><%= alert.message %></p>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-divider">
+            <div class="flex items-center gap-1.5">
+              <%= lucide_icon "server", size: 12, class: "text-slate-400" %>
+              <span class="text-[11px] text-slate-400 font-mono"><%= alert.monitor&.name || "System" %></span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono"><%= time_ago_in_words(alert.created_at) %> ago</span>
+          </div>
+        <% end %>
       <% end %>
     </div>
   <% else %>
-    <div class="card text-center py-12 text-slate-400">
-      <p class="text-body-lg">No alerts.</p>
-      <p class="text-xs mt-1">Create an alert to start tracking.</p>
+    <div class="card text-center py-16 space-y-3">
+      <%= lucide_icon "bell-off", size: 32, class: "text-slate-300 mx-auto" %>
+      <div>
+        <p class="text-body-lg text-navy font-medium">No alerts yet</p>
+        <p class="text-xs text-slate-400 mt-1">Create your first alert to start tracking system events.</p>
+      </div>
     </div>
   <% end %>
 </div>

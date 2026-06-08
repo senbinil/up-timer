@@ -14,7 +14,14 @@ Rails.application.routes.draw do
 
   get "dashboard", to: "dashboard#index", as: :dashboard
 
-  resources :nodes, only: [ :index, :new, :create, :show ]
+  resources :nodes do
+    member do
+      post :move_up
+      post :move_down
+    end
+  end
+
+  resource :settings, only: [ :show, :update ]
 
   resources :alerts
 end
