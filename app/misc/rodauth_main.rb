@@ -49,7 +49,7 @@ class RodauthMain < Rodauth::Rails::Auth
     # Change some default param keys.
     login_param "email"
     login_confirm_param "email-confirm"
-    # password_confirm_param "confirm_password"
+    password_confirm_param "confirm_password"
 
     # Redirect back to originally requested location after authentication.
     # login_return_to_requested_location? true
@@ -62,7 +62,7 @@ class RodauthMain < Rodauth::Rails::Auth
     # delete_account_on_close? true
 
     # Redirect to the app from login and registration pages if already logged in.
-    # already_logged_in { redirect login_redirect }
+    already_logged_in { redirect "/dashboard" }
 
     # ==> Emails
     send_email do |email|
@@ -128,6 +128,7 @@ class RodauthMain < Rodauth::Rails::Auth
     # Validate custom fields in the create account form.
     before_create_account do
       throw_error_status(422, "name", "must be present") if param("name").blank?
+      throw_error_status(422, "compliance", "must be accepted") unless param("compliance") == "1"
     end
 
     # Perform additional actions after the account is created.
@@ -143,6 +144,9 @@ class RodauthMain < Rodauth::Rails::Auth
     # ==> Redirects
     # Redirect to home page after logout.
     logout_redirect "/"
+
+    # Redirect after successful login.
+    login_redirect "/dashboard"
 
     # Redirect to wherever login redirects to after account verification.
     verify_account_redirect { login_redirect }
