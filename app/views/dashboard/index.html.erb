@@ -42,110 +42,41 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <%# ── Card 2.1: API Gateway ── %>
-      <div class="card space-y-4">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-default bg-primary-container/10 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-primary-container" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+      <% @services.each do |node| %>
+        <%= link_to node_path(node), class: "card space-y-4 block hover:border-primary-container/30 transition-colors" do %>
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-default bg-primary-container/10 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-primary-container" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-sm font-semibold text-navy truncate"><%= node.name %></h3>
+                <p class="text-[11px] text-slate-400 font-mono truncate"><%= node.url %></p>
+              </div>
             </div>
-            <div>
-              <h3 class="text-sm font-semibold text-navy">API Gateway</h3>
-              <p class="text-[11px] text-slate-400 font-mono">us-east-1</p>
+            <span class="w-2 h-2 rounded-full <%= node.status == "up" ? "bg-primary-container" : "bg-error" %> flex-shrink-0 mt-1.5"></span>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-divider">
+            <div class="flex justify-between text-xs">
+              <span class="font-mono text-slate-400">Interval</span>
+              <span class="font-mono font-semibold text-navy"><%= node.check_interval %>s</span>
             </div>
-          </div>
-          <span class="w-2 h-2 rounded-full bg-primary-container flex-shrink-0 mt-1.5"></span>
-        </div>
-
-        <div class="space-y-2 pt-2 border-t border-divider">
-          <div class="flex justify-between text-xs">
-            <span class="font-mono text-slate-400">Latency</span>
-            <span class="font-mono font-semibold text-navy">42ms</span>
-          </div>
-          <div class="flex justify-between text-xs">
-            <span class="font-mono text-slate-400">Throughput</span>
-            <span class="font-mono font-semibold text-navy">12.4k req/s</span>
-          </div>
-        </div>
-
-        <div class="pt-2 border-t border-divider">
-          <div class="flex justify-between text-xs mb-2">
-            <span class="font-mono text-slate-400">30 Days</span>
-            <span class="font-mono font-semibold text-primary-container">100%</span>
-          </div>
-          <%= column_chart random_chart_data, height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
-        </div>
-      </div>
-
-      <%# ── Card 2.2: Primary DB ── %>
-      <div class="card space-y-4">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-default bg-error-container/50 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125v-3.75" /></svg>
-            </div>
-            <div>
-              <h3 class="text-sm font-semibold text-navy">Primary DB</h3>
-              <p class="text-[11px] text-slate-400 font-mono">us-west-2</p>
+            <div class="flex justify-between text-xs">
+              <span class="font-mono text-slate-400">Timeout</span>
+              <span class="font-mono font-semibold text-navy"><%= node.timeout %>s</span>
             </div>
           </div>
-          <span class="w-2 h-2 rounded-full bg-error flex-shrink-0 mt-1.5"></span>
-        </div>
 
-        <div class="space-y-2 pt-2 border-t border-divider">
-          <div class="flex justify-between text-xs">
-            <span class="font-mono text-slate-400">Connections</span>
-            <span class="font-mono font-semibold text-error">4,902 / 5,000</span>
-          </div>
-          <div class="flex justify-between text-xs">
-            <span class="font-mono text-slate-400">Replica Lag</span>
-            <span class="font-mono font-semibold text-navy">1.2s</span>
-          </div>
-        </div>
-
-        <div class="pt-2 border-t border-divider">
-          <div class="flex justify-between text-xs mb-2">
-            <span class="font-mono text-slate-400">30 Days</span>
-            <span class="font-mono font-semibold text-error">98.2%</span>
-          </div>
-          <%= column_chart db_chart_data, height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
-        </div>
-      </div>
-
-      <%# ── Card 2.3: Authentication ── %>
-      <div class="card space-y-4">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-default bg-primary-container/10 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-primary-container" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+          <div class="pt-2 border-t border-divider">
+            <div class="flex justify-between text-xs mb-2">
+              <span class="font-mono text-slate-400">Status</span>
+              <span class="font-mono font-semibold <%= node.status == "up" ? "text-primary-container" : "text-error" %>"><%= node.status&.upcase %></span>
             </div>
-            <div>
-              <h3 class="text-sm font-semibold text-navy">Authentication</h3>
-              <p class="text-[11px] text-slate-400 font-mono">global</p>
-            </div>
+            <%= column_chart random_chart_data, height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
           </div>
-          <span class="w-2 h-2 rounded-full bg-primary-container flex-shrink-0 mt-1.5"></span>
-        </div>
-
-        <div class="space-y-2 pt-2 border-t border-divider">
-          <div class="flex justify-between text-xs">
-            <span class="font-mono text-slate-400">Auth Rate</span>
-            <span class="font-mono font-semibold text-navy">2.1k / min</span>
-          </div>
-          <div class="flex justify-between text-xs">
-            <span class="font-mono text-slate-400">Failures</span>
-            <span class="font-mono font-semibold text-navy">0.01%</span>
-          </div>
-        </div>
-
-        <div class="pt-2 border-t border-divider">
-          <div class="flex justify-between text-xs mb-2">
-            <span class="font-mono text-slate-400">30 Days</span>
-            <span class="font-mono font-semibold text-primary-container">100%</span>
-          </div>
-          <%= column_chart random_chart_data, height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
-        </div>
-      </div>
+        <% end %>
+      <% end %>
     </div>
   </div>
 

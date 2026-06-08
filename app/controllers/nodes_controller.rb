@@ -19,6 +19,11 @@ class NodesController < ApplicationController
     end
   end
 
+  def show
+    @node = UptimeMonitor.find(params[:id])
+    @checks = @node.monitor_checks.order(checked_at: :desc).limit(50)
+  end
+
   private
 
   def authenticate

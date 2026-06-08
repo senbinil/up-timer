@@ -6,6 +6,8 @@ class DashboardController < ApplicationController
   def index
     @page_title = "Dashboard"
     @chart_data = generate_chart_data
+    @nodes = UptimeMonitor.all.order(created_at: :desc)
+    @services = @nodes.first(3)
   end
 
   private

@@ -14,13 +14,13 @@
         <span>Status</span>
       </div>
       <% @nodes.each do |node| %>
-        <div class="md:grid md:grid-cols-[1fr_1fr_100px_100px_80px] gap-4 px-1 py-3 items-center list-row">
+        <%= link_to node_path(node), class: "md:grid md:grid-cols-[1fr_1fr_100px_100px_80px] gap-4 px-1 py-3 items-center list-row block hover:bg-surface-container-low" do %>
           <span class="text-sm font-semibold text-navy"><%= node.name %></span>
           <span class="text-xs text-slate-400 font-mono truncate hidden md:block"><%= node.url %></span>
           <span class="text-xs text-slate-400 font-mono"><%= node.check_interval %>s</span>
           <span class="text-xs text-slate-400 font-mono"><%= node.timeout %>s</span>
           <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= node.status %></span>
-        </div>
+        <% end %>
       <% end %>
     </div>
   <% else %>
