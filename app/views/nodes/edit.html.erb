@@ -1,0 +1,11 @@
+<div class="max-w-lg mx-auto space-y-6">
+  <div class="space-y-2">
+    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Nodes</p>
+    <h1 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Edit Node</h1>
+    <p class="text-body-md text-slate-400">Update endpoint configuration.</p>
+  </div>
+
+  <div class="card">
+    <%= render "form", url: node_path(@node), method: :patch, submit_label: "Save Changes" %>
+  </div>
+</div>
