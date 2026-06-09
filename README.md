@@ -2,7 +2,10 @@
 
 Uptime monitoring dashboard for tracking service health, response times, and incidents.
 
-<img width="1883" height="857" alt="image" src="https://github.com/user-attachments/assets/33061149-684f-4b00-b354-9aaf5895e651" />
+<img width="1886" height="865" alt="image" src="https://github.com/user-attachments/assets/67e747b1-fc2d-4cd7-8f96-e27b6a6c7ad3" />
+
+## Public Status Page
+<img width="1892" height="860" alt="image" src="https://github.com/user-attachments/assets/594a8a1d-618d-44e2-b99d-6535942a6709" />
 
 ## Prerequisites
 
