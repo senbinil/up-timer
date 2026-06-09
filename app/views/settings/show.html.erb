@@ -31,4 +31,13 @@
       <%= form.button class: "btn btn-primary" do %>Save<% end %>
     <% end %>
   </div>
+
+  <div class="card space-y-3">
+    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Public Status Page</p>
+    <p class="text-xs text-slate-600">Share this URL to give anyone a read-only view of your service status.</p>
+    <div class="flex items-center gap-2">
+      <code class="flex-1 text-xs font-mono bg-surface-container-high rounded-default px-3 py-2 text-navy break-all"><%= public_status_url(@account.status_token) %></code>
+      <button onclick="navigator.clipboard.writeText('<%= public_status_url(@account.status_token) %>')" class="btn btn-secondary text-xs flex-shrink-0">Copy</button>
+    </div>
+  </div>
 </div>
