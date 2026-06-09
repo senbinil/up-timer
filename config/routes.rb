@@ -25,5 +25,9 @@ Rails.application.routes.draw do
 
   resource :settings, only: [ :show, :update ]
 
-  resources :alerts
+  resources :alerts do
+    member do
+      post :resolve
+    end
+  end
 end

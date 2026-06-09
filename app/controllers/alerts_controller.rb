@@ -1,7 +1,7 @@
 class AlertsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
-  before_action :set_alert, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_alert, only: [ :show, :edit, :update, :destroy, :resolve ]
 
   def index
     @pagy, @alerts = pagy(Alert.recent, limit: 15)
@@ -41,6 +41,14 @@ class AlertsController < ApplicationController
   def destroy
     @alert.destroy
     redirect_to alerts_path, notice: "Alert deleted."
+  end
+
+  def resolve
+    @alert.update!(resolved: true)
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to alerts_path, notice: "Alert resolved." }
+    end
   end
 
   private

@@ -8,6 +8,7 @@ class DashboardController < ApplicationController
     @nodes = UptimeMonitor.ranked
     @services = @nodes.top(current_dashboard_limit)
     @alerts = Alert.recent.limit(5)
+    @alert_counts = Alert.active.group(:severity).count
     @stats = fleet_stats
   end
 

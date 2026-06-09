@@ -13,7 +13,7 @@
         <p class="text-body-md text-slate-400 mt-1"><%= @stats[:up_count] %> of <%= @stats[:total] %> nodes healthy<% if @stats[:down_count] > 0 %>, <%= @stats[:down_count] %> degraded<% end %>.</p>
       </div>
 
-      <div class="grid grid-cols-3 gap-4 pt-4 border-t border-divider">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-divider">
         <div>
           <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
           <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:uptime] %>%</p>
@@ -25,6 +25,16 @@
         <div>
           <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Downtime</p>
           <p class="text-lg md:text-2xl font-semibold <%= @stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:error_rate] %>%</p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Alerts</p>
+          <p class="text-lg md:text-2xl font-semibold <%= @alert_counts.values.sum > 0 ? "text-warning" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @alert_counts.values.sum %></p>
+          <% if @alert_counts.values.sum > 0 %>
+            <p class="text-[10px] font-mono mt-0.5">
+              <% if @alert_counts["critical"].to_i > 0 %><span class="text-error"><%= @alert_counts["critical"] %> crit</span><% end %>
+              <% if @alert_counts["warning"].to_i > 0 %><span class="text-warning ml-1"><%= @alert_counts["warning"] %> warn</span><% end %>
+            </p>
+          <% end %>
         </div>
       </div>
 
@@ -40,10 +50,6 @@
   <div>
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-xl font-semibold text-navy font-[Hanken_Grotesk]">Active Services</h2>
-      <div class="flex items-center gap-4 text-xs text-slate-400 font-mono">
-        <span class="cursor-pointer hover:text-navy">Filter</span>
-        <span class="cursor-pointer hover:text-navy">Sort &#9776;</span>
-      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -96,13 +102,17 @@
 
     <% if @alerts.any? %>
       <% @alerts.each do |alert| %>
-        <%= link_to alert_path(alert), class: "block px-1 py-3 items-center list-row hover:bg-surface-container-low transition-colors" do %>
-          <div class="flex items-center gap-3">
-            <span class="<%= severity_chip_class(alert.severity) %> text-[10px] flex-shrink-0"><%= alert.severity %></span>
-            <span class="text-xs text-slate-400 truncate flex-1"><%= alert.message %></span>
-            <span class="text-[10px] text-slate-400 font-mono flex-shrink-0"><%= time_ago_in_words(alert.created_at) %> ago</span>
-          </div>
-        <% end %>
+        <div class="px-1 py-3 list-row hover:bg-surface-container-low transition-colors flex items-center gap-3">
+          <span class="<%= severity_chip_class(alert.severity) %> text-[10px] flex-shrink-0"><%= alert.severity %></span>
+          <% if alert.resolved? %>
+            <span class="chip chip-success text-[10px] flex-shrink-0">resolved</span>
+          <% end %>
+          <%= link_to alert.message, alert_path(alert), class: "text-xs text-slate-400 truncate flex-1 hover:text-navy transition-colors" %>
+          <span class="text-[10px] text-slate-400 font-mono flex-shrink-0"><%= time_ago_in_words(alert.created_at) %> ago</span>
+          <% unless alert.resolved? %>
+            <button onclick="document.dispatchEvent(new CustomEvent('confirm-modal:open', { detail: { url: '<%= resolve_alert_path(alert) %>', message: 'Mark this alert as resolved?' } }))" class="btn btn-ghost text-[10px] text-success flex-shrink-0">Resolve</button>
+          <% end %>
+        </div>
       <% end %>
     <% else %>
       <div class="py-8 text-center text-xs text-slate-400">No alerts yet.</div>
