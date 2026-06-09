@@ -1,4 +1,4 @@
-<%= form_with model: @alert, class: "space-y-8" do |form| %>
+<%= form_with model: @alert, class: "space-y-8", data: { controller: "alert-form" } do |form| %>
   <% if @alert.errors.any? %>
     <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
       <strong><%= pluralize(@alert.errors.count, "error") %>:</strong>
@@ -8,10 +8,15 @@
     </div>
   <% end %>
 
+  <div class="space-y-1.5">
+    <%= label_tag :alert_trigger_id, "Trigger Type", class: "input-label block" %>
+    <%= select_tag :alert_trigger_id, options_from_collection_for_select(@triggers, :id, :name), include_blank: "Custom", class: "input-field", data: { action: "change->alert-form#setSeverity", alert_form_target: "trigger", severities: @triggers.map { |t| [t.id, t.severity] }.to_h.to_json } %>
+  </div>
+
   <div class="grid grid-cols-2 gap-4">
     <div class="space-y-1.5">
       <%= form.label :severity, class: "input-label block" %>
-      <%= form.select :severity, [["Info", "info"], ["Warning", "warning"], ["Critical", "critical"]], {}, class: "input-field" %>
+      <%= form.select :severity, [["Info", "info"], ["Warning", "warning"], ["Critical", "critical"]], {}, class: "input-field", data: { alert_form_target: "severity" } %>
     </div>
     <div class="space-y-1.5">
       <%= form.label :monitor_id, "Node", class: "input-label block" %>
@@ -21,7 +26,7 @@
 
   <div class="space-y-1.5">
     <%= form.label :message, class: "input-label block" %>
-    <%= form.text_area :message, rows: 4, required: true, class: "input-field" %>
+    <%= form.text_area :message, rows: 4, required: true, class: "input-field", data: { alert_form_target: "message" } %>
   </div>
 
   <div class="flex items-center gap-2">
