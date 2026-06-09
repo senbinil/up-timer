@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_000004) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -42,6 +42,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
     t.string "status_token"
     t.index ["email"], name: "index_accounts_on_email", unique: true, where: "status IN (1, 2)"
     t.index ["status_token"], name: "index_accounts_on_status_token", unique: true
+  end
+
+  create_table "alert_triggers", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.string "severity", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "alerts", force: :cascade do |t|
@@ -91,6 +100,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
     t.datetime "updated_at", null: false
     t.string "url", null: false
     t.index ["position"], name: "index_monitors_on_position"
+  end
+
+  create_table "recipients", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name", null: false
+    t.string "role"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_recipients_on_email", unique: true
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
