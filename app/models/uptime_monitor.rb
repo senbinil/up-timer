@@ -6,6 +6,10 @@ class UptimeMonitor < ApplicationRecord
 
   after_create_commit :enqueue_first_check
 
+  validates :request_type, inclusion: { in: MonitorCheckService::SUPPORTED_METHODS }
+  validates :expected_status, numericality: { only_integer: true, greater_than: 0, less_than: 600 }, allow_nil: true
+  validates :request_body, length: { maximum: 10_000 }, allow_blank: true
+
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
   scope :top, ->(n = 3) { ranked.limit(n) }
 

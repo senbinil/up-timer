@@ -1,10 +1,11 @@
 class AlertsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
-  before_action :set_alert, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_alert, only: [ :show, :edit, :update, :destroy, :resolve ]
 
   def index
     @pagy, @alerts = pagy(Alert.recent, limit: 15)
+    @heatmap = alert_heatmap
   end
 
   def show
@@ -43,7 +44,29 @@ class AlertsController < ApplicationController
     redirect_to alerts_path, notice: "Alert deleted."
   end
 
+  def resolve
+    @alert.update!(resolved: true)
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to alerts_path, notice: "Alert resolved." }
+    end
+  end
+
   private
+
+  def alert_heatmap
+    29.downto(0).map do |days_ago|
+      date = days_ago.days.ago.to_date
+      day_alerts = Alert.where(created_at: date.all_day)
+      {
+        date: date,
+        count: day_alerts.count,
+        critical: day_alerts.where(severity: "critical").count,
+        warning: day_alerts.where(severity: "warning").count,
+        info: day_alerts.where(severity: "info").count
+      }
+    end
+  end
 
   def authenticate
     rodauth.require_account

@@ -18,10 +18,16 @@ Rails.application.routes.draw do
     member do
       post :move_up
       post :move_down
+      get :edit
+      patch :update
     end
   end
 
   resource :settings, only: [ :show, :update ]
 
-  resources :alerts
+  resources :alerts do
+    member do
+      post :resolve
+    end
+  end
 end

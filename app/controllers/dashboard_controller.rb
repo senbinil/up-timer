@@ -8,10 +8,26 @@ class DashboardController < ApplicationController
     @nodes = UptimeMonitor.ranked
     @services = @nodes.top(current_dashboard_limit)
     @alerts = Alert.recent.limit(5)
+    @alert_counts = Alert.active.group(:severity).count
+    @heatmap = alert_heatmap
     @stats = fleet_stats
   end
 
   private
+
+  def alert_heatmap
+    29.downto(0).map do |days_ago|
+      date = days_ago.days.ago.to_date
+      day_alerts = Alert.where(created_at: date.all_day)
+      {
+        date: date,
+        count: day_alerts.count,
+        critical: day_alerts.where(severity: "critical").count,
+        warning: day_alerts.where(severity: "warning").count,
+        info: day_alerts.where(severity: "info").count
+      }
+    end
+  end
 
   def current_dashboard_limit
     account = Account.find_by(id: rodauth.session_value)

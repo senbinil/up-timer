@@ -6,55 +6,6 @@
   </div>
 
   <div class="card">
-    <%= form_with model: @node, url: nodes_path, class: "space-y-8" do |form| %>
-      <% if @node.errors.any? %>
-        <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
-          <strong><%= pluralize(@node.errors.count, "error") %> prevented this node from being saved:</strong>
-          <ul class="mt-1 list-disc list-inside">
-            <% @node.errors.full_messages.each do |msg| %>
-              <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <div class="space-y-1.5">
-        <%= form.label :name, class: "input-label block" %>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" /></svg>
-          </span>
-          <%= form.text_field :name, required: true, placeholder: "us-east-1 API", class: "input-field pl-10" %>
-        </div>
-      </div>
-
-      <div class="space-y-1.5">
-        <%= form.label :url, class: "input-label block" %>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
-          </span>
-          <%= form.url_field :url, required: true, placeholder: "https://api.example.com/health", class: "input-field pl-10" %>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-1.5">
-          <%= form.label :check_interval, "Check Interval (s)", class: "input-label block" %>
-          <%= form.number_field :check_interval, required: true, min: 10, class: "input-field" %>
-        </div>
-        <div class="space-y-1.5">
-          <%= form.label :timeout, "Timeout (s)", class: "input-label block" %>
-          <%= form.number_field :timeout, required: true, min: 1, class: "input-field" %>
-        </div>
-      </div>
-
-      <div class="flex gap-3">
-        <%= form.button class: "btn btn-primary flex-1 justify-center" do %>
-          Create Node &plus;
-        <% end %>
-        <%= link_to "Cancel", nodes_path, class: "btn btn-secondary flex-1 justify-center" %>
-      </div>
-    <% end %>
+    <%= render "form", url: nodes_path, method: :post, submit_label: "Create Node +" %>
   </div>
 </div>

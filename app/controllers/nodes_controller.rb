@@ -7,7 +7,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @node = UptimeMonitor.new(check_interval: 60, timeout: 30)
+    @node = UptimeMonitor.new(check_interval: 60, timeout: 30, request_type: "GET")
   end
 
   def create
@@ -16,6 +16,19 @@ class NodesController < ApplicationController
       redirect_to nodes_path, notice: "Node created. First check in progress."
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    @node = UptimeMonitor.find(params[:id])
+  end
+
+  def update
+    @node = UptimeMonitor.find(params[:id])
+    if @node.update(node_params)
+      redirect_to node_path(@node), notice: "Node updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -50,6 +63,6 @@ class NodesController < ApplicationController
   end
 
   def node_params
-    params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout)
+    params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body)
   end
 end

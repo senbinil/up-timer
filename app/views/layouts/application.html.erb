@@ -16,6 +16,9 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <%= javascript_importmap_tags %>
 
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -38,5 +41,6 @@
 
     <%= render "shared/footer" %>
     <%= render "shared/help_modal" %>
+    <%= render "shared/confirm_modal" %>
   </body>
 </html>
