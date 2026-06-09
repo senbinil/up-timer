@@ -5,6 +5,7 @@ class AlertsController < ApplicationController
 
   def index
     @pagy, @alerts = pagy(Alert.recent, limit: 15)
+    @heatmap = alert_heatmap
   end
 
   def show
@@ -52,6 +53,20 @@ class AlertsController < ApplicationController
   end
 
   private
+
+  def alert_heatmap
+    29.downto(0).map do |days_ago|
+      date = days_ago.days.ago.to_date
+      day_alerts = Alert.where(created_at: date.all_day)
+      {
+        date: date,
+        count: day_alerts.count,
+        critical: day_alerts.where(severity: "critical").count,
+        warning: day_alerts.where(severity: "warning").count,
+        info: day_alerts.where(severity: "info").count
+      }
+    end
+  end
 
   def authenticate
     rodauth.require_account
