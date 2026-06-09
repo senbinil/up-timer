@@ -4,6 +4,7 @@ class Account < ApplicationRecord
 
   has_one :user_preference, dependent: :destroy
 
+  before_create :set_status_token
   after_create :build_default_preference
 
   def preference
@@ -11,6 +12,10 @@ class Account < ApplicationRecord
   end
 
   private
+
+  def set_status_token
+    self.status_token = SecureRandom.urlsafe_base64(24)
+  end
 
   def build_default_preference
     create_user_preference!

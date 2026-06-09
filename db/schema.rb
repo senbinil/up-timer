@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -39,7 +39,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000001) do
     t.string "name"
     t.string "password_hash"
     t.integer "status", default: 1, null: false
+    t.string "status_token"
     t.index ["email"], name: "index_accounts_on_email", unique: true, where: "status IN (1, 2)"
+    t.index ["status_token"], name: "index_accounts_on_status_token", unique: true
   end
 
   create_table "alerts", force: :cascade do |t|

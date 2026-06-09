@@ -1,0 +1,71 @@
+<div class="card space-y-5">
+  <div class="flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full <%= @stats[:status] == "operational" ? "bg-success" : (@stats[:status] == "degraded" ? "bg-warning" : "bg-error") %>"></span>
+    <span class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">System Status</span>
+  </div>
+
+  <div>
+    <h1 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk] capitalize"><%= @stats[:status] %></h1>
+    <p class="text-sm text-slate-400 mt-1"><%= @stats[:up_count] %> of <%= @stats[:total] %> services healthy<% if @stats[:down_count] > 0 %>, <%= @stats[:down_count] %> degraded<% end %>.</p>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4 pt-4 border-t border-divider">
+    <div>
+      <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Healthy</p>
+      <p class="text-lg font-semibold text-success font-[Hanken_Grotesk] mt-1"><%= @stats[:up_count] %></p>
+    </div>
+    <div>
+      <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Total</p>
+      <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:total] %></p>
+    </div>
+    <div>
+      <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Degraded</p>
+      <p class="text-lg font-semibold <%= @stats[:down_count] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:down_count] %></p>
+    </div>
+  </div>
+
+  <% if @last_resolved %>
+    <div class="flex items-center gap-2 pt-3 border-t border-divider text-[10px] text-slate-400 font-mono">
+      Last incident resolved <%= time_ago_in_words(@last_resolved) %> ago
+    </div>
+  <% end %>
+</div>
+
+<div class="space-y-3">
+  <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Services</h2>
+
+  <% if @nodes.any? %>
+    <div class="space-y-2">
+      <% @nodes.each do |node| %>
+        <div class="card flex items-center gap-4 py-3">
+          <span class="w-2.5 h-2.5 rounded-full <%= node.status == "up" ? "bg-success" : "bg-error" %> flex-shrink-0"></span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-navy truncate"><%= node.name %></p>
+            <p class="text-[11px] text-slate-400 font-mono truncate"><%= node.url %></p>
+            <% if node.monitor_checks.last %>
+              <p class="text-[10px] text-slate-400 font-mono mt-0.5">Last checked <%= time_ago_in_words(node.monitor_checks.last.checked_at) %> ago</p>
+            <% end %>
+          </div>
+          <span class="text-xs font-mono font-semibold <%= node.status == "up" ? "text-success" : "text-error" %> flex-shrink-0"><%= node.status.upcase %></span>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-xs text-slate-400 py-8 text-center">No services configured.</p>
+  <% end %>
+</div>
+
+<% if @recent_alerts.any? %>
+<div class="space-y-3">
+  <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Recent Alerts</h2>
+  <div class="space-y-1">
+    <% @recent_alerts.each do |alert| %>
+      <div class="flex items-center gap-3 text-xs py-2 px-1 border-b border-divider last:border-0">
+        <span class="<%= alert.severity == 'critical' ? 'text-error' : (alert.severity == 'warning' ? 'text-warning' : 'text-slate-400') %> font-mono font-semibold w-16 flex-shrink-0"><%= alert.severity.upcase %></span>
+        <span class="text-slate-600 truncate flex-1"><%= alert.message %></span>
+        <span class="text-slate-400 font-mono flex-shrink-0"><%= time_ago_in_words(alert.created_at) %> ago</span>
+      </div>
+    <% end %>
+  </div>
+</div>
+<% end %>
