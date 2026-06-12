@@ -55,6 +55,12 @@ docker run -d -p 3000:80 -e ADMIN_EMAILS=admin@example.com binilsn/up-timer:late
 
 Opens at `http://localhost:3000`. The `config/master.key` is baked into the image.
 
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `ADMIN_EMAILS` | ❌ | — | Comma-separated emails that get admin role on registration |
+| `SOLID_QUEUE_IN_PUMA` | ❌ | `true` (baked in) | Runs background jobs in the web process |
+| `RAILS_MASTER_KEY` | ❌ | Baked in image | Rails credentials key |
+
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
 ### Build and run manually
