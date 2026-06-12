@@ -42,6 +42,6 @@ class AlertIntegrationsController < ApplicationController
   end
 
   def recipient_params
-    params.require(:recipient).permit(:email, :name, :role)
+    params.require(:recipient).permit(:email)
   end
 end
