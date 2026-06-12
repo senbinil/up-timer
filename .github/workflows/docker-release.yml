@@ -7,6 +7,9 @@ on:
         tags:
             - "v*.*.*"
 
+env:
+    DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME || github.repository_owner }}
+
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
@@ -19,16 +22,16 @@ jobs:
 
             - name: Log in to Docker Hub
               uses: docker/login-action@v3
-              if: vars.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != ''
+              if: env.DOCKER_USERNAME != ''
               with:
-                  username: ${{ vars.DOCKER_USERNAME }}
+                  username: ${{ env.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
             - name: Build and push
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  push: ${{ vars.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
+                  push: true
                   tags: |
-                      ${{ vars.DOCKER_USERNAME }}/up-timer:latest
-                      ${{ vars.DOCKER_USERNAME }}/up-timer:${{ github.ref_name }}
+                      ${{ env.DOCKER_USERNAME }}/up-timer:latest
+                      ${{ env.DOCKER_USERNAME }}/up-timer:${{ github.ref_name }}
