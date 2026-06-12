@@ -80,15 +80,27 @@ docker run -e RAILS_MASTER_KEY=xxx -e ADMIN_EMAILS="admin@example.com" -e SOLID_
 
 ## Auth
 
-Authentication is handled by Rodauth. Default routes:
+Authentication is handled by Rodauth.
+
+### Routes
 
 | Route | Description |
 |---|---|
 | `/login` | Sign in |
-| `/create-account` | Register new user (URL is hidden — known to admins) |
+| `/create-account` | Register new user |
 | `/logout` | Sign out |
 
 After login, users are redirected to `/dashboard`.
+
+### Admin assignment
+
+Set `ADMIN_EMAILS` environment variable with a comma-separated list:
+
+```bash
+ADMIN_EMAILS=admin@example.com docker compose up -d
+```
+
+Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
 
 ## Role-Based Access Control
 
