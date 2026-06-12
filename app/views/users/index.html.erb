@@ -21,9 +21,13 @@
         </div>
         <span class="chip chip-default text-[10px]"><%= user.role %></span>
         <div class="flex justify-end">
+          <% if user.id == current_account&.id %>
+            <span class="text-[10px] text-slate-400 font-mono italic">Current user</span>
+          <% else %>
           <%= form_with url: update_role_user_path(user), method: :patch, class: "flex items-center gap-2" do |f| %>
             <%= f.select :role, Account::ROLES.map { |r| [r.capitalize, r] }, { selected: user.role }, class: "input-field text-xs py-1 w-28" %>
             <%= f.submit "Update", class: "btn btn-primary text-[10px] py-1 px-2" %>
+          <% end %>
           <% end %>
         </div>
       </div>

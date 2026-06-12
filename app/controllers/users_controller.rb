@@ -9,6 +9,11 @@ class UsersController < ApplicationController
 
   def update_role
     @user = Account.find(params[:id])
+
+    if @user.id == current_account.id
+      return redirect_to users_path, alert: "You cannot change your own role."
+    end
+
     new_role = params[:role]
 
     if Account::ROLES.include?(new_role)
@@ -17,5 +22,11 @@ class UsersController < ApplicationController
     else
       redirect_to users_path, alert: "Invalid role."
     end
+  end
+
+  private
+
+  def authenticate
+    rodauth.require_account
   end
 end
