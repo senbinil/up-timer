@@ -64,7 +64,7 @@ RAILS_MASTER_KEY=xxx ADMIN_EMAILS=admin@example.com docker compose up -d
 ```bash
 docker pull binilsn/up-timer:latest
 
-RAILS_MASTER_KEY=xxx ADMIN_EMAILS=admin@example.com docker compose up -d
+ADMIN_EMAILS=admin@example.com docker compose up -d
 ```
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
