@@ -19,7 +19,7 @@ jobs:
 
             - name: Log in to Docker Hub
               uses: docker/login-action@v3
-              if: vars.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != ''
+              if: vars.DOCKER_USERNAME != ''
               with:
                   username: ${{ vars.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
@@ -28,7 +28,7 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  push: ${{ vars.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
+                  push: true
                   tags: |
                       ${{ vars.DOCKER_USERNAME }}/up-timer:latest
                       ${{ vars.DOCKER_USERNAME }}/up-timer:${{ github.ref_name }}
