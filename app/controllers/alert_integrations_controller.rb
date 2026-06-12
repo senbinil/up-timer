@@ -9,6 +9,12 @@ class AlertIntegrationsController < ApplicationController
     @new_recipient = Recipient.new
   end
 
+  def search_recipients
+    @recipients = Recipient.ordered
+    @recipients = @recipients.where("email LIKE ? OR name LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%") if params[:q].present?
+    render partial: "recipients_list"
+  end
+
   def create_recipient
     @recipient = Recipient.new(recipient_params)
     if @recipient.save

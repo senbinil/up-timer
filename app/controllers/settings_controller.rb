@@ -5,6 +5,7 @@ class SettingsController < ApplicationController
 
   def show
     @account = current_account
+    @account.update!(status_token: SecureRandom.urlsafe_base64(24)) if @account.status_token.blank?
     @preference = current_account.preference
   end
 

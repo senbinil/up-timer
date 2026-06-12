@@ -1,0 +1,36 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]">Users</h1>
+      <p class="text-xs text-slate-400 font-mono mt-1">Manage account roles and access permissions</p>
+    </div>
+  </div>
+
+  <div class="card space-y-0">
+    <div class="hidden md:grid grid-cols-[1fr_120px_160px] gap-4 px-1 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+      <span>Email</span>
+      <span>Role</span>
+      <span class="text-right">Actions</span>
+    </div>
+
+    <% @users.each do |user| %>
+      <div class="md:grid md:grid-cols-[1fr_120px_160px] gap-4 px-1 py-3 items-center list-row hover:bg-surface-container-low transition-colors">
+        <div>
+          <p class="text-sm font-medium text-navy"><%= user.email %></p>
+          <p class="text-[10px] text-slate-400 font-mono"><%= user.name.presence || "—" %></p>
+        </div>
+        <span class="chip chip-default text-[10px]"><%= user.role %></span>
+        <div class="flex justify-end">
+          <% if user.id == current_account&.id %>
+            <span class="text-[10px] text-slate-400 font-mono italic">Current user</span>
+          <% else %>
+          <%= form_with url: update_role_user_path(user), method: :patch, class: "flex items-center gap-2" do |f| %>
+            <%= f.select :role, Account::ROLES.map { |r| [r.capitalize, r] }, { selected: user.role }, class: "input-field text-xs py-1 w-28" %>
+            <%= f.submit "Update", class: "btn btn-primary text-[10px] py-1 px-2" %>
+          <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
