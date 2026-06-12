@@ -50,14 +50,10 @@ bin/dev
 ### One-command deploy
 
 ```bash
-# 1. Get your RAILS_MASTER_KEY
-# Copy config/master.key from the repo or generate: rails secret
-
-# 2. Deploy
-RAILS_MASTER_KEY=xxx ADMIN_EMAILS=admin@example.com docker compose up -d
-
-# 3. Open http://localhost:3000
+ADMIN_EMAILS=admin@example.com docker compose up -d
 ```
+
+Opens at `http://localhost:3000`. The `RAILS_MASTER_KEY` is auto-generated on first boot.
 
 ### Pull and run from Docker Hub
 
