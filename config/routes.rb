@@ -35,6 +35,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :users, only: :index do
+    member do
+      patch :update_role
+    end
+  end
+
   resource :alert_integrations, only: :show do
     post :recipients, to: "alert_integrations#create_recipient", as: :recipients
     post "recipients/:id/toggle", to: "alert_integrations#toggle_recipient", as: :toggle_recipient

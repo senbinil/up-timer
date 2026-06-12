@@ -20,6 +20,7 @@
       { icon: "bell", label: "Alerts", path: alerts_path },
     ] %>
     <% nav_items << { icon: "radio", label: "Integrations", path: alert_integrations_path } if current_account&.admin? %>
+    <% nav_items << { icon: "users", label: "Users", path: users_path } if current_account&.admin? %>
     <% nav_items.each do |item| %>
       <%= link_to item[:path], data: { action: "click->sidebar#close" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-navy hover:bg-surface-container-low'}" do %>
         <%= lucide_icon item[:icon], size: 16, class: "flex-shrink-0" %>
