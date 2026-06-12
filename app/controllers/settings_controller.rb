@@ -1,6 +1,7 @@
 class SettingsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
+  before_action -> { require_role!(:admin) }
 
   def show
     @account = current_account
@@ -22,6 +23,15 @@ class SettingsController < ApplicationController
     else
       render :show, status: :unprocessable_entity
     end
+  end
+
+  def toggle_email_notifications
+    if Flipper.enabled?(:email_notifications)
+      Flipper.disable(:email_notifications)
+    else
+      Flipper.enable(:email_notifications)
+    end
+    render partial: "email_notifications"
   end
 
   private

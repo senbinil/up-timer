@@ -2,6 +2,7 @@ class AlertsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
   before_action :set_alert, only: [ :show, :edit, :update, :destroy, :resolve ]
+  before_action -> { require_role!(:collaborator) }, only: [ :new, :create, :edit, :update, :destroy ]
 
   def index
     @pagy, @alerts = pagy(Alert.recent, limit: 15)

@@ -4,6 +4,7 @@ class AlertNotificationJob < ApplicationJob
   def perform(alert_id)
     alert = Alert.find_by(id: alert_id)
     return unless alert
+    return unless Flipper.enabled?(:email_notifications)
 
     Recipient.active.pluck(:email).each do |email|
       AlertMailer.alert_down(email, alert).deliver_later

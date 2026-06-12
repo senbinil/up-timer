@@ -1,0 +1,13 @@
+<%= turbo_frame_tag "email_notifications" do %>
+  <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Email Notifications</p>
+  <p class="text-xs text-slate-600">Send alert emails to configured recipients.</p>
+  <div class="flex items-center gap-3">
+    <span class="text-xs font-mono text-slate-400">Off</span>
+    <%= form_with url: toggle_email_notifications_settings_path, method: :post, data: { turbo_frame: "email_notifications" } do |f| %>
+      <button type="submit" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer <%= Flipper.enabled?(:email_notifications) ? 'bg-primary-container' : 'bg-[#e2e8f0]' %> focus:outline-none">
+        <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform <%= Flipper.enabled?(:email_notifications) ? 'translate-x-6' : 'translate-x-1' %>"></span>
+      </button>
+    <% end %>
+    <span class="text-xs font-mono font-semibold <%= Flipper.enabled?(:email_notifications) ? 'text-primary-container' : 'text-slate-400' %>"><%= Flipper.enabled?(:email_notifications) ? 'On' : 'Off' %></span>
+  </div>
+<% end %>

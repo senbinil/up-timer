@@ -86,3 +86,7 @@ gem "sequel-activerecord_connection", "~> 2.0", require: false
 gem "bcrypt", "~> 3.1", require: false
 # Used by Rodauth for rendering built-in view and email templates
 gem "tilt", "~> 2.4", require: false
+
+# Feature flags [https://github.com/jnunemaker/flipper]
+gem "flipper"
+gem "flipper-active_record"

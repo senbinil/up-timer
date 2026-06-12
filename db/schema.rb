@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_000004) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_053209) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -38,6 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000004) do
     t.string "email", null: false
     t.string "name"
     t.string "password_hash"
+    t.string "role", default: "viewer", null: false
     t.integer "status", default: 1, null: false
     t.string "status_token"
     t.index ["email"], name: "index_accounts_on_email", unique: true, where: "status IN (1, 2)"
@@ -63,6 +64,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000004) do
     t.index ["monitor_id"], name: "index_alerts_on_monitor_id"
     t.index ["resolved"], name: "index_alerts_on_resolved"
     t.index ["severity"], name: "index_alerts_on_severity"
+  end
+
+  create_table "flipper_features", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.text "value"
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
   create_table "incidents", force: :cascade do |t|

@@ -133,7 +133,10 @@ class RodauthMain < Rodauth::Rails::Auth
 
     # Perform additional actions after the account is created.
     after_create_account do
-      Account.find(account_id).update!(name: param("name"))
+      Account.find(account_id).update!(
+        name: param("name"),
+        role: Account.count == 1 ? "admin" : "viewer"
+      )
     end
 
     # Do additional cleanup after the account is closed.

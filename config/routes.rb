@@ -25,7 +25,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :settings, only: [ :show, :update ]
+  resource :settings, only: [ :show, :update ] do
+    post :toggle_email_notifications
+  end
 
   resources :alerts do
     member do
