@@ -182,6 +182,16 @@ Built with:
 | Icons | Lucide |
 | Tools | Tippy.js (tooltips), Pagy (pagination) |
 
+## Creating a Release
+
+```bash
+# Tag and push — CI builds and pushes to Docker Hub
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via the UI — same result.
+
 ## Testing
 
 ```bash
