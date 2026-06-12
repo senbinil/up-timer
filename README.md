@@ -59,6 +59,14 @@ RAILS_MASTER_KEY=xxx ADMIN_EMAILS=admin@example.com docker compose up -d
 # 3. Open http://localhost:3000
 ```
 
+### Pull from Docker Hub
+
+```bash
+docker pull binilsn/up-timer:latest
+```
+
+Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
+
 ### Build and run manually
 
 ```bash
@@ -181,6 +189,16 @@ Built with:
 | Feature Flags | Flipper (email_notifications toggle) |
 | Icons | Lucide |
 | Tools | Tippy.js (tooltips), Pagy (pagination) |
+
+## Creating a Release
+
+```bash
+# Tag and push — CI builds and pushes to Docker Hub
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via the UI — same result.
 
 ## Testing
 
