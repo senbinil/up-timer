@@ -47,10 +47,32 @@ bin/dev
 
 ## Docker
 
+### One-command deploy
+
+```bash
+# 1. Get your RAILS_MASTER_KEY
+# Copy config/master.key from the repo or generate: rails secret
+
+# 2. Deploy
+RAILS_MASTER_KEY=xxx ADMIN_EMAILS=admin@example.com docker compose up -d
+
+# 3. Open http://localhost:3000
+```
+
+### Build and run manually
+
 ```bash
 docker build -t up-timer .
-docker run -e ADMIN_EMAILS="admin@example.com" -p 3000:3000 up-timer
+docker run -e RAILS_MASTER_KEY=xxx -e ADMIN_EMAILS="admin@example.com" -e SOLID_QUEUE_IN_PUMA=true -p 3000:80 up-timer
 ```
+
+### Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `RAILS_MASTER_KEY` | ✅ | Rails credentials key (see `config/master.key`) |
+| `ADMIN_EMAILS` | ❌ | Comma-separated emails that get admin role on registration |
+| `SOLID_QUEUE_IN_PUMA` | ❌ | Set to `true` to run job worker inside the web process |
 
 ## Auth
 
