@@ -133,10 +133,12 @@ class RodauthMain < Rodauth::Rails::Auth
 
     # Perform additional actions after the account is created.
     after_create_account do
-      Account.find(account_id).update!(
-        name: param("name"),
-        role: Account.count == 1 ? "admin" : "viewer"
-      )
+      account = Account.find(account_id)
+      role = account.email.in?(ADMIN_EMAILS) ? "admin" : "viewer"
+      account.update!(name: param("name"), role: role)
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Account creation error: #{e.message}"
+      raise
     end
 
     # Do additional cleanup after the account is closed.

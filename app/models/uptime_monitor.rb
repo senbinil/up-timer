@@ -3,6 +3,7 @@ class UptimeMonitor < ApplicationRecord
 
   has_many :monitor_checks, dependent: :destroy, foreign_key: :monitor_id
   has_many :incidents, dependent: :destroy, foreign_key: :monitor_id
+  has_many :alerts, dependent: :destroy, foreign_key: :monitor_id
 
   after_create_commit :enqueue_first_check
 

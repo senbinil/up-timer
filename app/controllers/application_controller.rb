@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
     return nil unless rodauth.session_value
     @current_account ||= Account.find_by(id: rodauth.session_value)
   end
+  helper_method :current_account
 
   def require_role!(min_role)
     return unless current_account
