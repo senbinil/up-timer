@@ -63,21 +63,6 @@ Opens at `http://localhost:3000`. The `config/master.key` is baked into the imag
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
-### Build and run manually
-
-```bash
-docker build -t up-timer .
-docker run -e RAILS_MASTER_KEY=xxx -e ADMIN_EMAILS="admin@example.com" -e SOLID_QUEUE_IN_PUMA=true -p 3000:80 up-timer
-```
-
-### Environment variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `RAILS_MASTER_KEY` | ✅ | Rails credentials key (see `config/master.key`) |
-| `ADMIN_EMAILS` | ❌ | Comma-separated emails that get admin role on registration |
-| `SOLID_QUEUE_IN_PUMA` | ❌ | Set to `true` to run job worker inside the web process |
-
 ## Auth
 
 Authentication is handled by Rodauth.
