@@ -50,10 +50,16 @@ bin/dev
 ### One-command deploy
 
 ```bash
+RAILS_MASTER_KEY=$(cat config/master.key) ADMIN_EMAILS=admin@example.com docker compose up -d
+```
+
+Or if you have the image pulled, the key is already baked in — just:
+
+```bash
 ADMIN_EMAILS=admin@example.com docker compose up -d
 ```
 
-Opens at `http://localhost:3000`. The `RAILS_MASTER_KEY` is auto-generated on first boot.
+Opens at `http://localhost:3000`.
 
 ### Pull and run from Docker Hub
 

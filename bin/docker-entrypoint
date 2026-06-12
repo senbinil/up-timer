@@ -1,13 +1,5 @@
 #!/bin/bash -e
 
-# Auto-generate master key if not provided
-if [ ! -f config/master.key ] && [ -z "$RAILS_MASTER_KEY" ]; then
-  echo "No RAILS_MASTER_KEY found. Generating one..."
-  RAILS_MASTER_KEY=$(bundle exec rails secret)
-  echo "$RAILS_MASTER_KEY" > config/master.key
-  export RAILS_MASTER_KEY
-fi
-
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
