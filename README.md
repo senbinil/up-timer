@@ -50,24 +50,10 @@ bin/dev
 ### One-command deploy
 
 ```bash
-RAILS_MASTER_KEY=$(cat config/master.key) ADMIN_EMAILS=admin@example.com docker compose up -d
+docker run -d -p 3000:80 -e ADMIN_EMAILS=admin@example.com binilsn/up-timer:latest
 ```
 
-Or if you have the image pulled, the key is already baked in — just:
-
-```bash
-ADMIN_EMAILS=admin@example.com docker compose up -d
-```
-
-Opens at `http://localhost:3000`.
-
-### Pull and run from Docker Hub
-
-```bash
-docker pull binilsn/up-timer:latest
-
-ADMIN_EMAILS=admin@example.com docker compose up -d
-```
+Opens at `http://localhost:3000`. The `config/master.key` is baked into the image.
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
