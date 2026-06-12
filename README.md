@@ -59,6 +59,14 @@ RAILS_MASTER_KEY=xxx ADMIN_EMAILS=admin@example.com docker compose up -d
 # 3. Open http://localhost:3000
 ```
 
+### Pull from Docker Hub
+
+```bash
+docker pull binilsn/up-timer:latest
+```
+
+Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
+
 ### Build and run manually
 
 ```bash
