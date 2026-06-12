@@ -13,12 +13,17 @@ Uptime monitoring dashboard for tracking service health, response times, and inc
 - SQLite3
 - [RVM](https://rvm.io) (recommended for Ruby version management)
 
-## Setup
+## Setup (Development)
 
 ```bash
 # Clone and enter project
 git clone https://github.com/binilsn/up-timer.git
 cd up-timer
+
+# Configure admin emails (copy and edit)
+cp .env.example .env
+# Edit .env with your email to get admin access:
+# ADMIN_EMAILS=you@example.com
 
 # Activate Ruby (RVM users)
 rvm use
@@ -29,6 +34,7 @@ bundle install
 # Setup database
 rails db:create
 rails db:migrate
+rails db:seed
 
 # Start development server
 bin/dev
@@ -39,6 +45,13 @@ bin/dev
 - **CSS watcher** (Tailwind CSS v4)
 - **Job worker** (SolidQueue) for background jobs
 
+## Docker
+
+```bash
+docker build -t up-timer .
+docker run -e ADMIN_EMAILS="admin@example.com" -p 3000:3000 up-timer
+```
+
 ## Auth
 
 Authentication is handled by Rodauth. Default routes:
@@ -46,10 +59,28 @@ Authentication is handled by Rodauth. Default routes:
 | Route | Description |
 |---|---|
 | `/login` | Sign in |
-| `/create-account` | Register new user |
+| `/create-account` | Register new user (URL is hidden — known to admins) |
 | `/logout` | Sign out |
 
 After login, users are redirected to `/dashboard`.
+
+## Role-Based Access Control
+
+| Role | Access |
+|---|---|
+| **viewer** | Dashboard, Nodes (view), Alerts (view), Public status page |
+| **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve) |
+| **admin** | Everything above + Integrations, Settings, user promotion |
+
+### Setting admins
+
+Set `ADMIN_EMAILS` env var with a comma-separated list of emails:
+
+```bash
+ADMIN_EMAILS=alice@example.com,bob@example.com rails server
+```
+
+Users registering with these emails are auto-assigned the **admin** role. Everyone else defaults to **viewer**.
 
 ## Background Jobs & Scheduler
 
@@ -119,13 +150,15 @@ Built with:
 | Framework | Rails 8.1 |
 | Ruby | 4.0.5 |
 | Database | SQLite3 |
-| Auth | Rodauth |
+| Auth | Rodauth with RBAC (viewer / collaborator / admin) |
 | CSS | Tailwind CSS v4 |
 | JS | Stimulus + Turbo |
 | Charts | Chartkick + Chart.js |
 | Jobs | SolidQueue |
-| Mailer | letter_opener (dev) |
+| Mailer | letter_opener (dev), Action Mailer with AlertMailer |
+| Feature Flags | Flipper (email_notifications toggle) |
 | Icons | Lucide |
+| Tools | Tippy.js (tooltips), Pagy (pagination) |
 
 ## Testing
 

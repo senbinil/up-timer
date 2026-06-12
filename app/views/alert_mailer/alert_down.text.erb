@@ -1,0 +1,7 @@
+⚠ <%= @alert.severity.upcase %> — <%= @monitor&.name || "System" %> is down
+
+Message:   <%= @alert.message %>
+Severity:  <%= @alert.severity.capitalize %>
+Time:      <%= @alert.created_at.strftime("%b %d, %Y at %H:%M:%S") %>
+
+Log in to UpTimer for full incident details.

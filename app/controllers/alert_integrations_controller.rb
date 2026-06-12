@@ -1,6 +1,7 @@
 class AlertIntegrationsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
+  before_action -> { require_role!(:admin) }
 
   def show
     @recipients = Recipient.ordered

@@ -18,8 +18,8 @@
       { icon: "grid", label: "Status", path: dashboard_path },
       { icon: "server", label: "Nodes", path: nodes_path },
       { icon: "bell", label: "Alerts", path: alerts_path },
-      { icon: "radio", label: "Integrations", path: alert_integrations_path }
     ] %>
+    <% nav_items << { icon: "radio", label: "Integrations", path: alert_integrations_path } if current_account&.admin? %>
     <% nav_items.each do |item| %>
       <%= link_to item[:path], data: { action: "click->sidebar#close" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-navy hover:bg-surface-container-low'}" do %>
         <%= lucide_icon item[:icon], size: 16, class: "flex-shrink-0" %>
@@ -32,9 +32,11 @@
   <div class="px-4 pb-3 mt-auto">
     <hr class="border-divider mb-3" />
     <div class="space-y-0.5 mb-3">
+      <% if current_account&.admin? %>
       <%= link_to settings_path, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
         <%= lucide_icon "settings", size: 16, class: "flex-shrink-0" %>
         <span>Settings</span>
+      <% end %>
       <% end %>
 
       <%= link_to "#", data: { action: "click->sidebar#openHelp" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors" do %>

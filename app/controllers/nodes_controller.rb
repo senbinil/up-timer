@@ -1,6 +1,7 @@
 class NodesController < ApplicationController
   layout "dashboard"
   before_action :authenticate
+  before_action -> { require_role!(:collaborator) }, except: [ :index, :show ]
 
   def index
     @pagy, @nodes = pagy(UptimeMonitor.ranked, limit: 15)

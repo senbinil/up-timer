@@ -1,0 +1,19 @@
+<h1 style="font-family: 'Hanken Grotesk', sans-serif; font-size: 20px; color: #191c1e;">
+  ✅ <%= @monitor.name %> has recovered
+</h1>
+
+<div style="background: #f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0;">
+  <p style="margin: 0; font-size: 13px; color: #64748b;">
+    <strong style="color: #191c1e;">Service:</strong> <%= @monitor.name %>
+  </p>
+  <p style="margin: 8px 0 0; font-size: 13px; color: #64748b;">
+    <strong style="color: #191c1e;">URL:</strong> <%= @monitor.url %>
+  </p>
+  <p style="margin: 8px 0 0; font-size: 13px; color: #64748b;">
+    <strong style="color: #191c1e;">Recovered at:</strong> <%= Time.current.strftime("%b %d, %Y at %H:%M:%S") %>
+  </p>
+</div>
+
+<p style="font-size: 13px; color: #64748b;">
+  All incidents for this node have been resolved.
+</p>

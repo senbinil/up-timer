@@ -7,7 +7,7 @@
   </div>
 
   <div class="flex items-center gap-2 md:gap-3">
-    <% unless controller_name == "nodes" %>
+    <% if current_account&.collaborator? && controller_name != "nodes" %>
       <%= link_to new_node_path, class: "btn btn-primary text-xs py-1.5 px-3" do %>
         Create Node &plus;
       <% end %>

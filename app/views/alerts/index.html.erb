@@ -4,8 +4,10 @@
       <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]">Alerts</h1>
       <p class="text-xs text-slate-400 font-mono mt-1">Monitor system events and incidents</p>
     </div>
+    <% if current_account&.collaborator? %>
     <%= link_to new_alert_path, class: "btn btn-primary text-xs py-1.5 px-3" do %>
       New Alert &plus;
+    <% end %>
     <% end %>
   </div>
 
