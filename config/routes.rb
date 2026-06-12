@@ -32,4 +32,10 @@ Rails.application.routes.draw do
       post :resolve
     end
   end
+
+  resource :alert_integrations, only: :show do
+    post :recipients, to: "alert_integrations#create_recipient", as: :recipients
+    post "recipients/:id/toggle", to: "alert_integrations#toggle_recipient", as: :toggle_recipient
+    post "triggers/:id/toggle", to: "alert_integrations#toggle_trigger", as: :toggle_trigger
+  end
 end

@@ -14,6 +14,7 @@ class AlertsController < ApplicationController
   def new
     @alert = Alert.new(severity: "info")
     @monitors = UptimeMonitor.all.order(:name)
+    @triggers = AlertTrigger.ordered
   end
 
   def create
@@ -22,12 +23,14 @@ class AlertsController < ApplicationController
       redirect_to alerts_path, notice: "Alert created."
     else
       @monitors = UptimeMonitor.all.order(:name)
+      @triggers = AlertTrigger.ordered
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @monitors = UptimeMonitor.all.order(:name)
+    @triggers = AlertTrigger.ordered
   end
 
   def update
@@ -35,6 +38,7 @@ class AlertsController < ApplicationController
       redirect_to alerts_path, notice: "Alert updated."
     else
       @monitors = UptimeMonitor.all.order(:name)
+      @triggers = AlertTrigger.ordered
       render :edit, status: :unprocessable_entity
     end
   end
