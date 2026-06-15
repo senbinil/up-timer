@@ -94,3 +94,6 @@ gem "flipper-active_record"
 # Email delivery providers [https://resend.com] [https://www.mailgun.com]
 gem "resend"
 gem "mailgun-ruby"
+
+# Security patches
+gem "net-imap", ">= 0.6.4.1"
