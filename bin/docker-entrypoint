@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+# Auto-generate secret_key_base if master key is not available
+if [ ! -f config/master.key ] && [ -z "$RAILS_MASTER_KEY" ]; then
+  export SECRET_KEY_BASE=$(openssl rand -hex 64)
+  echo "Generated SECRET_KEY_BASE for this session"
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
