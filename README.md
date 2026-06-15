@@ -47,7 +47,40 @@ bin/dev
 
 ## Docker
 
-### One-command deploy
+### Production with SSL
+
+Use Docker Compose with Traefik for HTTPS. Create a `.env` file with SSL and app config:
+
+**Let's Encrypt (wildcard):**
+
+```bash
+# .env
+DOMAIN=uptime.example.com
+WILDCARD_DOMAIN=*.example.com
+DNS_PROVIDER=cloudflare
+CF_DNS_API_TOKEN=your-token
+LETSENCRYPT_EMAIL=you@example.com
+# App config (see table above)
+ADMIN_EMAILS=admin@example.com,manager@example.com
+
+docker compose up -d
+```
+
+**Cloudflare SSL (no cert management):**
+
+```bash
+# .env
+DOMAIN=uptime.example.com
+ENTRYPOINT=web
+# App config (see table above)
+ADMIN_EMAILS=admin@example.com
+
+docker compose up -d
+```
+
+If `ENTRYPOINT` is not set, Traefik defaults to `websecure` (HTTPS) with automatic Let's Encrypt DNS challenge. [Supported DNS providers](https://doc.traefik.io/traefik/https/acme/#dnschallenge)
+
+### One-command deploy (local)
 
 ```bash
 docker run -d -p 3000:80 \
