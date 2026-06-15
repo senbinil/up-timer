@@ -57,7 +57,7 @@ docker run -d -p 3000:80 \
   binilsn/up-timer:latest
 ```
 
-Opens at `http://localhost:3000`. The `config/master.key` is baked into the image.
+Opens at `http://localhost:3000`.
 
 See [Mailer](#mailer) for email configuration.
 
@@ -71,7 +71,7 @@ See [Mailer](#mailer) for email configuration.
 | `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
 | `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
 | `SOLID_QUEUE_IN_PUMA` | ❌ | `true` (baked in) | Runs background jobs in the web process |
-| `RAILS_MASTER_KEY` | ❌ | Baked in image | Rails credentials key |
+
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
