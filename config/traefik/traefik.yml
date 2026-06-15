@@ -1,33 +1,33 @@
 # Static configuration
 global:
-  sendAnonymousUsage: false
+    sendAnonymousUsage: false
 
 api:
-  dashboard: false
+    dashboard: false
 
 entryPoints:
-  web:
-    address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-  websecure:
-    address: ":443"
+    web:
+        address: ":80"
+        http:
+            redirections:
+                entryPoint:
+                    to: websecure
+                    scheme: https
+    websecure:
+        address: ":443"
 
 providers:
-  file:
-    filename: /etc/traefik/dynamic.yml
-    watch: true
+    file:
+        filename: /etc/traefik/dynamic.yml
+        watch: true
 
 certificatesResolvers:
-  letsencrypt:
-    acme:
-      email: "{{ env \"LETSENCRYPT_EMAIL\" }}"
-      storage: /letsencrypt/acme.json
-      dnsChallenge:
-        provider: cloudflare
-        resolvers:
-          - "1.1.1.1:53"
-          - "8.8.8.8:53"
+    letsencrypt:
+        acme:
+            email: '{{ env "LETSENCRYPT_EMAIL" }}'
+            storage: /letsencrypt/acme.json
+            dnsChallenge:
+                provider: '{{ env "DNS_PROVIDER" "cloudflare" }}'
+                resolvers:
+                    - "1.1.1.1:53"
+                    - "8.8.8.8:53"

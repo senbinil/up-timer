@@ -10,6 +10,8 @@ services:
             - ./config/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
             - traefik-certs:/letsencrypt
         environment:
+            - ENTRYPOINT=${ENTRYPOINT:-websecure}
+            - DNS_PROVIDER=${DNS_PROVIDER:-cloudflare}
             - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
             - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
             - DOMAIN=${DOMAIN}

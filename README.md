@@ -49,20 +49,36 @@ bin/dev
 
 ### Production with SSL
 
-Use Docker Compose with Traefik for automatic HTTPS via Let's Encrypt:
+Use Docker Compose with Traefik for HTTPS. Create a `.env` file with SSL and app config:
+
+**Let's Encrypt (wildcard):**
 
 ```bash
-# Set required env vars
-export DOMAIN=uptime.example.com
-export WILDCARD_DOMAIN=*.example.com
-export LETSENCRYPT_EMAIL=you@example.com
-export CF_DNS_API_TOKEN=your-cloudflare-token
-export ADMIN_EMAILS=admin@example.com
+# .env
+DOMAIN=uptime.example.com
+WILDCARD_DOMAIN=*.example.com
+DNS_PROVIDER=cloudflare
+CF_DNS_API_TOKEN=your-token
+LETSENCRYPT_EMAIL=you@example.com
+# App config (see table above)
+ADMIN_EMAILS=admin@example.com,manager@example.com
 
 docker compose up -d
 ```
 
-Requires a Cloudflare API token with `Zone:DNS:Edit` permission for wildcard certificate DNS challenge.
+**Cloudflare SSL (no cert management):**
+
+```bash
+# .env
+DOMAIN=uptime.example.com
+ENTRYPOINT=web
+# App config (see table above)
+ADMIN_EMAILS=admin@example.com
+
+docker compose up -d
+```
+
+If `ENTRYPOINT` is not set, Traefik defaults to `websecure` (HTTPS) with automatic Let's Encrypt DNS challenge. [Supported DNS providers](https://doc.traefik.io/traefik/https/acme/#dnschallenge)
 
 ### One-command deploy (local)
 
