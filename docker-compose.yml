@@ -6,16 +6,21 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - ./config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-            - ./config/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
             - traefik-certs:/letsencrypt
         environment:
-            - ENTRYPOINT=${ENTRYPOINT:-websecure}
-            - DNS_PROVIDER=${DNS_PROVIDER:-cloudflare}
             - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-            - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-            - DOMAIN=${DOMAIN}
-            - WILDCARD_DOMAIN=${WILDCARD_DOMAIN}
+        command:
+            - "--global.sendAnonymousUsage=false"
+            - "--api.dashboard=false"
+            - "--entrypoints.web.address=:80"
+            - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+            - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+            - "--entrypoints.websecure.address=:443"
+            - "--providers.docker"
+            - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
+            - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+            - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${DNS_PROVIDER:-cloudflare}"
         restart: unless-stopped
 
     up-timer:
@@ -38,7 +43,7 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.uptimer.rule=Host(`${DOMAIN}`)"
-            - "traefik.http.routers.uptimer.entrypoints=websecure"
+            - "traefik.http.routers.uptimer.entrypoints=${ENTRYPOINT:-websecure}"
             - "traefik.http.routers.uptimer.tls.certresolver=letsencrypt"
         restart: unless-stopped
 

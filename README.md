@@ -49,7 +49,7 @@ bin/dev
 
 ### Production with SSL
 
-Use Docker Compose with Traefik for HTTPS. Clone the repo or copy `docker-compose.yml` and `config/traefik/`, then create a `.env` file:
+Use Docker Compose with Traefik for HTTPS. Only `docker-compose.yml` and a `.env` file are needed:
 
 **Let's Encrypt (wildcard):**
 
