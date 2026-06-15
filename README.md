@@ -47,7 +47,24 @@ bin/dev
 
 ## Docker
 
-### One-command deploy
+### Production with SSL
+
+Use Docker Compose with Traefik for automatic HTTPS via Let's Encrypt:
+
+```bash
+# Set required env vars
+export DOMAIN=uptime.example.com
+export WILDCARD_DOMAIN=*.example.com
+export LETSENCRYPT_EMAIL=you@example.com
+export CF_DNS_API_TOKEN=your-cloudflare-token
+export ADMIN_EMAILS=admin@example.com
+
+docker compose up -d
+```
+
+Requires a Cloudflare API token with `Zone:DNS:Edit` permission for wildcard certificate DNS challenge.
+
+### One-command deploy (local)
 
 ```bash
 docker run -d -p 3000:80 \

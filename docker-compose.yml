@@ -1,14 +1,30 @@
 services:
+    traefik:
+        image: traefik:v3
+        container_name: traefik
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./config/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+            - ./config/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+            - traefik-certs:/letsencrypt
+        environment:
+            - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+            - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+            - DOMAIN=${DOMAIN}
+            - WILDCARD_DOMAIN=${WILDCARD_DOMAIN}
+        restart: unless-stopped
+
     up-timer:
         image: binilsn/up-timer:latest
         build: .
-        ports:
-            - "3000:80"
         environment:
             - RAILS_ENV=production
             - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
             - ADMIN_EMAILS=${ADMIN_EMAILS}
             - SOLID_QUEUE_IN_PUMA=true
+            - APP_HOST=${DOMAIN}
         volumes:
             - up-timer-storage:/rails/storage
             - up-timer-db:/rails/db
@@ -17,7 +33,14 @@ services:
             interval: 10s
             timeout: 3s
             retries: 3
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.uptimer.rule=Host(`${DOMAIN}`)"
+            - "traefik.http.routers.uptimer.entrypoints=websecure"
+            - "traefik.http.routers.uptimer.tls.certresolver=letsencrypt"
+        restart: unless-stopped
 
 volumes:
     up-timer-storage:
     up-timer-db:
+    traefik-certs:
