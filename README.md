@@ -50,14 +50,26 @@ bin/dev
 ### One-command deploy
 
 ```bash
-docker run -d -p 3000:80 -e ADMIN_EMAILS=admin@example.com binilsn/up-timer:latest
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e MAIL_PROVIDER=resend \
+  -e RESEND_API_KEY=re_xxxxxx \
+  binilsn/up-timer:latest
 ```
 
 Opens at `http://localhost:3000`. The `config/master.key` is baked into the image.
 
+See [Mailer](#mailer) for email configuration.
+
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `ADMIN_EMAILS` | ❌ | — | Comma-separated emails that get admin role on registration |
+| `MAIL_PROVIDER` | ❌ | — | Email delivery provider: `resend` or `mailgun` (no value = disabled) |
+| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for all outgoing emails |
+| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
+| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
 | `SOLID_QUEUE_IN_PUMA` | ❌ | `true` (baked in) | Runs background jobs in the web process |
 | `RAILS_MASTER_KEY` | ❌ | Baked in image | Rails credentials key |
 
@@ -125,24 +137,6 @@ SolidQueue powers all background processing with a recurring schedule defined in
 | `MonitorCheckJob` | `app/jobs/monitor_check_job.rb` | Performs an HTTP GET against a monitor's URL; records response time, status code, and `up`/`down` state; manages `Incident` lifecycle (creates on first failure, resolves all open incidents on recovery) |
 | `DataRetentionJob` | `app/jobs/data_retention_job.rb` | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days |
 
-### Flow
-
-```mermaid
-flowchart TD
-    A[Solid Queue Recurring Schedule] -->|"every 30s"| B[MonitorSchedulerJob]
-    A -->|"daily at 3am"| D[DataRetentionJob]
-    A -->|"hourly :12"| E[Clear finished jobs<br/>prod only]
-
-    B -->|"performs for each<br/>due monitor"| C[MonitorCheckJob]
-    C -->|"HTTP GET"| F[Target URL]
-    C -->|"records"| G[MonitorCheck]
-    C -->|"updates status"| H[UptimeMonitor]
-    C -->|"creates/resolves"| I[Incident]
-
-    D -->|"deletes >30d"| G
-    D -->|"deletes >90d resolved"| I
-```
-
 Start the worker with `bin/jobs` (already included in `bin/dev`).
 
 ## Creating Monitored Endpoints
@@ -152,9 +146,26 @@ Start the worker with `bin/jobs` (already included in `bin/dev`).
 3. Fill in name, URL, check interval (seconds), and timeout (seconds)
 4. The scheduler picks it up within 30 seconds
 
-## Mailer (Development)
+## Mailer
+
+### Development
 
 Emails open in browser via [letter_opener](https://github.com/ryanb/letter_opener). No SMTP configuration needed.
+
+### Production
+
+Email supports **Resend** and **Mailgun**. Set `MAIL_PROVIDER` and the provider's credentials via environment variables. If no provider is configured, email delivery is silently disabled — no errors will be raised.
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun` |
+| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for all outgoing emails |
+| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
+| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
+
+*Required when using that provider.*
 
 ## Design System
 
