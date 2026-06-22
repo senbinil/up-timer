@@ -66,9 +66,10 @@ detect_environment() {
     # Check for Kamal proxy
     if docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^kamal-proxy$'; then
         DETECTED_PROXY="kamal"
-        # Find which network kamal-proxy is on
-        DETECTED_NETWORK=$(docker inspect kamal-proxy --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null || echo "kamal")
-        ok "Kamal proxy detected (network: $DETECTED_NETWORK)"
+        DETECTED_NETWORK=$(docker inspect kamal-proxy --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
+        if [ -n "$DETECTED_NETWORK" ]; then
+            ok "Kamal proxy detected (network: $DETECTED_NETWORK)"
+        fi
     fi
 
     # Check for other Traefik containers
@@ -76,11 +77,13 @@ detect_environment() {
         local traefik_containers
         traefik_containers=$(docker ps --format '{{.Names}} {{.Image}}' 2>/dev/null | grep -i traefik | grep -v uptimer-traefik || true)
         if [ -n "$traefik_containers" ]; then
-            DETECTED_PROXY="traefik"
             local traefik_name
             traefik_name=$(echo "$traefik_containers" | head -1 | awk '{print $1}')
-            DETECTED_NETWORK=$(docker inspect "$traefik_name" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null || echo "traefik-public")
-            ok "Existing Traefik detected (container: $traefik_name, network: $DETECTED_NETWORK)"
+            DETECTED_NETWORK=$(docker inspect "$traefik_name" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
+            if [ -n "$DETECTED_NETWORK" ]; then
+                DETECTED_PROXY="traefik"
+                ok "Existing Traefik detected (container: $traefik_name, network: $DETECTED_NETWORK)"
+            fi
         fi
     fi
 
@@ -300,6 +303,18 @@ collect_existing_traefik_env() {
             read -rp "  Traefik Docker network name: " TRAEFIK_NETWORK
         done
     fi
+
+    # Validate network exists
+    while ! docker network ls --format '{{.Name}}' 2>/dev/null | grep -qx "$TRAEFIK_NETWORK"; do
+        err "Network '$TRAEFIK_NETWORK' not found"
+        echo "  Existing networks:"
+        docker network ls --format '    {{.Name}}'
+        read -rp "  Traefik Docker network name (or enter 'create' to make one): " TRAEFIK_NETWORK
+        if [ "$TRAEFIK_NETWORK" = "create" ]; then
+            read -rp "  New network name: " TRAEFIK_NETWORK
+            docker network create "$TRAEFIK_NETWORK" && ok "Created network: $TRAEFIK_NETWORK" || err "Failed to create network"
+        fi
+    done
 
     read -rp "  HTTPS only? [Y/n]: " https_choice; https_choice=${https_choice:-y}
     if [ "$https_choice" = "n" ] || [ "$https_choice" = "N" ]; then
