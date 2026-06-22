@@ -66,7 +66,8 @@ detect_environment() {
     # Check for Kamal proxy
     if docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^kamal-proxy$'; then
         DETECTED_PROXY="kamal"
-        DETECTED_NETWORK=$(docker inspect kamal-proxy --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
+        DETECTED_NETWORK=$(docker inspect kamal-proxy --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}
+{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
         if [ -n "$DETECTED_NETWORK" ]; then
             ok "Kamal proxy detected (network: $DETECTED_NETWORK)"
         fi
@@ -79,7 +80,7 @@ detect_environment() {
         if [ -n "$traefik_containers" ]; then
             local traefik_name
             traefik_name=$(echo "$traefik_containers" | head -1 | awk '{print $1}')
-            DETECTED_NETWORK=$(docker inspect "$traefik_name" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
+            DETECTED_NETWORK=$(docker inspect "$traefik_name" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}\n{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
             if [ -n "$DETECTED_NETWORK" ]; then
                 DETECTED_PROXY="traefik"
                 ok "Existing Traefik detected (container: $traefik_name, network: $DETECTED_NETWORK)"
@@ -384,6 +385,8 @@ RESEND_API_KEY=${RESEND_API_KEY:-}
 MAILGUN_API_KEY=${MAILGUN_API_KEY:-}
 MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
 DOMAIN=${DOMAIN:-}
+TRAEFIK_NETWORK=${TRAEFIK_NETWORK:-}
+ENTRYPOINT=${ENTRYPOINT:-websecure}
 DEPLOY_MODE=${DEPLOY_MODE}
 EOF
 
@@ -394,13 +397,11 @@ EOF
 LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
 DNS_PROVIDER=${DNS_PROVIDER:-cloudflare}
 CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-ENTRYPOINT=${ENTRYPOINT:-websecure}
 EOF
             ;;
         existing-traefik)
             cat >> "$ENV_FILE" << EOF
 TRAEFIK_NETWORK=${TRAEFIK_NETWORK}
-ENTRYPOINT=${ENTRYPOINT:-websecure}
 EOF
             ;;
         cloudflare)
