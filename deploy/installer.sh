@@ -80,7 +80,8 @@ detect_environment() {
         if [ -n "$traefik_containers" ]; then
             local traefik_name
             traefik_name=$(echo "$traefik_containers" | head -1 | awk '{print $1}')
-            DETECTED_NETWORK=$(docker inspect "$traefik_name" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}\n{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
+            DETECTED_NETWORK=$(docker inspect "$traefik_name" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}
+{{end}}' 2>/dev/null | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$' | head -1 || echo "")
             if [ -n "$DETECTED_NETWORK" ]; then
                 DETECTED_PROXY="traefik"
                 ok "Existing Traefik detected (container: $traefik_name, network: $DETECTED_NETWORK)"
