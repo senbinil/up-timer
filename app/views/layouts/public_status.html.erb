@@ -7,15 +7,14 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="icon" href="/icon.png" type="image/png">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   </head>
   <body class="font-body min-h-screen bg-surface">
     <header class="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0] bg-white">
       <div class="flex items-center gap-3">
-        <div class="w-7 h-7 bg-primary-container rounded-default flex items-center justify-center">
-          <span class="text-white font-semibold text-xs">O</span>
-        </div>
+        <%= image_tag "logo.svg", alt: "UpTimer", class: "w-7 h-7 rounded" %>
         <span class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">UpTimer Status</span>
       </div>
       <span class="text-[10px] text-slate-400 font-mono">Public</span>
