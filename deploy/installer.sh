@@ -191,7 +191,7 @@ show_menu() {
     OPT_STANDALONE=$i;  echo "  $i) Standalone Traefik + Let's Encrypt (auto HTTPS)"; i=$((i+1))
 
     if [ "$DETECTED_PROXY" = "kamal" ] || [ "$DETECTED_PROXY" = "traefik" ]; then
-        OPT_EXISTING_TRAEFIK=$i; echo "  $i) Integrate with existing Traefik ${GREEN}← auto-detected${NC}"; i=$((i+1))
+        OPT_EXISTING_TRAEFIK=$i; echo -e "  $i) Integrate with existing Traefik ${GREEN}← auto-detected${NC}"; i=$((i+1))
     else
         OPT_EXISTING_TRAEFIK=$i; echo "  $i) Integrate with existing Traefik"; i=$((i+1))
     fi
@@ -664,7 +664,7 @@ deploy() {
     if [ -n "${DOMAIN:-}" ]; then
         echo ""
         echo "  Your UpTimer instance will be available at:"
-        echo "  ${BOLD}https://${DOMAIN}${NC}"
+        echo -e "  ${BOLD}https://${DOMAIN}${NC}"
     fi
     echo ""
     echo "  Check status:  docker compose -f docker-compose.generated.yml ps"
