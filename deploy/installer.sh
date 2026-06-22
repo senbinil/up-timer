@@ -214,7 +214,6 @@ collect_env() {
 
     # App vars (common)
     read -rp "  Image tag [latest]: " TAG; TAG=${TAG:-latest}
-    read -rp "  Rails master key [auto-generate if empty]: " RAILS_MASTER_KEY
 
     read -rp "  Admin emails (comma-separated, optional): " ADMIN_EMAILS
 
