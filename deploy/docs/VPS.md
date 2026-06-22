@@ -6,8 +6,8 @@ General setup for deploying UpTimer on any Linux VPS.
 
 - Linux VPS (Ubuntu 22.04+ recommended)
 - Docker + Docker Compose installed
-- A domain name pointed to the VPS IP
-- `config/master.key` from the project
+- A domain name pointed to the VPS IP (or Cloudflare Tunnel token)
+- `config/master.key` (optional — auto-generated if omitted, but sessions reset on restart)
 
 ## Install Docker
 
@@ -18,6 +18,14 @@ sudo usermod -aG docker $USER
 ```
 
 ## Quick Deploy
+
+**One-liner (no clone needed):**
+
+```bash
+curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
+```
+
+**From a cloned repo:**
 
 ```bash
 git clone https://github.com/binilsn/up-timer.git
@@ -67,14 +75,17 @@ Or set up a cron job for auto-updates:
 
 ```bash
 # /etc/cron.d/uptimer-update
-0 3 * * * cd /path/to/up-timer && docker compose pull && docker compose up -d --remove-orphans
+0 3 * * * root cd /path/to/up-timer && docker compose -f docker-compose.generated.yml --env-file deploy/.env pull && docker compose -f docker-compose.generated.yml --env-file deploy/.env up -d --remove-orphans
 ```
 
 Note: auto-updating `latest` tag can pull breaking changes. Pin a version tag in `.env` for production.
 
 ## Backups
 
-SQLite database and uploads are stored in Docker volumes:
+SQLite database and uploads are stored in Docker volumes.
+
+Volume names follow the pattern `<directory>_<volume>` (e.g. `up-timer_up-timer-db`).
+Run `docker volume ls | grep up-timer` to confirm.
 
 ```bash
 # Backup
