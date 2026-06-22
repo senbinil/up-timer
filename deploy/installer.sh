@@ -83,6 +83,11 @@ detect_environment() {
             if [ -n "$DETECTED_NETWORK" ]; then
                 DETECTED_PROXY="traefik"
                 ok "Existing Traefik detected (container: $traefik_name, network: $DETECTED_NETWORK)"
+            else
+                warn "Traefik found but on default bridge network — can't integrate directly"
+                info "Move it to a user-defined network first:"
+                info "  docker network create traefik-public"
+                info "  docker network connect traefik-public $traefik_name"
             fi
         fi
     fi
@@ -304,11 +309,21 @@ collect_existing_traefik_env() {
         done
     fi
 
+    # Reject Docker built-in networks
+    while [ "$TRAEFIK_NETWORK" = "bridge" ] || [ "$TRAEFIK_NETWORK" = "host" ] || [ "$TRAEFIK_NETWORK" = "none" ]; do
+        err "Cannot use Docker built-in network '$TRAEFIK_NETWORK' — must use a user-defined network"
+        info "Create one with: docker network create traefik-public"
+        read -rp "  Traefik Docker network name: " TRAEFIK_NETWORK
+        while [ -z "$TRAEFIK_NETWORK" ]; do
+            read -rp "  Traefik Docker network name: " TRAEFIK_NETWORK
+        done
+    done
+
     # Validate network exists
     while ! docker network ls --format '{{.Name}}' 2>/dev/null | grep -qx "$TRAEFIK_NETWORK"; do
         err "Network '$TRAEFIK_NETWORK' not found"
         echo "  Existing networks:"
-        docker network ls --format '    {{.Name}}'
+        docker network ls --format '    {{.Name}}' | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$'
         read -rp "  Traefik Docker network name (or enter 'create' to make one): " TRAEFIK_NETWORK
         if [ "$TRAEFIK_NETWORK" = "create" ]; then
             read -rp "  New network name: " TRAEFIK_NETWORK
