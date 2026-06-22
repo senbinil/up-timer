@@ -27,6 +27,9 @@ Answer a few questions and it auto-detects your environment, generates config, a
 | 3 | **Existing Nginx** | Nginx already on the host | None | Existing proxy handles it |
 | 4 | **Cloudflare Tunnel** | Zero open ports, Cloudflare handles TLS | None | Cloudflare |
 | 5 | **IP-only** | Testing, or external load balancer | 80 (configurable) | None |
+| 6 | **Coolify** | Self-hosted PaaS — web UI deploy | None | Auto Let's Encrypt |
+
+Coolify is deployed through its own web dashboard, not the installer. See [docs/Coolify.md](docs/Coolify.md).
 
 ## Directory Structure
 
