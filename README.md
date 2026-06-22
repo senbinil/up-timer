@@ -45,42 +45,25 @@ bin/dev
 - **CSS watcher** (Tailwind CSS v4)
 - **Job worker** (SolidQueue) for background jobs
 
-## Docker
+## Production Deployment
 
-### Production with SSL
+See **[deploy/](deploy/)** for the full deployment system — interactive installer that auto-detects your infrastructure and generates the right configuration.
 
-Use Docker Compose with Traefik for HTTPS. Only `docker-compose.yml` and a `.env` file are needed:
-
-**Let's Encrypt (wildcard):**
+**One-liner deploy (no clone needed):**
 
 ```bash
-# .env
-DOMAIN=uptime.example.com
-WILDCARD_DOMAIN=*.example.com
-DNS_PROVIDER=cloudflare
-CF_DNS_API_TOKEN=your-token
-LETSENCRYPT_EMAIL=you@example.com
-# App config (see table above)
-ADMIN_EMAILS=admin@example.com,manager@example.com
-
-docker compose up -d
+curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
 ```
 
-**Cloudflare SSL (no cert management):**
+Or from a cloned repo:
 
 ```bash
-# .env
-DOMAIN=uptime.example.com
-ENTRYPOINT=web
-# App config (see table above)
-ADMIN_EMAILS=admin@example.com
-
-docker compose up -d
+./deploy/installer.sh
 ```
 
-If `ENTRYPOINT` is not set, Traefik defaults to `websecure` (HTTPS) with automatic Let's Encrypt DNS challenge. [Supported DNS providers](https://doc.traefik.io/traefik/https/acme/#dnschallenge)
+Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only** — all from the same immutable Docker image.
 
-### One-command deploy (local)
+### One-command deploy (local testing)
 
 ```bash
 docker run -d -p 3000:80 \

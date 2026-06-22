@@ -1,0 +1,18 @@
+# Cloudflare Tunnel (cloudflared).
+# Zero open ports — cloudflared creates an outbound tunnel to Cloudflare.
+# Cloudflare handles TLS termination.
+#
+# Assembled at install time with:
+#   compose/app.yml              — app service
+#   networking/standalone.yml    — bridge network
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: uptimer-tunnel
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    restart: unless-stopped
+    networks:
+      - web

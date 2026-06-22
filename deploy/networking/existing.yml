@@ -1,0 +1,17 @@
+# External network — attach to an existing reverse proxy's network.
+# The installer auto-detects the network name or prompts for it.
+#
+# Common values:
+#   TRAEFIK_NETWORK=kamal            (Kamal proxy)
+#   TRAEFIK_NETWORK=traefik-public   (manual Traefik)
+#   TRAEFIK_NETWORK=nginx-proxy      (Nginx proxy network)
+#
+# Use when:
+#   - Existing Traefik integration
+#   - Existing Nginx integration
+#   - Any shared reverse proxy
+
+networks:
+  web:
+    external: true
+    name: ${TRAEFIK_NETWORK}

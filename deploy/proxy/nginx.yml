@@ -1,0 +1,28 @@
+# Nginx reverse proxy.
+# Routes port 80/443 to the app using a generated nginx.conf.
+#
+# Assembled at install time with:
+#   compose/app.yml              — app service
+#   networking/standalone.yml    — bridge network (standalone)
+#   networking/existing.yml      — external network (existing Nginx on host)
+#
+# The installer generates deploy/nginx.conf from templates/nginx.conf.
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: uptimer-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - nginx-certs:/etc/nginx/certs
+    depends_on:
+      - up-timer
+    restart: unless-stopped
+    networks:
+      - web
+
+volumes:
+  nginx-certs:
