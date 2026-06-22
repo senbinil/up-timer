@@ -1,0 +1,43 @@
+# Standalone Traefik + Let's Encrypt DNS challenge.
+# Creates a new Traefik container with automatic HTTPS.
+#
+# Assembled at install time with:
+#   compose/app.yml              — app service
+#   networking/standalone.yml    — bridge network
+
+services:
+  up-timer:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptimer.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.uptimer.entrypoints=${ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.uptimer.tls.certresolver=letsencrypt"
+
+  traefik:
+    image: traefik:v3
+    container_name: uptimer-traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certs:/letsencrypt
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    command:
+      - "--global.sendAnonymousUsage=false"
+      - "--api.dashboard=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker"
+      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${DNS_PROVIDER:-cloudflare}"
+    restart: unless-stopped
+    networks:
+      - web
+
+volumes:
+  traefik-certs:

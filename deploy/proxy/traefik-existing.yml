@@ -1,0 +1,14 @@
+# Integrate with an existing Traefik instance (e.g. Kamal proxy).
+# Adds routing labels to the app — no new Traefik container.
+#
+# Assembled at install time with:
+#   compose/app.yml              — app service
+#   networking/existing.yml      — external network (e.g. kamal)
+
+services:
+  up-timer:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptimer.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.uptimer.entrypoints=${ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.uptimer.tls.certresolver=letsencrypt"

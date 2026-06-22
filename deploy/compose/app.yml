@@ -1,0 +1,36 @@
+# Base app service (proxy-agnostic).
+# No port exposure. No labels. Used with Traefik, Nginx, or Cloudflare Tunnel.
+#
+# Assembled at install time with:
+#   networking/*.yml   — network definition
+#   proxy/*.yml        — reverse proxy + labels
+
+services:
+  up-timer:
+    image: binilsn/up-timer:${TAG:-latest}
+    environment:
+      - RAILS_ENV=production
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - SOLID_QUEUE_IN_PUMA=true
+      - APP_HOST=${APP_HOST:-${DOMAIN}}
+      - ADMIN_EMAILS=${ADMIN_EMAILS:-}
+      - MAIL_PROVIDER=${MAIL_PROVIDER:-}
+      - MAIL_FROM=${MAIL_FROM:-noreply@example.com}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - MAILGUN_API_KEY=${MAILGUN_API_KEY:-}
+      - MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
+    volumes:
+      - up-timer-storage:/rails/storage
+      - up-timer-db:/rails/db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/up"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - web
+
+volumes:
+  up-timer-storage:
+  up-timer-db:

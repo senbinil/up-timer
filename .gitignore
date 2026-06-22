@@ -37,6 +37,11 @@
 # Ignore Traefik certificate storage
 acme.json
 
+# Ignore generated deployment files
+docker-compose.generated.yml
+deploy/.env
+deploy/nginx.conf
+
 
 /app/assets/builds/*
 !/app/assets/builds/.keep

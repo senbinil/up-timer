@@ -45,42 +45,27 @@ bin/dev
 - **CSS watcher** (Tailwind CSS v4)
 - **Job worker** (SolidQueue) for background jobs
 
-## Docker
+## Production Deployment
 
-### Production with SSL
+See **[deploy/](deploy/)** for the full deployment system — interactive installer that auto-detects your infrastructure and generates the right configuration.
 
-Use Docker Compose with Traefik for HTTPS. Only `docker-compose.yml` and a `.env` file are needed:
-
-**Let's Encrypt (wildcard):**
+**One-liner deploy (no clone needed):**
 
 ```bash
-# .env
-DOMAIN=uptime.example.com
-WILDCARD_DOMAIN=*.example.com
-DNS_PROVIDER=cloudflare
-CF_DNS_API_TOKEN=your-token
-LETSENCRYPT_EMAIL=you@example.com
-# App config (see table above)
-ADMIN_EMAILS=admin@example.com,manager@example.com
-
-docker compose up -d
+curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
 ```
 
-**Cloudflare SSL (no cert management):**
+Or from a cloned repo:
 
 ```bash
-# .env
-DOMAIN=uptime.example.com
-ENTRYPOINT=web
-# App config (see table above)
-ADMIN_EMAILS=admin@example.com
-
-docker compose up -d
+./deploy/installer.sh
 ```
 
-If `ENTRYPOINT` is not set, Traefik defaults to `websecure` (HTTPS) with automatic Let's Encrypt DNS challenge. [Supported DNS providers](https://doc.traefik.io/traefik/https/acme/#dnschallenge)
+Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only, Coolify** — all from the same immutable Docker image.
 
-### One-command deploy (local)
+See [deploy/README.md](deploy/README.md) for full environment variable reference.
+
+### One-command deploy (local testing)
 
 ```bash
 docker run -d -p 3000:80 \
@@ -93,18 +78,6 @@ docker run -d -p 3000:80 \
 Opens at `http://localhost:3000`.
 
 See [Mailer](#mailer) for email configuration.
-
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `ADMIN_EMAILS` | ❌ | — | Comma-separated emails that get admin role on registration |
-| `MAIL_PROVIDER` | ❌ | — | Email delivery provider: `resend` or `mailgun` (no value = disabled) |
-| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for all outgoing emails |
-| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
-| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
-| `SOLID_QUEUE_IN_PUMA` | ❌ | `true` (baked in) | Runs background jobs in the web process |
-
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
@@ -127,7 +100,7 @@ After login, users are redirected to `/dashboard`.
 Set `ADMIN_EMAILS` environment variable with a comma-separated list:
 
 ```bash
-ADMIN_EMAILS=admin@example.com docker compose up -d
+ADMIN_EMAILS=admin@example.com docker compose -f docker-compose.generated.yml --env-file deploy/.env up -d
 ```
 
 Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.

@@ -1,0 +1,12 @@
+# Standalone bridge network.
+# Creates a dedicated network for the app and its proxy.
+#
+# Use when:
+#   - Standalone Traefik (new Traefik on this network)
+#   - Standalone Nginx  (new Nginx on this network)
+#   - Cloudflare Tunnel (app + cloudflared on this network)
+#   - IP-only            (app on this network)
+
+networks:
+  web:
+    driver: bridge
