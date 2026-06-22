@@ -61,7 +61,9 @@ Or from a cloned repo:
 ./deploy/installer.sh
 ```
 
-Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only** — all from the same immutable Docker image.
+Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only, Coolify** — all from the same immutable Docker image.
+
+See [deploy/README.md](deploy/README.md) for full environment variable reference.
 
 ### One-command deploy (local testing)
 
@@ -76,18 +78,6 @@ docker run -d -p 3000:80 \
 Opens at `http://localhost:3000`.
 
 See [Mailer](#mailer) for email configuration.
-
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `ADMIN_EMAILS` | ❌ | — | Comma-separated emails that get admin role on registration |
-| `MAIL_PROVIDER` | ❌ | — | Email delivery provider: `resend` or `mailgun` (no value = disabled) |
-| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for all outgoing emails |
-| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
-| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
-| `SOLID_QUEUE_IN_PUMA` | ❌ | `true` (baked in) | Runs background jobs in the web process |
-
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
@@ -110,7 +100,7 @@ After login, users are redirected to `/dashboard`.
 Set `ADMIN_EMAILS` environment variable with a comma-separated list:
 
 ```bash
-ADMIN_EMAILS=admin@example.com docker compose up -d
+ADMIN_EMAILS=admin@example.com docker compose -f docker-compose.generated.yml --env-file deploy/.env up -d
 ```
 
 Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
