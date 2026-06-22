@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Shield Background for security/reliability -->
+  <path d="M50 5 L85 20 C85 55 50 90 50 90 C50 90 15 55 15 20 L50 5 Z" fill="#2563eb" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+  
+  <!-- Pulse/Status Line in white -->
+  <path d="M30 50 H42 L48 35 L55 65 L60 50 H70" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Status Indicator Dot -->
+  <circle cx="75" cy="50" r="4" fill="#FFFFFF" />
+</svg>
