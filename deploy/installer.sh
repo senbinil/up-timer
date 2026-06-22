@@ -215,10 +215,6 @@ collect_env() {
     # App vars (common)
     read -rp "  Image tag [latest]: " TAG; TAG=${TAG:-latest}
     read -rp "  Rails master key [auto-generate if empty]: " RAILS_MASTER_KEY
-    if [ -z "$RAILS_MASTER_KEY" ]; then
-        info "No master key provided — a random SECRET_KEY_BASE will be generated per session"
-        warn "Sessions and cookies will reset on container restart. Provide a key for persistence."
-    fi
 
     read -rp "  Admin emails (comma-separated, optional): " ADMIN_EMAILS
 

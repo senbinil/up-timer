@@ -7,7 +7,6 @@ General setup for deploying UpTimer on any Linux VPS.
 - Linux VPS (Ubuntu 22.04+ recommended)
 - Docker + Docker Compose installed
 - A domain name pointed to the VPS IP (or Cloudflare Tunnel token)
-- `config/master.key` (optional — auto-generated if omitted, but sessions reset on restart)
 
 ## Install Docker
 

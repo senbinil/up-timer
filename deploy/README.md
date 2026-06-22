@@ -75,7 +75,7 @@ Only the surrounding infrastructure differs.
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `TAG` | ❌ | `latest` | Docker image tag (pin to a version for stability) |
-| `RAILS_MASTER_KEY` | ❌ | — | From `config/master.key` (auto-generated if empty, but sessions reset on restart) |
+| `RAILS_MASTER_KEY` | ❌ | auto-generated | Decrypts config/credentials (auto-generated if empty) |
 | `ADMIN_EMAILS` | ❌ | — | Comma-separated emails auto-assigned admin role |
 | `APP_HOST` | ❌ | `DOMAIN` | Host used in email links |
 | `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun` (empty = disabled) |
