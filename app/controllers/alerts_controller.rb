@@ -60,7 +60,7 @@ class AlertsController < ApplicationController
   private
 
   def alert_heatmap
-    29.downto(0).map do |days_ago|
+    14.downto(0).map do |days_ago|
       date = days_ago.days.ago.to_date
       day_alerts = Alert.where(created_at: date.all_day)
       {
