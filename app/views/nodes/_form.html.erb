@@ -46,6 +46,12 @@
     <%= form.text_area :request_body, rows: 4, placeholder: '{"key": "value"}', class: "input-field font-mono text-xs" %>
   </div>
 
+  <div class="space-y-1.5">
+    <%= label_tag "uptime_monitor[tag_list]", "Tags", class: "input-label block" %>
+    <p class="text-[10px] text-slate-400 font-mono mb-1">Comma-separated (e.g. production, api)</p>
+    <%= text_field_tag "uptime_monitor[tag_list]", @node.tag_list, placeholder: "production, api", class: "input-field" %>
+  </div>
+
   <div class="grid grid-cols-2 gap-4">
     <div class="space-y-1.5">
       <%= form.label :check_interval, "Check Interval (s)", class: "input-label block" %>

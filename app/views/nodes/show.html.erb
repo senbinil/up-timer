@@ -11,7 +11,7 @@
   </div>
 
   <%# ── Node Info Cards ── %>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
     <div class="card">
       <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Status</p>
       <span class="<%= @node.status == "up" ? "chip chip-success" : "chip chip-error" %> mt-2 text-[10px]"><%= @node.status %></span>
@@ -27,6 +27,20 @@
     <div class="card">
       <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Timeout</p>
       <p class="text-lg font-semibold text-navy mt-1"><%= @node.timeout %>s</p>
+    </div>
+    <div class="card">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Tags</p>
+      <div class="flex flex-wrap gap-1 mt-1">
+        <turbo-frame id="<%= dom_id(@node, :tags) %>" style="display: contents">
+          <% if @node.tags.any? %>
+            <% @node.tags.each do |tag| %>
+              <span class="chip chip-success text-[10px]"><%= tag %></span>
+            <% end %>
+          <% else %>
+            <span class="text-xs text-slate-400 font-mono">—</span>
+          <% end %>
+        </turbo-frame>
+      </div>
     </div>
   </div>
 

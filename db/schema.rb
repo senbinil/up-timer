@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_053209) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_095527) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -97,6 +97,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_053209) do
     t.datetime "created_at", null: false
     t.integer "monitor_id", null: false
     t.float "response_time"
+    t.datetime "ssl_expires_at"
+    t.string "ssl_issuer"
+    t.string "ssl_subject"
+    t.boolean "ssl_valid"
     t.string "status", null: false
     t.integer "status_code"
     t.datetime "updated_at", null: false
@@ -107,12 +111,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_053209) do
   create_table "monitors", force: :cascade do |t|
     t.integer "check_interval", null: false
     t.datetime "created_at", null: false
+    t.integer "down_threshold", default: 1, null: false
     t.integer "expected_status"
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.text "request_body"
     t.string "request_type", default: "GET", null: false
     t.string "status", default: "unknown", null: false
+    t.json "tags", default: [], null: false
     t.integer "timeout", null: false
     t.datetime "updated_at", null: false
     t.string "url", null: false

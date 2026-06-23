@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     member do
       post :move_up
       post :move_down
+      patch :assign_tag
       get :edit
       patch :update
     end
