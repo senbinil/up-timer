@@ -11,30 +11,19 @@
     <% end %>
   </div>
 
-  <div class="card space-y-2">
-    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Last 30 Days</p>
-    <div class="flex gap-1 flex-wrap">
-      <% @heatmap.each do |day| %>
-        <% bg = if day[:critical] > 0
-                 "bg-error"
-               elsif day[:warning] > 0
-                 "bg-warning"
-               elsif day[:info] > 0
-                 "bg-primary-container/60"
-               else
-                 "bg-surface-container-high"
-               end %>
-        <div class="w-3.5 h-3.5 rounded-sm <%= bg %>" data-controller="tooltip" data-tooltip-content-value="<%= day[:date].strftime('%b %d') %>: <%= day[:critical] %> crit, <%= day[:warning] %> warn, <%= day[:info] %> info"></div>
-      <% end %>
-    </div>
-    <div class="flex items-center gap-3 text-[10px] text-slate-400 font-mono pt-1">
-      <span>Less</span>
-      <span class="w-3 h-3 rounded-sm bg-surface-container-high"></span>
-      <span class="w-3 h-3 rounded-sm bg-primary-container/60"></span>
-      <span class="w-3 h-3 rounded-sm bg-warning"></span>
-      <span class="w-3 h-3 rounded-sm bg-error"></span>
-      <span>More</span>
-    </div>
+  <div class="card space-y-3">
+    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Alert Activity — Last 15 Days</p>
+    <%= area_chart alert_chart_data(@heatmap),
+                   discrete: true,
+                   stacked: true,
+                   height: "240px",
+                   library: {
+                     scales: {
+                       x: { type: "category", grid: { display: false } },
+                       y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                     },
+                     plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 16 } } }
+                   } %>
   </div>
 
   <% if @alerts.any? %>
