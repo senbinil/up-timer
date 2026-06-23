@@ -8,7 +8,6 @@ class MonitorCheckJob < ApplicationJob
     result = MonitorCheckService.call(monitor)
     status = result.up ? "up" : "down"
 
-    monitor.update!(status: status)
     monitor.monitor_checks.create!(
       status: status,
       response_time: result.duration,
@@ -16,11 +15,24 @@ class MonitorCheckJob < ApplicationJob
       checked_at: Time.current
     )
 
-    if status == "down" && monitor.incidents.where(resolved_at: nil).none?
-      monitor.incidents.create!(started_at: Time.current)
-      create_trigger_alerts(monitor)
-    elsif status == "up"
-      monitor.incidents.where(resolved_at: nil).update_all(resolved_at: Time.current)
+    threshold = monitor.down_threshold
+    recent = monitor.monitor_checks
+                    .order(checked_at: :desc)
+                    .limit(threshold)
+                    .pluck(:status)
+
+    if recent.all?("down") && recent.size >= threshold
+      monitor.update!(status: "down") unless monitor.down?
+      if monitor.incidents.where(resolved_at: nil).none?
+        monitor.incidents.create!(started_at: Time.current)
+        create_trigger_alerts(monitor)
+      end
+    elsif recent.all?("up") && recent.size >= threshold
+      if monitor.down?
+        monitor.update!(status: "up")
+        monitor.incidents.where(resolved_at: nil).update_all(resolved_at: Time.current)
+        create_recovery_alerts(monitor)
+      end
     end
   end
 
@@ -33,6 +45,12 @@ class MonitorCheckJob < ApplicationJob
         severity: trigger.severity,
         message: "#{trigger.name}: #{monitor.name} is down — #{monitor.url}"
       )
+    end
+  end
+
+  def create_recovery_alerts(monitor)
+    Recipient.active.pluck(:email).each do |email|
+      AlertMailer.alert_recovered(email, monitor.id).deliver_later
     end
   end
 end
