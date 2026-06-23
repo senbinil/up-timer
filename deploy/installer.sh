@@ -3,13 +3,16 @@
 # Self-contained — no repo clone needed.
 #
 # One-liner:
-#   curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
+#   bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
 #
 # Or save and run:
 #   curl -sSLO https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh
 #   chmod +x installer.sh && ./installer.sh
 
 set -euo pipefail
+
+# Reconnect stdin to the terminal if it was piped (so interactive prompts work)
+[ -t 0 ] || exec </dev/tty
 
 # Work from current directory — no dependency on script location
 PROJECT_DIR="$(pwd)"
