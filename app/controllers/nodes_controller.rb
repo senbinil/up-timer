@@ -8,7 +8,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @node = UptimeMonitor.new(check_interval: 60, timeout: 30, request_type: "GET")
+    @node = UptimeMonitor.new(check_interval: 60, timeout: 30, request_type: "GET", down_threshold: 1)
   end
 
   def create
@@ -79,6 +79,6 @@ class NodesController < ApplicationController
   end
 
   def node_params
-    params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body, :tag_list, tags: [])
-  end
+    params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body, :down_threshold, :tag_list, tags: [])
+end
 end
