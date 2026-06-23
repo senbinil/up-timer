@@ -2,7 +2,9 @@ class MonitorCheckService
   SUPPORTED_METHODS = %w[GET HEAD POST PUT PATCH DELETE OPTIONS].freeze
   BODY_METHODS = %w[POST PUT PATCH].freeze
 
-  Result = Struct.new(:code, :message, :up, :duration, keyword_init: true)
+  Result = Struct.new(:code, :message, :up, :duration,
+                      :ssl_valid, :ssl_expires_at, :ssl_issuer, :ssl_subject,
+                      keyword_init: true)
 
   def self.call(monitor)
     new(monitor).call
@@ -29,11 +31,27 @@ class MonitorCheckService
       code: code,
       message: response.message,
       up: up,
-      duration: duration
+      duration: duration,
+      **ssl_info(response)
     )
   end
 
   private
+
+  def ssl_info(response)
+    cert = response.respond_to?(:peer_cert) ? response.peer_cert : nil
+    return {} unless cert
+
+    expires = cert.not_after
+    {
+      ssl_valid: Time.current.between?(cert.not_before, expires),
+      ssl_expires_at: expires,
+      ssl_issuer: cert.issuer.to_s,
+      ssl_subject: cert.subject.to_s
+    }
+  rescue StandardError
+    {}
+  end
 
   def perform_http_request
     uri = URI(@url)

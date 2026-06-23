@@ -12,7 +12,11 @@ class MonitorCheckJob < ApplicationJob
       status: status,
       response_time: result.duration,
       status_code: result.code,
-      checked_at: Time.current
+      checked_at: Time.current,
+      ssl_valid: result.ssl_valid,
+      ssl_expires_at: result.ssl_expires_at,
+      ssl_issuer: result.ssl_issuer,
+      ssl_subject: result.ssl_subject
     )
 
     MonitorStatusService.call(monitor)
