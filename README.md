@@ -64,6 +64,16 @@ Or from a cloned repo:
 Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only, Coolify** — all from the same immutable Docker image.
 
 See [deploy/README.md](deploy/README.md) for full environment variable reference.
+### Deploy Files
+
+| File | Purpose |
+|---|---|
+| [deploy/installer.sh](deploy/installer.sh) | Interactive CLI wizard |
+| [deploy/.env.example](deploy/.env.example) | All environment variables documented |
+| [deploy/README.md](deploy/README.md) | Deployment guide & scenarios |
+| [Dockerfile](Dockerfile) | Application image build |
+| [docker-compose.yml](docker-compose.yml) | Local development compose |
+| [.kamal/](.kamal/) | Kamal deploy config (optional) |
 
 ### One-command deploy (local testing)
 
