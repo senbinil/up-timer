@@ -52,7 +52,7 @@ See **[deploy/](deploy/)** for the full deployment system — interactive instal
 **One-liner deploy (no clone needed):**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
+bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
 ```
 
 Or from a cloned repo:

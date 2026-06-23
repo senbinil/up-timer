@@ -7,7 +7,7 @@ Production deployment for any infrastructure — no application changes needed.
 **One-liner (no clone needed):**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
+bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
 ```
 
 **From a cloned repo:**
