@@ -57,6 +57,21 @@ class NodesController < ApplicationController
     redirect_to nodes_path
   end
 
+  def assign_tag
+    @node = UptimeMonitor.find(params[:id])
+    tag = params[:tag].to_s.strip.presence
+    return head(:bad_request) unless tag
+
+    tags = Array(@node.tags)
+    if tags.include?(tag)
+      @node.update!(tags: tags - [ tag ])
+    else
+      @node.update!(tags: (tags + [ tag ]).uniq)
+    end
+
+    render turbo_stream: turbo_stream.update(helpers.dom_id(@node, :tags), partial: "nodes/tags", locals: { node: @node })
+  end
+
   private
 
   def authenticate
@@ -64,6 +79,6 @@ class NodesController < ApplicationController
   end
 
   def node_params
-    params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body, :down_threshold)
-  end
+    params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body, :down_threshold, :tag_list, tags: [])
+end
 end

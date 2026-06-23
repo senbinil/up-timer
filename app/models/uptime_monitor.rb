@@ -15,6 +15,18 @@ class UptimeMonitor < ApplicationRecord
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
   scope :top, ->(n = 3) { ranked.limit(n) }
 
+  def self.all_tags
+    pluck(:tags).flatten.uniq.sort
+  end
+
+  def tag_list
+    (tags || []).join(", ")
+  end
+
+  def tag_list=(value)
+    self.tags = value.to_s.split(",").map(&:strip).reject(&:blank?).uniq
+  end
+
   def down?
     status == "down"
   end
