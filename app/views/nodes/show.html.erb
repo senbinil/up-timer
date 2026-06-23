@@ -30,6 +30,29 @@
     </div>
   </div>
 
+  <%# ── SSL Info ── %>
+  <% latest_check = @node.monitor_checks.where.not(ssl_valid: nil).order(checked_at: :desc).first %>
+  <% if latest_check %>
+    <div class="card space-y-3">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">SSL Certificate</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <span class="<%= latest_check.ssl_valid ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= latest_check.ssl_valid ? "Valid" : "Invalid" %></span>
+        </div>
+        <div>
+          <% days = latest_check.ssl_days_remaining %>
+          <span class="chip text-[10px] <%= days && days <= 0 ? "chip-error" : (days && days <= 30 ? "chip-warning" : "chip-success") %>">
+            <%= days ? (days <= 0 ? "Expired" : "#{days}d remaining") : "—" %>
+          </span>
+        </div>
+        <div class="col-span-2">
+          <p class="text-xs font-mono text-slate-500"><%= latest_check.ssl_subject %></p>
+          <p class="text-[10px] font-mono text-slate-400"><%= latest_check.ssl_issuer %></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <%# ── Response Time Chart ── %>
   <div class="card space-y-3">
     <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Response Time (ms)</h2>
@@ -55,17 +78,27 @@
       </div>
     </h2>
     <% if @checks.any? %>
-      <div class="hidden md:grid grid-cols-[80px_100px_1fr_160px] gap-4 px-1 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+      <div class="hidden md:grid grid-cols-[60px_50px_1fr_80px_160px] gap-4 px-1 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
         <span>Status</span>
         <span>Code</span>
         <span>Response</span>
+        <span>SSL</span>
         <span class="text-right">Checked At</span>
       </div>
       <% @checks.each do |check| %>
-        <div class="md:grid md:grid-cols-[80px_100px_1fr_160px] gap-4 px-1 py-2 items-center list-row">
+        <div class="md:grid md:grid-cols-[60px_50px_1fr_80px_160px] gap-4 px-1 py-2 items-center list-row">
           <span class="<%= check.status == "up" ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= check.status %></span>
           <span class="text-xs font-mono <%= check.status_code && check.status_code >= 400 ? "text-error" : "text-navy" %>"><%= check.status_code || "-" %></span>
           <span class="text-xs text-slate-400 font-mono"><%= check.response_time ? "#{check.response_time}ms" : "-" %></span>
+          <span class="text-[10px] font-mono">
+            <% if check.ssl_valid == true %>
+              <span class="text-success">✓</span>
+            <% elsif check.ssl_valid == false %>
+              <span class="text-error">✗</span>
+            <% else %>
+              <span class="text-slate-300">—</span>
+            <% end %>
+          </span>
           <span class="text-xs text-slate-400 font-mono md:text-right"><%= check.checked_at.strftime("%b %d, %H:%M:%S") %></span>
         </div>
       <% end %>
