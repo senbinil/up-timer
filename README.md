@@ -78,6 +78,12 @@ See [deploy/README.md](deploy/README.md) for full environment variable reference
 ### One-command deploy (local testing)
 
 ```bash
+# Without email (auto-verify, no alert emails)
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  binilsn/up-timer:latest
+
+# With email (Resend)
 docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
   -e MAIL_PROVIDER=resend \
