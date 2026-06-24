@@ -9,6 +9,10 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def authenticate
+    rodauth.require_account
+  end
+
   def current_account
     return nil unless rodauth.session_value
     @current_account ||= Account.find_by(id: rodauth.session_value)

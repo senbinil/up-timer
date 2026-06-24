@@ -8,7 +8,7 @@ class AlertNotificationJob < ApplicationJob
     return unless Flipper.enabled?(:email_notifications)
 
     Recipient.active.pluck(:email).each do |email|
-      AlertMailer.alert_down(email, alert).deliver_later
+      AlertMailer.alert_down(email, alert).deliver_now
     end
   end
 end

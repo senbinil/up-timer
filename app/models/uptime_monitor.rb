@@ -15,6 +15,19 @@ class UptimeMonitor < ApplicationRecord
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
   scope :top, ->(n = 3) { ranked.limit(n) }
 
+  def self.fleet_stats
+    total = count
+    up_count = where(status: "up").count
+    down_count = total - up_count
+
+    {
+      status: down_count == 0 ? "operational" : (up_count > 0 ? "degraded" : "down"),
+      up_count: up_count,
+      down_count: down_count,
+      total: total
+    }
+  end
+
   def self.all_tags
     pluck(:tags).flatten.uniq.sort
   end

@@ -44,10 +44,6 @@ class AlertIntegrationsController < ApplicationController
 
   private
 
-  def authenticate
-    rodauth.require_account
-  end
-
   def recipient_params
     params.require(:recipient).permit(:email)
   end

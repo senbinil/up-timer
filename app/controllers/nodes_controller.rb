@@ -74,10 +74,6 @@ class NodesController < ApplicationController
 
   private
 
-  def authenticate
-    rodauth.require_account
-  end
-
   def node_params
     params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body, :down_threshold, :tag_list, tags: [])
 end

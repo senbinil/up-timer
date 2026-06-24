@@ -72,7 +72,10 @@ class RodauthMain < Rodauth::Rails::Auth
     # Redirect to the app from login and registration pages if already logged in.
     already_logged_in { redirect "/dashboard" }
 
-    # ==> Emails
+    # NOTE: When email is not configured, password reset still generates a
+    # valid token but no email is sent. The user sees a success message with
+    # no delivery. This is by design — the feature remains functional when
+    # email is later configured.
     send_email do |email|
       # queue email delivery on the mailer after the transaction commits
       db.after_commit { email.deliver_later }

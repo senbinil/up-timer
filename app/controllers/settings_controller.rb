@@ -36,14 +36,6 @@ class SettingsController < ApplicationController
 
   private
 
-  def authenticate
-    rodauth.require_account
-  end
-
-  def current_account
-    Account.find(rodauth.session_value)
-  end
-
   def preference_params
     params.require(:user_preference).permit(:dashboard_limit)
   end
