@@ -78,7 +78,7 @@ Only the surrounding infrastructure differs.
 | `RAILS_MASTER_KEY` | ❌ | auto-generated | Decrypts config/credentials (auto-generated if empty) |
 | `ADMIN_EMAILS` | ❌ | — | Comma-separated emails auto-assigned admin role |
 | `APP_HOST` | ❌ | `DOMAIN` | Host used in email links |
-| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun` (empty = disabled) |
+| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun`. When empty, email delivery is disabled — accounts auto-verify, alert emails are skipped, app still fully functional. |
 | `MAIL_FROM` | ❌ | `noreply@example.com` | From address for outgoing emails |
 | `RESEND_API_KEY` | * | — | Required if `MAIL_PROVIDER=resend` |
 | `MAILGUN_API_KEY` | * | — | Required if `MAIL_PROVIDER=mailgun` |
