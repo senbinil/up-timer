@@ -59,6 +59,9 @@ class MonitorStatusService
   end
 
   def notify_recovery
+    return unless MailAdapter.configured?
+    return unless Flipper.enabled?(:email_notifications)
+
     Recipient.active.pluck(:email).each do |email|
       AlertMailer.alert_recovered(email, @monitor.id).deliver_later
     end

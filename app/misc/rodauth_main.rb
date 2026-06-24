@@ -3,10 +3,18 @@ require "sequel/core"
 class RodauthMain < Rodauth::Rails::Auth
   configure do
     # List of authentication features that are loaded.
-    enable :create_account, :verify_account, :verify_account_grace_period,
-      :login, :logout, :remember,
-      :reset_password, :change_password, :change_login, :verify_login_change,
-      :close_account
+    # When email is not configured, disable features that require email delivery.
+    if MailAdapter.configured?
+      enable :create_account, :verify_account, :verify_account_grace_period,
+        :login, :logout, :remember,
+        :reset_password, :change_password, :change_login, :verify_login_change,
+        :close_account
+    else
+      enable :create_account,
+        :login, :logout, :remember,
+        :reset_password, :change_password,
+        :close_account
+    end
 
     # See the Rodauth documentation for the list of available config options:
     # http://rodauth.jeremyevans.net/documentation.html
@@ -44,7 +52,7 @@ class RodauthMain < Rodauth::Rails::Auth
     account_password_hash_column :password_hash
 
     # Set password when creating account instead of when verifying.
-    verify_account_set_password? false
+    verify_account_set_password? false if MailAdapter.configured?
 
     # Change some default param keys.
     login_param "email"
@@ -70,14 +78,18 @@ class RodauthMain < Rodauth::Rails::Auth
       db.after_commit { email.deliver_later }
     end
 
-    create_verify_account_email do
-      RodauthMailer.verify_account(self.class.configuration_name, account_id, verify_account_key_value)
+    if MailAdapter.configured?
+      create_verify_account_email do
+        RodauthMailer.verify_account(self.class.configuration_name, account_id, verify_account_key_value)
+      end
     end
     create_reset_password_email do
       RodauthMailer.reset_password(self.class.configuration_name, account_id, reset_password_key_value)
     end
-    create_verify_login_change_email do |_login|
-      RodauthMailer.verify_login_change(self.class.configuration_name, account_id, verify_login_change_key_value)
+    if MailAdapter.configured?
+      create_verify_login_change_email do |_login|
+        RodauthMailer.verify_login_change(self.class.configuration_name, account_id, verify_login_change_key_value)
+      end
     end
 
     # ==> Flash
@@ -86,7 +98,11 @@ class RodauthMain < Rodauth::Rails::Auth
     # flash_error_key :error # default is :alert
 
     # Override default flash messages.
-    # create_account_notice_flash "Your account has been created. Please verify your account by visiting the confirmation link sent to your email address."
+    if MailAdapter.configured?
+      # create_account_notice_flash "Your account has been created. Please verify your account by visiting the confirmation link sent to your email address."
+    else
+      create_account_notice_flash "Your account has been created and is ready to use."
+    end
     # require_login_error_flash "Login is required for accessing this page"
     # login_notice_flash nil
 
@@ -135,7 +151,10 @@ class RodauthMain < Rodauth::Rails::Auth
     after_create_account do
       account = Account.find(account_id)
       role = account.email.in?(ADMIN_EMAILS) ? "admin" : "viewer"
-      account.update!(name: param("name"), role: role)
+      attrs = { name: param("name"), role: role }
+      # Auto-verify when email delivery is not configured.
+      attrs[:status] = Account.statuses[:verified] unless MailAdapter.configured?
+      account.update!(attrs)
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error "Account creation error: #{e.message}"
       raise
@@ -154,7 +173,7 @@ class RodauthMain < Rodauth::Rails::Auth
     login_redirect "/dashboard"
 
     # Redirect to wherever login redirects to after account verification.
-    verify_account_redirect { login_redirect }
+    verify_account_redirect { login_redirect } if MailAdapter.configured?
 
     # Redirect to login page after password reset.
     reset_password_redirect { login_path }
