@@ -23,10 +23,4 @@ class UsersController < ApplicationController
       redirect_to users_path, alert: "Invalid role."
     end
   end
-
-  private
-
-  def authenticate
-    rodauth.require_account
-  end
 end

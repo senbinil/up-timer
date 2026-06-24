@@ -86,7 +86,7 @@ RAILS_MASTER_KEY=
 ADMIN_EMAILS=you@example.com
 ```
 
-No master key needed — key auto-generated per session.
+No master key needed — key auto-generated per session. Email is optional — without a provider, accounts are auto-verified and alert emails are skipped.
 
 ### With Email (Resend)
 

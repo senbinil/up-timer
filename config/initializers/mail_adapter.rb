@@ -5,6 +5,8 @@ require "mail_adapter/mailgun"
 
 ActionMailer::Base.add_delivery_method :null_mail, MailAdapter::NullAdapter
 
+configured = false
+
 if Rails.env.production?
   provider = ENV["MAIL_PROVIDER"]&.downcase
 
@@ -24,3 +26,5 @@ if Rails.env.production?
     Rails.application.config.action_mailer.delivery_method = :null_mail
   end
 end
+
+Rails.application.config.email_configured = configured

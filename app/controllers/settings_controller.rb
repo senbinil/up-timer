@@ -1,7 +1,6 @@
 class SettingsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
-  before_action -> { require_role!(:admin) }
 
   def show
     @account = current_account
@@ -36,14 +35,6 @@ class SettingsController < ApplicationController
   end
 
   private
-
-  def authenticate
-    rodauth.require_account
-  end
-
-  def current_account
-    Account.find(rodauth.session_value)
-  end
 
   def preference_params
     params.require(:user_preference).permit(:dashboard_limit)

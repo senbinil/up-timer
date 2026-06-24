@@ -32,6 +32,11 @@ services:
             - ADMIN_EMAILS=${ADMIN_EMAILS}
             - SOLID_QUEUE_IN_PUMA=true
             - APP_HOST=${DOMAIN}
+            - MAIL_PROVIDER=${MAIL_PROVIDER:-}
+            - MAIL_FROM=${MAIL_FROM:-noreply@example.com}
+            - RESEND_API_KEY=${RESEND_API_KEY:-}
+            - MAILGUN_API_KEY=${MAILGUN_API_KEY:-}
+            - MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
         volumes:
             - up-timer-storage:/rails/storage
             - up-timer-db:/rails/db
