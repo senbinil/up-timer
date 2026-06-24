@@ -101,9 +101,21 @@ Authentication is handled by Rodauth.
 |---|---|
 | `/login` | Sign in |
 | `/create-account` | Register new user |
+| `/reset-password` | Request password reset |
 | `/logout` | Sign out |
 
 After login, users are redirected to `/dashboard`.
+
+### Email configuration
+
+Email delivery is **optional**. When a mail provider is configured, the full auth flow works as expected — verification emails, password reset emails, and login change confirmations are sent. Without a provider, the app degrades gracefully:
+
+- **Self-registration** works and accounts are auto-verified
+- **Password reset** remains functional (token is generated but not emailed)
+- **Login change** and **email verification** are disabled
+- **Alert emails** are skipped silently
+
+See [Mailer](#mailer) for provider setup.
 
 ### Admin assignment
 
@@ -119,9 +131,9 @@ Users registering with those emails get the **admin** role. Everyone else defaul
 
 | Role | Access |
 |---|---|
-| **viewer** | Dashboard, Nodes (view), Alerts (view), Public status page |
-| **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve) |
-| **admin** | Everything above + Integrations, Settings, user promotion |
+| **viewer** | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings |
+| **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings |
+| **admin** | Everything above + Integrations, Email notifications toggle, User promotion |
 
 ### Setting admins
 
@@ -169,6 +181,8 @@ Start the worker with `bin/jobs` (already included in `bin/dev`).
 Emails open in browser via [letter_opener](https://github.com/ryanb/letter_opener). No SMTP configuration needed.
 
 ### Production
+
+Email delivery is **optional**. Without a provider, the app works fully — accounts are auto-verified, password reset stays functional, and alert emails are skipped. Configure a provider to enable verification emails, login change confirmations, and alert delivery.
 
 Email supports **Resend** and **Mailgun**. Set `MAIL_PROVIDER` and the provider's credentials via environment variables. If no provider is configured, email delivery is silently disabled — no errors will be raised.
 
