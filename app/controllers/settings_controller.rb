@@ -1,7 +1,6 @@
 class SettingsController < ApplicationController
   layout "dashboard"
   before_action :authenticate
-  before_action -> { require_role!(:admin) }
 
   def show
     @account = current_account
