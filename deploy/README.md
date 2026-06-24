@@ -26,7 +26,7 @@ Answer a few questions and it auto-detects your environment, generates config, a
 | 2 | **Existing Traefik** | Kamal or another Traefik already running | None | Existing proxy handles it |
 | 3 | **Existing Nginx** | Nginx already on the host | None | Existing proxy handles it |
 | 4 | **Cloudflare Tunnel** | Zero open ports, Cloudflare handles TLS | None | Cloudflare |
-| 5 | **IP-only** | Testing, or external load balancer | 80 (configurable) | None |
+| 5 | **IP-only** | Minimal deployment, testing, or external load balancer | 80 (configurable) | None |
 | 6 | **Coolify** | Self-hosted PaaS — web UI deploy | None | Auto Let's Encrypt |
 
 Coolify is deployed through its own web dashboard, not the installer. See [docs/Coolify.md](docs/Coolify.md).
@@ -152,7 +152,7 @@ Your UpTimer instance attaches to Kamal's network with zero port conflicts.
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in DOMAIN, LETSENCRYPT_EMAIL, CF_DNS_API_TOKEN (RAILS_MASTER_KEY optional)
+# Fill in DOMAIN, LETSENCRYPT_EMAIL, CF_DNS_API_TOKEN (email vars optional, RAILS_MASTER_KEY optional)
 
 docker compose \
   -f deploy/compose/app.yml \
@@ -166,7 +166,7 @@ docker compose \
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in DOMAIN, TRAEFIK_NETWORK
+# Fill in DOMAIN, TRAEFIK_NETWORK (email vars optional, RAILS_MASTER_KEY optional)
 
 docker compose \
   -f deploy/compose/app.yml \
@@ -180,7 +180,7 @@ docker compose \
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in CF_TUNNEL_TOKEN
+# Fill in CF_TUNNEL_TOKEN (email vars optional, RAILS_MASTER_KEY optional)
 
 docker compose \
   -f deploy/compose/app.yml \
@@ -194,7 +194,7 @@ docker compose \
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in APP_PORT if not using default 80
+# Fill in APP_PORT if not using default 80 (email vars optional, RAILS_MASTER_KEY optional)
 
 docker compose \
   -f deploy/compose/app-ip.yml \

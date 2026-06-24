@@ -72,10 +72,10 @@ See [deploy/README.md](deploy/README.md) for full environment variable reference
 | [deploy/.env.example](deploy/.env.example) | All environment variables documented |
 | [deploy/README.md](deploy/README.md) | Deployment guide & scenarios |
 | [Dockerfile](Dockerfile) | Application image build |
-| [docker-compose.yml](docker-compose.yml) | Local development compose |
+| [docker-compose.yml](docker-compose.yml) | Standalone production compose (Traefik + Let's Encrypt) |
 | [.kamal/](.kamal/) | Kamal deploy config (optional) |
 
-### One-command deploy (local testing)
+### Quick start (Docker)
 
 ```bash
 # Without email (auto-verify, no alert emails)
@@ -92,8 +92,6 @@ docker run -d -p 3000:80 \
 ```
 
 Opens at `http://localhost:3000`.
-
-See [Mailer](#mailer) for email configuration.
 
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
@@ -121,14 +119,23 @@ Email delivery is **optional**. When a mail provider is configured, the full aut
 - **Login change** and **email verification** are disabled
 - **Alert emails** are skipped silently
 
-See [Mailer](#mailer) for provider setup.
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun` |
+| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for outgoing emails |
+| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
+| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
+
+\* Required when using that provider.
 
 ### Admin assignment
 
 Set `ADMIN_EMAILS` environment variable with a comma-separated list:
 
 ```bash
-ADMIN_EMAILS=admin@example.com docker compose -f docker-compose.generated.yml --env-file deploy/.env up -d
+ADMIN_EMAILS=admin@example.com docker compose up -d
 ```
 
 Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
@@ -140,16 +147,6 @@ Users registering with those emails get the **admin** role. Everyone else defaul
 | **viewer** | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings |
 | **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings |
 | **admin** | Everything above + Integrations, Email notifications toggle, User promotion |
-
-### Setting admins
-
-Set `ADMIN_EMAILS` env var with a comma-separated list of emails:
-
-```bash
-ADMIN_EMAILS=alice@example.com,bob@example.com rails server
-```
-
-Users registering with these emails are auto-assigned the **admin** role. Everyone else defaults to **viewer**.
 
 ## Background Jobs & Scheduler
 
@@ -186,22 +183,7 @@ Start the worker with `bin/jobs` (already included in `bin/dev`).
 
 Emails open in browser via [letter_opener](https://github.com/ryanb/letter_opener). No SMTP configuration needed.
 
-### Production
-
-Email delivery is **optional**. Without a provider, the app works fully — accounts are auto-verified, password reset stays functional, and alert emails are skipped. Configure a provider to enable verification emails, login change confirmations, and alert delivery.
-
-Email supports **Resend** and **Mailgun**. Set `MAIL_PROVIDER` and the provider's credentials via environment variables. If no provider is configured, email delivery is silently disabled — no errors will be raised.
-
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun` |
-| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for all outgoing emails |
-| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
-| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
-
-*Required when using that provider.*
+For production email setup, see [Auth → Email configuration](#email-configuration).
 
 ## Design System
 
