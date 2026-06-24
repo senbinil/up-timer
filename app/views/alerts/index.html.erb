@@ -50,6 +50,11 @@
             </div>
             <span class="text-[10px] text-slate-400 font-mono"><%= time_ago_in_words(alert.created_at) %> ago</span>
           </div>
+          <% if current_account&.admin? && alert.account %>
+            <div class="text-[10px] text-slate-400 font-mono pt-1 border-t border-divider">
+              Created by <%= alert.account.email %>
+            </div>
+          <% end %>
         <% end %>
       <% end %>
     </div>

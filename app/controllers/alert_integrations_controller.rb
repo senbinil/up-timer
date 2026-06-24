@@ -38,6 +38,8 @@ class AlertIntegrationsController < ApplicationController
   def toggle_trigger
     @trigger = AlertTrigger.find(params[:id])
     @trigger.toggle!(:active)
+    ActionLog.log(action: :toggled, record: @trigger, account: current_account,
+                  metadata: { name: @trigger.name, active: @trigger.active, severity: @trigger.severity })
     @triggers = AlertTrigger.ordered
     render partial: "triggers_list"
   end

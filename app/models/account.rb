@@ -5,6 +5,9 @@ class Account < ApplicationRecord
   ROLES = %w[viewer collaborator admin].freeze
 
   has_one :user_preference, dependent: :destroy
+  has_many :alerts, dependent: :nullify
+  has_many :resolved_alerts, class_name: "Alert", foreign_key: :resolved_by_id, dependent: :nullify
+  has_many :action_logs, dependent: :nullify
 
   before_create :set_status_token
   after_create :build_default_preference

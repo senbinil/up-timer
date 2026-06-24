@@ -20,6 +20,7 @@ class AlertsController < ApplicationController
 
   def create
     @alert = Alert.new(alert_params)
+    @alert.account = current_account
     if @alert.save
       redirect_to alerts_path, notice: "Alert created."
     else
@@ -50,7 +51,9 @@ class AlertsController < ApplicationController
   end
 
   def resolve
-    @alert.update!(resolved: true)
+    @alert.update!(resolved: true, resolved_by: current_account)
+    ActionLog.log(action: :resolved, record: @alert, account: current_account,
+                  metadata: { name: @alert.monitor&.name, severity: @alert.severity })
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to alerts_path, notice: "Alert resolved." }

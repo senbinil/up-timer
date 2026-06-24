@@ -18,6 +18,11 @@
           <h3 class="text-sm font-semibold text-navy"><%= trigger.name %></h3>
         </div>
         <p class="text-xs text-slate-400 leading-relaxed"><%= trigger.description %></p>
+        <% if current_account&.admin? && (log = trigger.last_action_log) %>
+          <p class="text-[10px] text-slate-400 font-mono mt-1">
+            <%= log.action.to_s.humanize %> by <%= log.account&.email || "system" %> <%= time_ago_in_words(log.created_at) %> ago
+          </p>
+        <% end %>
       </div>
     </div>
   <% end %>

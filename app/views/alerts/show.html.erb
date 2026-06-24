@@ -27,7 +27,10 @@
   <div class="card space-y-2">
     <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Message</p>
     <p class="text-body-md text-navy"><%= @alert.message %></p>
-    <p class="text-xs text-slate-400 font-mono">Created <%= time_ago_in_words(@alert.created_at) %> ago</p>
+    <p class="text-xs text-slate-400 font-mono">Created <%= time_ago_in_words(@alert.created_at) %> ago<% if current_account&.admin? && @alert.account %> by <%= @alert.account.email %><% end %></p>
+    <% if current_account&.admin? && @alert.resolved_by %>
+      <p class="text-xs text-slate-400 font-mono">Resolved by <%= @alert.resolved_by.email %></p>
+    <% end %>
   </div>
 
   <div class="flex gap-3">
