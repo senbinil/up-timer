@@ -4,4 +4,8 @@ class AlertTrigger < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :ordered, -> { order(:name) }
+
+  def last_action_log
+    ActionLog.for_record(self.class.name, id).recent.first
+  end
 end

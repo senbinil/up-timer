@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_095527) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_122233) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -45,6 +45,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_095527) do
     t.index ["status_token"], name: "index_accounts_on_status_token", unique: true
   end
 
+  create_table "action_logs", force: :cascade do |t|
+    t.integer "account_id"
+    t.string "action", null: false
+    t.datetime "created_at", null: false
+    t.json "metadata"
+    t.integer "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_action_logs_on_account_id"
+    t.index ["created_at"], name: "index_action_logs_on_created_at"
+    t.index ["record_type", "record_id"], name: "index_action_logs_on_record_type_and_record_id"
+  end
+
   create_table "alert_triggers", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -55,14 +68,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_095527) do
   end
 
   create_table "alerts", force: :cascade do |t|
+    t.integer "account_id"
     t.datetime "created_at", null: false
     t.text "message", null: false
     t.integer "monitor_id"
     t.boolean "resolved", default: false, null: false
+    t.integer "resolved_by_id"
     t.string "severity", default: "info", null: false
     t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_alerts_on_account_id"
     t.index ["monitor_id"], name: "index_alerts_on_monitor_id"
     t.index ["resolved"], name: "index_alerts_on_resolved"
+    t.index ["resolved_by_id"], name: "index_alerts_on_resolved_by_id"
     t.index ["severity"], name: "index_alerts_on_severity"
   end
 
@@ -268,6 +285,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_095527) do
   add_foreign_key "account_password_reset_keys", "accounts", column: "id"
   add_foreign_key "account_remember_keys", "accounts", column: "id"
   add_foreign_key "account_verification_keys", "accounts", column: "id"
+  add_foreign_key "action_logs", "accounts"
+  add_foreign_key "alerts", "accounts"
+  add_foreign_key "alerts", "accounts", column: "resolved_by_id"
   add_foreign_key "alerts", "monitors"
   add_foreign_key "incidents", "monitors"
   add_foreign_key "monitor_checks", "monitors"
