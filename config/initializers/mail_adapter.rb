@@ -5,7 +5,9 @@ require "mail_adapter/mailgun"
 
 ActionMailer::Base.add_delivery_method :null_mail, MailAdapter::NullAdapter
 
-configured = false
+# Dev/test use letter_opener / :test delivery — email is functional by default.
+# Production requires an explicit provider; falls back to null adapter otherwise.
+configured = !Rails.env.production?
 
 if Rails.env.production?
   provider = ENV["MAIL_PROVIDER"]&.downcase
