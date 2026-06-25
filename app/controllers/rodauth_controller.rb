@@ -17,4 +17,16 @@ class RodauthController < ApplicationController
   #     "application"
   #   end
   # end
+
+  # Redirect authenticated users away from the login page when accessing
+  # the root path (/). The Rodauth middleware handles this for /login, but
+  # / goes through the Rails router (root to: "rodauth#login") and bypasses
+  # the already_logged_in check defined in the Rodauth config.
+  before_action :redirect_authenticated_user, only: :login
+
+  private
+
+  def redirect_authenticated_user
+    redirect_to dashboard_path if rodauth.logged_in?
+  end
 end
