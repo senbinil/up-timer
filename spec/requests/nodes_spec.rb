@@ -136,4 +136,59 @@ RSpec.describe "Nodes", type: :request do
       expect(response).to have_http_status(:bad_request)
     end
   end
+
+  describe "POST /nodes/:id/pause" do
+    it "pauses the monitor" do
+      sign_in_admin
+      post pause_node_path(monitor)
+      expect(monitor.reload).to be_paused
+    end
+
+    it "creates an action log" do
+      sign_in_admin
+      expect {
+        post pause_node_path(monitor)
+      }.to change(ActionLog, :count).by(1)
+      expect(ActionLog.last.action).to eq("paused")
+    end
+
+    it "is inaccessible to collaborators" do
+      sign_in_collaborator
+      post pause_node_path(monitor)
+      expect(response).to have_http_status(:redirect)
+      expect(monitor.reload).not_to be_paused
+    end
+
+    it "redirects to show page on HTML request" do
+      sign_in_admin
+      post pause_node_path(monitor)
+      expect(response).to redirect_to(node_path(monitor))
+    end
+  end
+
+  describe "POST /nodes/:id/resume" do
+    it "resumes the monitor" do
+      monitor.update!(paused: true)
+      sign_in_admin
+      post resume_node_path(monitor)
+      expect(monitor.reload).not_to be_paused
+    end
+
+    it "creates an action log" do
+      monitor.update!(paused: true)
+      sign_in_admin
+      expect {
+        post resume_node_path(monitor)
+      }.to change(ActionLog, :count).by(1)
+      expect(ActionLog.last.action).to eq("resumed")
+    end
+
+    it "is inaccessible to collaborators" do
+      monitor.update!(paused: true)
+      sign_in_collaborator
+      post resume_node_path(monitor)
+      expect(response).to have_http_status(:redirect)
+      expect(monitor.reload).to be_paused
+    end
+  end
 end
