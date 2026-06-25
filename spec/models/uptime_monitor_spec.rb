@@ -127,6 +127,53 @@ RSpec.describe UptimeMonitor, type: :model do
     end
   end
 
+  describe "#paused?" do
+    it "returns true when paused is true" do
+      monitor = build(:uptime_monitor, paused: true)
+      expect(monitor).to be_paused
+    end
+
+    it "returns false when paused is false" do
+      monitor = build(:uptime_monitor, paused: false)
+      expect(monitor).not_to be_paused
+    end
+  end
+
+  describe "scopes" do
+    describe ".active" do
+      it "returns unpaused monitors" do
+        active = create(:uptime_monitor, paused: false)
+        _paused = create(:uptime_monitor, paused: true)
+
+        expect(UptimeMonitor.active).to contain_exactly(active)
+      end
+    end
+
+    describe ".paused" do
+      it "returns paused monitors" do
+        _active = create(:uptime_monitor, paused: false)
+        paused = create(:uptime_monitor, paused: true)
+
+        expect(UptimeMonitor.paused).to contain_exactly(paused)
+      end
+    end
+  end
+
+  describe "#last_pause_log" do
+    it "returns the most recent pause action log" do
+      monitor = create(:uptime_monitor, paused: true)
+      ActionLog.log(action: "paused", record: monitor, metadata: { name: monitor.name })
+
+      expect(monitor.last_pause_log).to be_present
+      expect(monitor.last_pause_log.action).to eq("paused")
+    end
+
+    it "returns nil when no pause log exists" do
+      monitor = create(:uptime_monitor, paused: true)
+      expect(monitor.last_pause_log).to be_nil
+    end
+  end
+
   describe "callbacks" do
     describe "after_create_commit :enqueue_first_check" do
       it "enqueues MonitorCheckJob after create" do

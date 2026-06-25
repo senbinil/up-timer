@@ -23,6 +23,8 @@ Rails.application.routes.draw do
       patch :assign_tag
       get :edit
       patch :update
+      post :pause
+      post :resume
     end
   end
 

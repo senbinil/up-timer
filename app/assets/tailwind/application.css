@@ -370,10 +370,15 @@
     background-color: var(--color-surface-container-low);
     color: var(--color-navy);
 }
-.pagy .current {
+.pagy a[aria-current="page"] {
     background-color: var(--color-primary-container);
     color: var(--color-on-primary);
     font-weight: 600;
+    cursor: default;
+}
+.pagy a[aria-current="page"]:hover {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary);
 }
 .pagy .gap {
     color: var(--color-slate-400);

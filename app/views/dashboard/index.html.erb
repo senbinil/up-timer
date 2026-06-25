@@ -13,7 +13,7 @@
         <p class="text-body-md text-slate-400 mt-1"><%= @stats[:up_count] %> of <%= @stats[:total] %> nodes healthy<% if @stats[:down_count] > 0 %>, <%= @stats[:down_count] %> degraded<% end %>.</p>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-divider">
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-4 border-t border-divider">
         <div>
           <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
           <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:uptime] %>%</p>
@@ -25,6 +25,10 @@
         <div>
           <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Downtime</p>
           <p class="text-lg md:text-2xl font-semibold <%= @stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:error_rate] %>%</p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Paused</p>
+          <p class="text-lg md:text-2xl font-semibold <%= @stats[:paused_count] > 0 ? "text-[var(--color-warning)]" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:paused_count] %></p>
         </div>
         <div>
           <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Alerts</p>
@@ -65,7 +69,7 @@
                 <p class="text-[11px] text-slate-400 font-mono truncate"><%= node.url %></p>
               </div>
             </div>
-            <span class="w-2 h-2 rounded-full <%= node.status == "up" ? "bg-primary-container" : "bg-error" %> flex-shrink-0 mt-1.5"></span>
+            <span class="w-2 h-2 rounded-full <%= node.paused? ? "bg-[var(--color-warning)]" : (node.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0 mt-1.5"></span>
           </div>
 
           <div class="space-y-2 pt-2 border-t border-divider">
@@ -96,7 +100,7 @@
           <div class="pt-2 border-t border-divider">
             <div class="flex justify-between text-xs mb-2">
               <span class="font-mono text-slate-400">Status</span>
-              <span class="font-mono font-semibold <%= node.status == "up" ? "text-primary-container" : "text-error" %>"><%= node.status&.upcase %></span>
+              <span class="font-mono font-semibold <%= node.paused? ? "text-[var(--color-warning)]" : (node.status == "up" ? "text-primary-container" : "text-error") %>"><%= node.paused? ? "PAUSED" : node.status&.upcase %></span>
             </div>
             <%= column_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
           </div>

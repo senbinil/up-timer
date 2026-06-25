@@ -24,14 +24,16 @@ class DashboardController < ApplicationController
   helper_method :chart_data_for, :fleet_stats
 
   def fleet_stats
+    active_ids = UptimeMonitor.active.pluck(:id)
     stats = UptimeMonitor.fleet_stats
-    all_checks = MonitorCheck.where(monitor_id: UptimeMonitor.pluck(:id))
+    all_checks = MonitorCheck.where(monitor_id: active_ids)
     total_checks = all_checks.count
     up_checks = all_checks.where(status: "up").count
 
     stats.merge(
       uptime: total_checks > 0 ? (up_checks.to_f / total_checks * 100).round(2) : 100,
-      error_rate: total_checks > 0 ? ((total_checks - up_checks).to_f / total_checks * 100).round(2) : 0
+      error_rate: total_checks > 0 ? ((total_checks - up_checks).to_f / total_checks * 100).round(2) : 0,
+      paused_count: UptimeMonitor.paused.count
     )
   end
 

@@ -2,6 +2,7 @@ class NodesController < ApplicationController
   layout "dashboard"
   before_action :authenticate
   before_action -> { require_role!(:collaborator) }, except: [ :index, :show ]
+  before_action -> { require_role!(:admin) }, only: [ :pause, :resume ]
 
   def index
     @pagy, @nodes = pagy(UptimeMonitor.ranked, limit: 15)
@@ -72,9 +73,43 @@ class NodesController < ApplicationController
     render turbo_stream: turbo_stream.update(helpers.dom_id(@node, :tags), partial: "nodes/tags", locals: { node: @node })
   end
 
+  def pause
+    @node = UptimeMonitor.find(params[:id])
+    @node.update!(paused: true)
+
+    ActionLog.log(
+      action: :paused,
+      record: @node,
+      account: current_account,
+      metadata: { name: @node.name, note: params[:note].presence }
+    )
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to node_path(@node), notice: "#{@node.name} paused." }
+    end
+  end
+
+  def resume
+    @node = UptimeMonitor.find(params[:id])
+    @node.update!(paused: false)
+
+    ActionLog.log(
+      action: :resumed,
+      record: @node,
+      account: current_account,
+      metadata: { name: @node.name }
+    )
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to node_path(@node), notice: "#{@node.name} resumed." }
+    end
+  end
+
   private
 
   def node_params
     params.require(:uptime_monitor).permit(:name, :url, :check_interval, :timeout, :request_type, :expected_status, :request_body, :down_threshold, :tag_list, tags: [])
-end
+  end
 end
