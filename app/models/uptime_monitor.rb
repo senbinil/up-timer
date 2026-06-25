@@ -54,6 +54,10 @@ class UptimeMonitor < ApplicationRecord
     paused
   end
 
+  def last_pause_log
+    ActionLog.for_record(self.class.name, id).where(action: "paused").recent.first
+  end
+
   private
 
   def enqueue_first_check

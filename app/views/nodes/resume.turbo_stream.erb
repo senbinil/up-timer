@@ -17,9 +17,15 @@
 <%= turbo_stream.replace dom_id(@node, :paused_banner) do %>
   <span id="<%= dom_id(@node, :paused_banner) %>">
     <% if @node.paused? %>
+      <% pause_log = @node.last_pause_log %>
       <div class="bg-warning-container border border-warning text-on-warning-container rounded-default p-3 mb-6 text-xs flex items-center gap-2">
         <span>⏸</span>
-        <span>This node is paused. Health checks are not running.</span>
+        <div>
+          <p>This node is paused. Health checks are not running.</p>
+          <% if pause_log %>
+            <p class="text-[10px] mt-1 opacity-80">Paused by <%= pause_log.account&.name || pause_log.account&.email || "unknown" %> &middot; <%= time_ago_in_words(pause_log.created_at) %> ago</p>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </span>

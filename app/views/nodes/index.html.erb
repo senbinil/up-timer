@@ -39,7 +39,8 @@
           <span class="text-xs text-slate-400 font-mono"><%= node.timeout %>s</span>
           <span id="<%= dom_id(node, :status) %>" class="text-[10px]">
             <% if node.paused? %>
-              <span class="chip chip-warning">Paused</span>
+              <% pause_log = node.last_pause_log %>
+              <span class="chip chip-warning" title="<%= pause_log ? "Paused by #{pause_log.account&.name || pause_log.account&.email || 'unknown'} · #{time_ago_in_words(pause_log.created_at)} ago" : "Paused" %>">Paused</span>
             <% else %>
               <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %>"><%= node.status %></span>
             <% end %>
