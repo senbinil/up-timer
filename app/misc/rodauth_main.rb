@@ -59,6 +59,12 @@ class RodauthMain < Rodauth::Rails::Auth
     login_confirm_param "email-confirm"
     password_confirm_param "confirm_password"
 
+    # Disable login confirmation (not present in the form) regardless of
+    # whether verify_account is loaded. The verify_account feature already
+    # disables this (require_login_confirmation? false), but when email is
+    # not configured, verify_account is not loaded and the default is true.
+    require_login_confirmation? false
+
     # Redirect back to originally requested location after authentication.
     # login_return_to_requested_location? true
     # two_factor_auth_return_to_requested_location? true # if using MFA
