@@ -4,6 +4,7 @@ class MonitorCheckJob < ApplicationJob
   def perform(monitor_id)
     monitor = UptimeMonitor.find_by(id: monitor_id)
     return unless monitor
+    return if monitor.paused?
 
     result = MonitorCheckService.call(monitor)
     status = result.up ? "up" : "down"

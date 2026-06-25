@@ -30,7 +30,13 @@
             <div class="flex gap-4 text-slate-600">
               <span><span class="font-mono text-success font-semibold">Up</span> — 2xx / 3xx</span>
               <span><span class="font-mono text-error font-semibold">Down</span> — 4xx / 5xx / error</span>
+              <span><span class="font-mono text-[var(--color-warning)] font-semibold">Paused</span> — manually stopped</span>
             </div>
+          </div>
+
+          <div>
+            <p class="font-medium mb-0.5">Pause / Resume</p>
+            <p class="text-slate-600">Admins can pause a node to stop health checks temporarily. A paused node shows a <span class="chip chip-warning text-[10px] align-middle">Paused</span> badge and is skipped by the scheduler. Use <strong>Resume</strong> to restart checks. Pause/resume actions are recorded in the audit log.</p>
           </div>
 
           <div>

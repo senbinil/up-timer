@@ -6,7 +6,7 @@
 
   <% if @nodes.any? %>
     <div class="card space-y-0">
-      <div class="hidden md:grid grid-cols-[40px_1fr_1fr_1fr_80px_80px_80px_80px] gap-2 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+      <div class="hidden md:grid grid-cols-[40px_1fr_1fr_1fr_80px_80px_80px_80px_100px] gap-2 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
         <span>#</span>
         <span>Name</span>
         <span>URL</span>
@@ -15,13 +15,14 @@
         <span>Timeout</span>
         <span>Status</span>
         <span></span>
+        <span>Actions</span>
       </div>
       <% @nodes.each.with_index(1) do |node, index| %>
-        <%= link_to node_path(node), class: "md:grid md:grid-cols-[40px_1fr_1fr_1fr_80px_80px_80px_80px] gap-2 px-1 py-3 items-center list-row block hover:bg-surface-container-low" do %>
-          <span class="text-xs font-mono text-slate-400 hidden md:block"><%= index %></span>
-          <span class="text-sm font-semibold text-navy"><%= node.name %></span>
-          <span class="text-xs text-slate-400 font-mono truncate hidden md:block"><%= node.url %></span>
-          <span class="hidden md:flex flex-wrap items-center gap-1" onclick="event.stopPropagation()">
+        <div class="hidden md:grid md:grid-cols-[40px_1fr_1fr_1fr_80px_80px_80px_80px_100px] gap-2 px-1 py-3 items-center list-row hover:bg-surface-container-low">
+          <span class="text-xs font-mono text-slate-400"><%= index %></span>
+          <%= link_to node.name, node_path(node), class: "text-sm font-semibold text-navy hover:underline" %>
+          <%= link_to node.url, node_path(node), class: "text-xs text-slate-400 font-mono truncate hover:underline" %>
+          <span class="flex flex-wrap items-center gap-1">
             <turbo-frame id="<%= dom_id(node, :tags) %>" style="display: contents">
               <% node.tags.each do |tag| %>
                 <span class="chip chip-success text-[10px]"><%= tag %></span>
@@ -36,10 +37,34 @@
           </span>
           <span class="text-xs text-slate-400 font-mono"><%= node.check_interval %>s</span>
           <span class="text-xs text-slate-400 font-mono"><%= node.timeout %>s</span>
-          <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= node.status %></span>
-          <span class="flex items-center gap-1" onclick="event.preventDefault()">
+          <span id="<%= dom_id(node, :status) %>" class="text-[10px]">
+            <% if node.paused? %>
+              <span class="chip chip-warning">Paused</span>
+            <% else %>
+              <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %>"><%= node.status %></span>
+            <% end %>
+          </span>
+          <span class="flex items-center gap-1">
             <%= button_to "&#9650;".html_safe, move_up_node_path(node), method: :post, class: "text-[10px] text-slate-400 hover:text-navy p-0.5 cursor-pointer", title: "Move up" %>
             <%= button_to "&#9660;".html_safe, move_down_node_path(node), method: :post, class: "text-[10px] text-slate-400 hover:text-navy p-0.5 cursor-pointer", title: "Move down" %>
+          </span>
+          <span id="<%= dom_id(node, :pause) %>" class="flex items-center gap-1">
+            <%= render partial: "nodes/pause_button", locals: { node: node } %>
+          </span>
+        </div>
+
+        <%# Mobile layout %>
+        <%= link_to node_path(node), class: "md:hidden flex items-center gap-3 px-1 py-3 list-row hover:bg-surface-container-low" do %>
+          <span class="flex-1 min-w-0">
+            <span class="text-sm font-semibold text-navy block"><%= node.name %></span>
+            <span class="text-xs text-slate-400 font-mono truncate block"><%= node.url %></span>
+          </span>
+          <span class="text-[10px]">
+            <% if node.paused? %>
+              <span class="chip chip-warning">Paused</span>
+            <% else %>
+              <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %>"><%= node.status %></span>
+            <% end %>
           </span>
         <% end %>
       <% end %>

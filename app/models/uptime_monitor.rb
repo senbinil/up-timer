@@ -14,6 +14,8 @@ class UptimeMonitor < ApplicationRecord
 
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
   scope :top, ->(n = 3) { ranked.limit(n) }
+  scope :active, -> { where(paused: false) }
+  scope :paused, -> { where(paused: true) }
 
   def self.fleet_stats
     total = count
@@ -46,6 +48,10 @@ class UptimeMonitor < ApplicationRecord
 
   def up?
     status == "up"
+  end
+
+  def paused?
+    paused
   end
 
   private

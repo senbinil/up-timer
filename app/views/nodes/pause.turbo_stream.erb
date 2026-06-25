@@ -1,0 +1,26 @@
+<%= turbo_stream.replace dom_id(@node, :status) do %>
+  <span id="<%= dom_id(@node, :status) %>">
+    <% if @node.paused? %>
+      <span class="chip chip-warning text-[10px]">Paused</span>
+    <% else %>
+      <span class="<%= @node.status == "up" ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= @node.status %></span>
+    <% end %>
+  </span>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@node, :pause) do %>
+  <span id="<%= dom_id(@node, :pause) %>" class="mt-2 block">
+    <%= render partial: "nodes/pause_button", locals: { node: @node } %>
+  </span>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@node, :paused_banner) do %>
+  <span id="<%= dom_id(@node, :paused_banner) %>">
+    <% if @node.paused? %>
+      <div class="bg-warning-container border border-warning text-on-warning-container rounded-default p-3 mb-6 text-xs flex items-center gap-2">
+        <span>⏸</span>
+        <span>This node is paused. Health checks are not running.</span>
+      </div>
+    <% end %>
+  </span>
+<% end %>
