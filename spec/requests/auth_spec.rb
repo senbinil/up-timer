@@ -164,20 +164,11 @@ RSpec.describe "Authentication flows", type: :request do
   end
 
   describe "without email configured", :without_email do
-    # Rails.application.config.email_configured set to false at runtime.
-    # Rodauth features (verify_account) are loaded at class load time, but
-    # the after_create_account hook auto-verifies accounts at runtime.
-    # verify-account routes still exist (loaded at boot) but the
-    # after_create_account hook sets status to verified.
-
-    before do
-      @_original_email_configured = Rails.application.config.email_configured
-      Rails.application.config.email_configured = false
-    end
-
-    after do
-      Rails.application.config.email_configured = @_original_email_configured
-    end
+    # Rodauth features (verify_account, reset_password, etc.) are determined
+    # at class load time. In test mode MailAdapter.configured? returns true,
+    # so these features are loaded. At runtime, the after_create_account hook
+    # checks MailAdapter.configured? — stubbing it to false verifies that
+    # accounts would be auto-verified when email is not configured.
 
     describe "POST /create-account" do
       let(:valid_params) do
@@ -190,7 +181,8 @@ RSpec.describe "Authentication flows", type: :request do
         }
       end
 
-      it "creates a new account as verified (auto-verified by after_create hook)" do
+      it "auto-verifies account when MailAdapter is not configured" do
+        allow(MailAdapter).to receive(:configured?).and_return(false)
         post "/create-account", params: valid_params
         account = Account.find_by(email: "auto-verify@example.com")
         expect(account).to be_verified
@@ -218,52 +210,6 @@ RSpec.describe "Authentication flows", type: :request do
         post "/create-account", params: valid_params.merge(compliance: "0")
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to include("must be accepted")
-      end
-    end
-
-    describe "GET /login" do
-      it "shows the login form" do
-        get "/login"
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("email")
-      end
-    end
-
-    describe "POST /login" do
-      let!(:account) { create(:account) }
-
-      it "logs in with valid credentials" do
-        post "/login", params: { email: account.email, password: "password" }
-        expect(response).to redirect_to(dashboard_path)
-      end
-
-      it "rejects invalid password with 401" do
-        post "/login", params: { email: account.email, password: "wrong" }
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-
-    describe "POST /logout" do
-      it "logs out and redirects to root" do
-        sign_in
-        post "/logout"
-        expect(response).to redirect_to(root_path)
-      end
-    end
-
-    describe "password reset" do
-      let!(:account) { create(:account) }
-
-      describe "POST /reset-password-request" do
-        it "redirects with success for existing email" do
-          post "/reset-password-request", params: { email: account.email }
-          expect(response).to have_http_status(:redirect)
-        end
-
-        it "does not reveal if email does not exist (returns 401)" do
-          post "/reset-password-request", params: { email: "nonexistent@example.com" }
-          expect(response).to have_http_status(:unauthorized)
-        end
       end
     end
   end

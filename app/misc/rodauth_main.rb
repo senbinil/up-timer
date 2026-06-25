@@ -12,7 +12,6 @@ class RodauthMain < Rodauth::Rails::Auth
     else
       enable :create_account,
         :login, :logout, :remember,
-        :reset_password, :change_password,
         :close_account
     end
 
@@ -92,8 +91,10 @@ class RodauthMain < Rodauth::Rails::Auth
         RodauthMailer.verify_account(self.class.configuration_name, account_id, verify_account_key_value)
       end
     end
-    create_reset_password_email do
-      RodauthMailer.reset_password(self.class.configuration_name, account_id, reset_password_key_value)
+    if MailAdapter.configured?
+      create_reset_password_email do
+        RodauthMailer.reset_password(self.class.configuration_name, account_id, reset_password_key_value)
+      end
     end
     if MailAdapter.configured?
       create_verify_login_change_email do |_login|
@@ -185,7 +186,7 @@ class RodauthMain < Rodauth::Rails::Auth
     verify_account_redirect { login_redirect } if MailAdapter.configured?
 
     # Redirect to login page after password reset.
-    reset_password_redirect { login_path }
+    reset_password_redirect { login_path } if MailAdapter.configured?
 
     # ==> Deadlines
     # Change default deadlines for some actions.
