@@ -45,3 +45,6 @@ deploy/nginx.conf
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# RSpec example status persistence
+/spec/examples.txt
