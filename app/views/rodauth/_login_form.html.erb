@@ -48,7 +48,9 @@
       <%= form.check_box "remember", class: "rounded border-[#e2e8f0] text-primary-container focus:ring-primary-container" %>
       Remember me
     </label>
-    <%= link_to "Forgot password?", rodauth.reset_password_request_path, class: "text-xs text-primary-container hover:underline" %>
+    <% if rodauth.respond_to?(:reset_password_request_path) %>
+      <%= link_to "Forgot password?", rodauth.reset_password_request_path, class: "text-xs text-primary-container hover:underline" %>
+    <% end %>
   </div>
 
   <%= form.button rodauth.login_button, class: "btn btn-primary w-full justify-center" %>
