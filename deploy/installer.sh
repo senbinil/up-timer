@@ -203,7 +203,13 @@ show_menu() {
     local i=1
     OPT_STANDALONE=$i;  echo "  $i) Standalone Traefik + Let's Encrypt (auto HTTPS)"; i=$((i+1))
 
-    if [ "$DETECTED_PROXY" = "kamal" ] || [ "$DETECTED_PROXY" = "traefik" ]; then
+    if [ "$DETECTED_PROXY" = "kamal" ]; then
+        OPT_KAMAL_PROXY=$i; echo -e "  $i) Integrate with existing Kamal Proxy ${GREEN}← auto-detected${NC}"; i=$((i+1))
+    else
+        OPT_KAMAL_PROXY=$i; echo "  $i) Integrate with existing Kamal Proxy"; i=$((i+1))
+    fi
+
+    if [ "$DETECTED_PROXY" = "traefik" ]; then
         OPT_EXISTING_TRAEFIK=$i; echo -e "  $i) Integrate with existing Traefik ${GREEN}← auto-detected${NC}"; i=$((i+1))
     else
         OPT_EXISTING_TRAEFIK=$i; echo "  $i) Integrate with existing Traefik"; i=$((i+1))
@@ -249,6 +255,9 @@ collect_env() {
         standalone)
             collect_standalone_env
             ;;
+        kamal-proxy)
+            collect_kamal_proxy_env
+            ;;
         existing-traefik)
             collect_existing_traefik_env
             ;;
@@ -262,6 +271,9 @@ collect_env() {
             collect_ip_env
             ;;
     esac
+
+    # Resolve APP_HOST from DOMAIN if not explicitly set (avoids nested expansion in Docker Compose)
+    : "${APP_HOST:=${DOMAIN:-}}"
 
     # Write .env
     write_env_file
@@ -343,6 +355,55 @@ collect_existing_traefik_env() {
     DEPLOY_MODE=existing-traefik
 }
 
+collect_kamal_proxy_env() {
+    echo ""
+    read -rp "  Domain (e.g. uptime.example.com): " DOMAIN
+    while [ -z "$DOMAIN" ]; do
+        err "Domain is required"
+        read -rp "  Domain: " DOMAIN
+    done
+
+    if [ -n "$DETECTED_NETWORK" ]; then
+        read -rp "  Kamal network [$DETECTED_NETWORK]: " TRAEFIK_NETWORK
+        TRAEFIK_NETWORK=${TRAEFIK_NETWORK:-$DETECTED_NETWORK}
+    else
+        read -rp "  Kamal Docker network name: " TRAEFIK_NETWORK
+        while [ -z "$TRAEFIK_NETWORK" ]; do
+            err "Network name is required"
+            read -rp "  Kamal Docker network name: " TRAEFIK_NETWORK
+        done
+    fi
+
+    # Reject Docker built-in networks
+    while [ "$TRAEFIK_NETWORK" = "bridge" ] || [ "$TRAEFIK_NETWORK" = "host" ] || [ "$TRAEFIK_NETWORK" = "none" ]; do
+        err "Cannot use Docker built-in network '$TRAEFIK_NETWORK' — must use a user-defined network"
+        read -rp "  Kamal Docker network name: " TRAEFIK_NETWORK
+        while [ -z "$TRAEFIK_NETWORK" ]; do
+            read -rp "  Kamal Docker network name: " TRAEFIK_NETWORK
+        done
+    done
+
+    # Validate network exists
+    while ! docker network ls --format '{{.Name}}' 2>/dev/null | grep -qx "$TRAEFIK_NETWORK"; do
+        err "Network '$TRAEFIK_NETWORK' not found"
+        echo "  Existing networks:"
+        docker network ls --format '    {{.Name}}' | grep -v '^bridge$' | grep -v '^host$' | grep -v '^none$'
+        read -rp "  Kamal Docker network name (or enter 'create' to make one): " TRAEFIK_NETWORK
+        if [ "$TRAEFIK_NETWORK" = "create" ]; then
+            read -rp "  New network name: " TRAEFIK_NETWORK
+            docker network create "$TRAEFIK_NETWORK" && ok "Created network: $TRAEFIK_NETWORK" || err "Failed to create network"
+        fi
+    done
+
+    read -rp "  Enable automatic HTTPS via Let's Encrypt? [Y/n]: " https_choice; https_choice=${https_choice:-y}
+    if [ "$https_choice" = "y" ] || [ "$https_choice" = "Y" ]; then
+        KAMAL_PROXY_TLS=true
+    else
+        KAMAL_PROXY_TLS=false
+    fi
+    DEPLOY_MODE=kamal-proxy
+}
+
 collect_nginx_env() {
     echo ""
     read -rp "  Domain (e.g. uptime.example.com): " DOMAIN
@@ -355,6 +416,13 @@ collect_nginx_env() {
 
 collect_cloudflare_env() {
     echo ""
+    read -rp "  Domain (e.g. uptime.example.com): " DOMAIN
+    while [ -z "$DOMAIN" ]; do
+        err "Domain is required"
+        read -rp "  Domain: " DOMAIN
+    done
+    read -rp "  Upstream service URL [http://up-timer:80]: " SERVICE_URL
+    SERVICE_URL=${SERVICE_URL:-http://up-timer:80}
     ask "Cloudflare tunnel token"
     read -rsp "" CF_TUNNEL_TOKEN; echo
     while [ -z "$CF_TUNNEL_TOKEN" ]; do
@@ -408,9 +476,17 @@ EOF
 TRAEFIK_NETWORK=${TRAEFIK_NETWORK}
 EOF
             ;;
+        kamal-proxy)
+            cat >> "$ENV_FILE" << EOF
+TRAEFIK_NETWORK=${TRAEFIK_NETWORK}
+KAMAL_PROXY_TLS=${KAMAL_PROXY_TLS:-true}
+EOF
+            ;;
         cloudflare)
             cat >> "$ENV_FILE" << EOF
+DOMAIN=${DOMAIN}
 CF_TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+SERVICE_URL=${SERVICE_URL:-http://up-timer:80}
 EOF
             ;;
         ip-only)
@@ -443,7 +519,7 @@ END_PORTS
       - RAILS_ENV=production
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
       - SOLID_QUEUE_IN_PUMA=true
-      - APP_HOST=${APP_HOST:-${DOMAIN}}
+      - APP_HOST=${APP_HOST}
       - ADMIN_EMAILS=${ADMIN_EMAILS:-}
       - MAIL_PROVIDER=${MAIL_PROVIDER:-}
       - MAIL_FROM=${MAIL_FROM:-noreply@example.com}
@@ -540,6 +616,24 @@ networks:
     driver: bridge
 END
             ;;
+        kamal-proxy)
+            cat >> "$COMPOSE_OUT" << 'END'
+services:
+END
+            write_app_service "" "" >> "$COMPOSE_OUT"
+            cat >> "$COMPOSE_OUT" << 'END'
+
+volumes:
+END
+            write_common_volumes >> "$COMPOSE_OUT"
+            cat >> "$COMPOSE_OUT" << 'END'
+
+networks:
+  web:
+    external: true
+    name: ${TRAEFIK_NETWORK}
+END
+            ;;
         existing-traefik)
             cat >> "$COMPOSE_OUT" << 'END'
 services:
@@ -614,6 +708,22 @@ NGINX
             ok "Generated deploy/nginx.conf"
             ;;
         cloudflare)
+            # Generate cloudflared config file
+            CLOUDFLARED_CONFIG="$DEPLOY_DIR/cloudflared.yml"
+            cat > "$CLOUDFLARED_CONFIG" << CLOUDCONF
+# Generated by deploy/installer.sh
+# Tunnel token is passed via environment variable (TUNNEL_TOKEN)
+
+# Ingress rules: route the domain to the upstream service
+# See https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/install-and-setup/tunnel-guide/local/local-management/ingress/
+ingress:
+  - hostname: ${DOMAIN}
+    service: ${SERVICE_URL:-http://up-timer:80}
+  # Catch-all: return 404 for unknown hostnames
+  - service: http_status:404
+CLOUDCONF
+            ok "Generated deploy/cloudflared.yml"
+
             cat >> "$COMPOSE_OUT" << 'END'
 services:
 END
@@ -623,9 +733,11 @@ END
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: uptimer-tunnel
-    command: tunnel run
+    command: tunnel --config /etc/cloudflared/config.yml run
     environment:
       - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    volumes:
+      - ./deploy/cloudflared.yml:/etc/cloudflared/config.yml:ro
     restart: unless-stopped
     networks:
       - web
@@ -689,12 +801,34 @@ deploy() {
     cd "$PROJECT_DIR"
     docker compose -f "$COMPOSE_OUT" --env-file "$ENV_FILE" up -d
 
+    if [ "$DEPLOY_MODE" = "kamal-proxy" ] && [ -n "${DOMAIN:-}" ]; then
+        echo ""
+        info "Registering route with kamal-proxy..."
+        local tls_flag=""
+        if [ "${KAMAL_PROXY_TLS:-true}" = "true" ]; then
+            tls_flag="--tls"
+        fi
+        docker exec kamal-proxy kamal-proxy deploy up-timer \
+            --target up-timer:80 \
+            --host "$DOMAIN" \
+            $tls_flag \
+            --health-check-path /up && \
+            ok "Route registered: $DOMAIN → up-timer:80" || \
+            warn "Route registration failed — you may need to run it manually"
+    fi
+
     echo ""
     ok "Deployment complete!"
     if [ -n "${DOMAIN:-}" ]; then
         echo ""
         echo "  Your UpTimer instance will be available at:"
-        echo -e "  ${BOLD}https://${DOMAIN}${NC}"
+        if [ "$DEPLOY_MODE" = "kamal-proxy" ] && [ "${KAMAL_PROXY_TLS:-true}" = "true" ]; then
+            echo -e "  ${BOLD}https://${DOMAIN}${NC}"
+        elif [ "$DEPLOY_MODE" = "kamal-proxy" ]; then
+            echo -e "  ${BOLD}http://${DOMAIN}${NC}"
+        else
+            echo -e "  ${BOLD}https://${DOMAIN}${NC}"
+        fi
     fi
     echo ""
     echo "  Check status:  docker compose -f docker-compose.generated.yml ps"
@@ -707,6 +841,8 @@ deploy() {
 resolve_mode() {
     if [ "$MODE_CHOICE" = "$OPT_STANDALONE" ]; then
         MODE=standalone
+    elif [ "$MODE_CHOICE" = "$OPT_KAMAL_PROXY" ]; then
+        MODE=kamal-proxy
     elif [ "$MODE_CHOICE" = "$OPT_EXISTING_TRAEFIK" ]; then
         MODE=existing-traefik
     elif [ "$MODE_CHOICE" = "$OPT_NGINX" ]; then
