@@ -21,7 +21,7 @@ git clone https://github.com/binilsn/up-timer.git
 cd up-timer
 
 # Configure admin emails (copy and edit)
-cp .env.example .env
+cp deploy/.env.example .env
 # Edit .env with your email to get admin access:
 # ADMIN_EMAILS=you@example.com
 
@@ -245,5 +245,5 @@ Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via t
 ## Testing
 
 ```bash
-rails test
+bundle exec rspec
 ```
