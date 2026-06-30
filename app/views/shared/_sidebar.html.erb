@@ -1,6 +1,6 @@
-<aside data-sidebar-target="sidebar" class="w-60 flex-col bg-white border-r border-[#e2e8f0] h-screen sticky top-0 shrink-0 hidden lg:flex z-30">
+<aside data-sidebar-target="sidebar" class="w-60 flex-col bg-surface-container-lowest border-r border-border h-screen sticky top-0 shrink-0 hidden lg:flex z-30">
   <%# ── Brand Header ── %>
-  <div class="px-5 py-5 border-b border-[#e2e8f0]">
+  <div class="px-5 py-5 border-b border-border">
     <div class="flex items-center gap-3">
       <%= image_tag "logo.svg", alt: "UpTimer", class: "w-8 h-8 rounded" %>
       <div>
@@ -20,7 +20,7 @@
     <% nav_items << { icon: "radio", label: "Integrations", path: alert_integrations_path } if current_account&.admin? %>
     <% nav_items << { icon: "users", label: "Users", path: users_path } if current_account&.admin? %>
     <% nav_items.each do |item| %>
-      <%= link_to item[:path], data: { action: "click->sidebar#close" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-navy hover:bg-surface-container-low'}" do %>
+      <button data-action="click->sidebar#close" class="flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-navy hover:bg-surface-container-low hover:text-on-surface'}"
         <%= lucide_icon item[:icon], size: 16, class: "flex-shrink-0" %>
         <span><%= item[:label] %></span>
       <% end %>

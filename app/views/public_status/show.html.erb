@@ -62,7 +62,7 @@
     <% @recent_alerts.each do |alert| %>
       <div class="flex items-center gap-3 text-xs py-2 px-1 border-b border-divider last:border-0">
         <span class="<%= alert.severity == 'critical' ? 'text-error' : (alert.severity == 'warning' ? 'text-warning' : 'text-slate-400') %> font-mono font-semibold w-16 flex-shrink-0"><%= alert.severity.upcase %></span>
-        <span class="text-slate-600 truncate flex-1"><%= alert.message %></span>
+        <span class="text-on-surface-variant truncate flex-1"><%= alert.message %></span>
         <span class="text-slate-400 font-mono flex-shrink-0"><%= time_ago_in_words(alert.created_at) %> ago</span>
       </div>
     <% end %>

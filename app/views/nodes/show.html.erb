@@ -121,7 +121,7 @@
       <div class="flex items-center gap-2">
         <span class="text-[10px] text-slate-400 font-mono">Show:</span>
         <% [10, 25, 50, 100].each do |n| %>
-          <%= link_to n, node_path(@node, per_page: n), data: { turbo_frame: "node_checks" }, class: "text-[10px] font-mono px-1.5 py-0.5 rounded-default border #{(params[:per_page].to_i == n || (params[:per_page].blank? && n == 25)) ? 'border-primary-container bg-primary-container/10 text-primary-container' : 'border-[#e2e8f0] text-slate-400 hover:text-navy'} transition-colors" %>
+          <%= link_to n, node_path(@node, per_page: n), data: { turbo_frame: "node_checks" }, class: "text-[10px] font-mono px-1.5 py-0.5 rounded-default border #{(params[:per_page].to_i == n || (params[:per_page].blank? && n == 25)) ? 'border-primary-container bg-primary-container/10 text-primary-container' : 'border-border text-slate-400 hover:text-navy'} transition-colors" %>
         <% end %>
         <span class="text-[10px] text-slate-400 font-mono">per page</span>
       </div>
