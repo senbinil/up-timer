@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_30_083714) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_30_084532) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -59,7 +59,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_083714) do
   end
 
   create_table "alert_triggers", force: :cascade do |t|
-    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.boolean "email_notify", default: false, null: false
