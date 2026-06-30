@@ -72,7 +72,7 @@ See [deploy/README.md](deploy/README.md) for full environment variable reference
 | [deploy/.env.example](deploy/.env.example) | All environment variables documented |
 | [deploy/README.md](deploy/README.md) | Deployment guide & scenarios |
 | [Dockerfile](Dockerfile) | Application image build |
-| [docker-compose.yml](docker-compose.yml) | Standalone production compose (Traefik + Let's Encrypt) |
+| [docker-compose.yml](docker-compose.yml) | Quick start with Docker (local/testing) |
 | [.kamal/](.kamal/) | Kamal deploy config (optional) |
 
 ### Quick start (Docker)

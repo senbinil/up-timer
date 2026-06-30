@@ -1,37 +1,15 @@
 services:
-    traefik:
-        image: traefik:v3
-        container_name: traefik
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
-            - traefik-certs:/letsencrypt
-        environment:
-            - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-        command:
-            - "--global.sendAnonymousUsage=false"
-            - "--api.dashboard=false"
-            - "--entrypoints.web.address=:80"
-            - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-            - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-            - "--entrypoints.websecure.address=:443"
-            - "--providers.docker"
-            - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
-            - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-            - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${DNS_PROVIDER:-cloudflare}"
-        restart: unless-stopped
-
     up-timer:
-        image: binilsn/up-timer:latest
-        build: .
+        image: binilsn/up-timer:${TAG:-latest}
+        ports:
+            - "${APP_PORT:-3000}:80"
         environment:
             - RAILS_ENV=production
-            - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
-            - ADMIN_EMAILS=${ADMIN_EMAILS}
+            - RAILS_MASTER_KEY=${RAILS_MASTER_KEY:-}
             - SOLID_QUEUE_IN_PUMA=true
-            - APP_HOST=${DOMAIN}
+            - RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
+            - ADMIN_EMAILS=${ADMIN_EMAILS:-}
+            - APP_HOST=${APP_HOST:-}
             - MAIL_PROVIDER=${MAIL_PROVIDER:-}
             - MAIL_FROM=${MAIL_FROM:-noreply@example.com}
             - RESEND_API_KEY=${RESEND_API_KEY:-}
@@ -39,20 +17,12 @@ services:
             - MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
         volumes:
             - up-timer-storage:/rails/storage
-            - up-timer-db:/rails/db
         healthcheck:
             test: ["CMD", "curl", "-f", "http://localhost/up"]
             interval: 10s
             timeout: 3s
             retries: 3
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.uptimer.rule=Host(`${DOMAIN}`)"
-            - "traefik.http.routers.uptimer.entrypoints=${ENTRYPOINT:-websecure}"
-            - "traefik.http.routers.uptimer.tls.certresolver=letsencrypt"
         restart: unless-stopped
 
 volumes:
     up-timer-storage:
-    up-timer-db:
-    traefik-certs:
