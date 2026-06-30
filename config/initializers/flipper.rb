@@ -5,9 +5,7 @@ Flipper.configure do |config|
 end
 
 Rails.application.config.after_initialize do
-  if MailAdapter.configured?
-    Flipper.enable(:email_notifications) unless Flipper.enabled?(:email_notifications)
-  end
+  Flipper.enable(:email_notifications) unless Flipper.enabled?(:email_notifications)
 rescue ActiveRecord::StatementInvalid
   # DB not ready yet (e.g. test environment)
 end
