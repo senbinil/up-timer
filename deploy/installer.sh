@@ -236,6 +236,12 @@ collect_env() {
 
     read -rp "  Admin emails (comma-separated, optional): " ADMIN_EMAILS
 
+    # RAILS_MAX_THREADS auto-detection
+    detect_thread_count
+    ask "RAILS_MAX_THREADS [$SUGGESTED_THREADS]"
+    read -rp " " RAILS_MAX_THREADS
+    RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-$SUGGESTED_THREADS}
+
     # Email config
     echo ""
     read -rp "  Email provider? [none/resend/mailgun]: " MAIL_PROVIDER
@@ -439,6 +445,34 @@ collect_ip_env() {
     DEPLOY_MODE=ip-only
 }
 
+# ── RAILS_MAX_THREADS auto-detection ──────────
+
+detect_thread_count() {
+    local ram_mb=1024
+    local cpu_cores=1
+
+    if command -v free &>/dev/null; then
+        ram_mb=$(free -m 2>/dev/null | awk '/Mem:/ {print $7}' || echo 1024)
+    fi
+
+    if command -v nproc &>/dev/null; then
+        cpu_cores=$(nproc 2>/dev/null || echo 1)
+    fi
+
+    # Reserve ~512MB for OS + Puma, assume ~100MB per thread
+    local by_ram=$(( (ram_mb - 512) / 100 ))
+    [ "$by_ram" -lt 0 ] && by_ram=0
+
+    # Cap by CPU (4 threads per core is a practical CRuby limit)
+    local by_cpu=$((cpu_cores * 4))
+
+    SUGGESTED_THREADS=$(( by_ram < by_cpu ? by_ram : by_cpu ))
+
+    # Clamp between 3 and 16
+    [ "$SUGGESTED_THREADS" -lt 3 ] && SUGGESTED_THREADS=3
+    [ "$SUGGESTED_THREADS" -gt 16 ] && SUGGESTED_THREADS=16
+}
+
 # ── Write .env ───────────────────────────────
 
 write_env_file() {
@@ -449,6 +483,7 @@ write_env_file() {
 # App
 TAG=${TAG}
 RAILS_MASTER_KEY=${RAILS_MASTER_KEY:-}
+RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
 ADMIN_EMAILS=${ADMIN_EMAILS:-}
 APP_HOST=${APP_HOST:-}
 MAIL_PROVIDER=${MAIL_PROVIDER:-}

@@ -2,6 +2,11 @@
 
 Production deployment for any infrastructure — no application changes needed.
 
+> **The installer covers all scenarios below.** Run `./deploy/installer.sh` for guided setup —
+> it auto-detects your environment, asks a few questions, and generates the right configuration.
+> The compose files in `compose/`, `proxy/`, etc. are assembled by the installer and documented
+> here for reference or manual tweaking.
+
 ## Quick Start
 
 **One-liner (no clone needed):**
@@ -77,6 +82,7 @@ Only the surrounding infrastructure differs.
 |---|---|---|---|
 | `TAG` | ❌ | `latest` | Docker image tag (pin to a version for stability) |
 | `RAILS_MASTER_KEY` | ❌ | auto-generated | Decrypts config/credentials (auto-generated if empty) |
+| `RAILS_MAX_THREADS` | ❌ | auto-detected | Puma thread pool (web + Solid Queue workers). Auto-detected from available RAM, clamped 3–16 |
 | `ADMIN_EMAILS` | ❌ | — | Comma-separated emails auto-assigned admin role |
 | `APP_HOST` | ❌ | `DOMAIN` | Host used in email links |
 | `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun`. When empty, email delivery is disabled — accounts auto-verify, alert emails are skipped, app still fully functional. |
