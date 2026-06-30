@@ -6,8 +6,9 @@ class AlertNotificationJob < ApplicationJob
     alert = Alert.find_by(id: alert_id)
     return unless alert
 
-    # Only send email if the alert's trigger has email_notify enabled
-    return unless alert.alert_trigger&.email_notify?
+    # Only send email if the alert's trigger has email_notify enabled.
+    # Manual alerts without a trigger always send email.
+    return unless alert.alert_trigger_id.nil? || alert.alert_trigger&.email_notify?
 
     Recipient.active.pluck(:email).each do |email|
       AlertMailer.alert_down(email, alert).deliver_now
