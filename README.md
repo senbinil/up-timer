@@ -93,6 +93,26 @@ docker run -d -p 3000:80 \
 
 Opens at `http://localhost:3000`.
 
+### Thread count
+
+`RAILS_MAX_THREADS` controls the Puma thread pool shared by web requests and
+Solid Queue workers. The installer auto-detects a value based on available RAM,
+or you can set it manually:
+
+```bash
+# With docker run
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e RAILS_MAX_THREADS=12 \
+  binilsn/up-timer:latest
+
+# With docker compose
+echo "RAILS_MAX_THREADS=12" >> .env
+docker compose up -d
+```
+
+Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
+
 Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
 
 ## Auth
