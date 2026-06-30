@@ -25,15 +25,6 @@ class SettingsController < ApplicationController
     end
   end
 
-  def toggle_email_notifications
-    if Flipper.enabled?(:email_notifications)
-      Flipper.disable(:email_notifications)
-    else
-      Flipper.enable(:email_notifications)
-    end
-    render partial: "email_notifications"
-  end
-
   private
 
   def preference_params

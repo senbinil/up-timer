@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_30_080747) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_30_083714) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -85,22 +85,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_30_080747) do
     t.index ["resolved"], name: "index_alerts_on_resolved"
     t.index ["resolved_by_id"], name: "index_alerts_on_resolved_by_id"
     t.index ["severity"], name: "index_alerts_on_severity"
-  end
-
-  create_table "flipper_features", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.index ["key"], name: "index_flipper_features_on_key", unique: true
-  end
-
-  create_table "flipper_gates", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "feature_key", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.text "value"
-    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
   create_table "incidents", force: :cascade do |t|

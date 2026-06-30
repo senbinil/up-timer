@@ -252,7 +252,6 @@ Built with:
 | Charts | Chartkick + Chart.js |
 | Jobs | SolidQueue |
 | Mailer | letter_opener (dev), Action Mailer with AlertMailer |
-| Feature Flags | Flipper (email_notifications toggle) |
 | Icons | Lucide |
 | Tools | Tippy.js (tooltips), Pagy (pagination) |
 
