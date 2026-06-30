@@ -36,7 +36,7 @@ class MonitorStatusService
     return if @monitor.down?
 
     @monitor.update!(status: "down")
-    create_incident_and_alerts if @monitor.incidents.where(resolved_at: nil).none?
+    create_incident_and_alert if @monitor.incidents.where(resolved_at: nil).none?
   end
 
   def transition_to_up
@@ -44,18 +44,28 @@ class MonitorStatusService
 
     @monitor.update!(status: "up")
     @monitor.incidents.where(resolved_at: nil).update_all(resolved_at: Time.current)
+
+    # Resolve unresolved auto-alerts for this monitor
+    Alert.where(monitor_id: @monitor.id, resolved: false)
+         .where.not(alert_trigger_id: nil)
+         .update_all(resolved: true, resolved_at: Time.current)
+
     notify_recovery
   end
 
-  def create_incident_and_alerts
+  def create_incident_and_alert
     @monitor.incidents.create!(started_at: Time.current)
-    AlertTrigger.active.each do |trigger|
-      Alert.create!(
-        monitor_id: @monitor.id,
-        severity: trigger.severity,
-        message: "#{trigger.name}: #{@monitor.name} is down — #{@monitor.url}"
-      )
-    end
+
+    # Create a single auto-alert using the "Node Offline" trigger
+    trigger = AlertTrigger.find_by(name: "Node Offline")
+    return unless trigger
+
+    Alert.create!(
+      monitor_id: @monitor.id,
+      alert_trigger_id: trigger.id,
+      severity: trigger.severity,
+      message: "#{trigger.name}: #{@monitor.name} is down — #{@monitor.url}"
+    )
   end
 
   def notify_recovery
