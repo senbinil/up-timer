@@ -168,6 +168,30 @@ Users registering with those emails get the **admin** role. Everyone else defaul
 | **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings |
 | **admin** | Everything above + Integrations, Email notifications toggle, User promotion |
 
+## Alert Triggers
+
+Alert triggers define event types that can fire notifications. The system uses a **single alert per failure** model:
+
+- **Node goes down** → 1 auto-alert created with the "Node Offline" trigger
+- **Node recovers** → the auto-alert is resolved automatically
+- **Manual alerts** → users pick a trigger type, which is saved to the alert
+
+### Email control per trigger
+
+Admins control which triggers send email notifications from the **Integrations** page:
+
+| Trigger | Auto-created | Email notification |
+|---|---|---|
+| Node Offline | ✅ When node goes down | Togglable |
+| Critical Errors | ❌ Manual only | Togglable |
+| Degraded Performance | ❌ Manual only | Togglable |
+| Security Breach | ❌ Manual only | Togglable |
+| Maintenance Window | ❌ Manual only | Togglable |
+| Custom | ❌ Manual only | Togglable |
+
+Email is only sent when the trigger's **Email** toggle is enabled on the Integrations page,
+regardless of the global email notifications setting.
+
 ## Background Jobs & Scheduler
 
 SolidQueue powers all background processing with a recurring schedule defined in `config/recurring.yml`.
