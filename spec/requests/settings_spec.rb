@@ -42,20 +42,4 @@ RSpec.describe "Settings", type: :request do
       expect(response).to redirect_to(settings_path)
     end
   end
-
-  describe "POST /settings/toggle_email_notifications" do
-    it "enables email notifications when disabled" do
-      Flipper.disable(:email_notifications)
-      sign_in
-      post toggle_email_notifications_settings_path
-      expect(Flipper.enabled?(:email_notifications)).to be(true)
-    end
-
-    it "disables email notifications when enabled" do
-      Flipper.enable(:email_notifications)
-      sign_in
-      post toggle_email_notifications_settings_path
-      expect(Flipper.enabled?(:email_notifications)).to be(false)
-    end
-  end
 end

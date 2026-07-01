@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_25_104525) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_30_084532) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -59,9 +59,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_104525) do
   end
 
   create_table "alert_triggers", force: :cascade do |t|
-    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.text "description"
+    t.boolean "email_notify", default: false, null: false
     t.string "name", null: false
     t.string "severity", null: false
     t.datetime "updated_at", null: false
@@ -69,34 +69,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_104525) do
 
   create_table "alerts", force: :cascade do |t|
     t.integer "account_id"
+    t.integer "alert_trigger_id"
     t.datetime "created_at", null: false
     t.text "message", null: false
     t.integer "monitor_id"
     t.boolean "resolved", default: false, null: false
+    t.datetime "resolved_at"
     t.integer "resolved_by_id"
     t.string "severity", default: "info", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_alerts_on_account_id"
+    t.index ["alert_trigger_id"], name: "index_alerts_on_alert_trigger_id"
     t.index ["monitor_id"], name: "index_alerts_on_monitor_id"
     t.index ["resolved"], name: "index_alerts_on_resolved"
     t.index ["resolved_by_id"], name: "index_alerts_on_resolved_by_id"
     t.index ["severity"], name: "index_alerts_on_severity"
-  end
-
-  create_table "flipper_features", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.index ["key"], name: "index_flipper_features_on_key", unique: true
-  end
-
-  create_table "flipper_gates", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "feature_key", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.text "value"
-    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
   create_table "incidents", force: :cascade do |t|
@@ -289,6 +276,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_104525) do
   add_foreign_key "action_logs", "accounts"
   add_foreign_key "alerts", "accounts"
   add_foreign_key "alerts", "accounts", column: "resolved_by_id"
+  add_foreign_key "alerts", "alert_triggers"
   add_foreign_key "alerts", "monitors"
   add_foreign_key "incidents", "monitors"
   add_foreign_key "monitor_checks", "monitors"

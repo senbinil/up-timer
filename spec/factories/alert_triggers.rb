@@ -3,6 +3,6 @@ FactoryBot.define do
     sequence(:name) { |n| "Trigger #{n}" }
     severity { "warning" }
     description { "Triggers when something happens" }
-    active { true }
+    email_notify { false }
   end
 end

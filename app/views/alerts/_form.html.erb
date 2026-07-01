@@ -10,7 +10,7 @@
 
   <div class="space-y-1.5">
     <%= label_tag :alert_trigger_id, "Trigger Type", class: "input-label block" %>
-    <%= select_tag :alert_trigger_id, options_from_collection_for_select(@triggers, :id, :name), include_blank: "Custom", class: "input-field", data: { action: "change->alert-form#setSeverity", alert_form_target: "trigger", severities: @triggers.map { |t| [t.id, t.severity] }.to_h.to_json } %>
+    <%= select_tag :alert_trigger_id, options_from_collection_for_select(@triggers, :id, :name), include_blank: "None (manual)", class: "input-field", data: { action: "change->alert-form#setSeverity", alert_form_target: "trigger", severities: @triggers.map { |t| [t.id, t.severity] }.to_h.to_json } %>
   </div>
 
   <div class="bg-warning-container/20 border border-warning text-on-warning-container/80 rounded-default p-3 text-xs">
