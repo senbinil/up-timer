@@ -26,6 +26,11 @@ Rails.application.routes.draw do
       post :pause
       post :resume
     end
+    resources :dependencies, only: [ :index, :create, :destroy ], controller: "node_dependencies" do
+      collection do
+        get :available
+      end
+    end
   end
 
   resource :settings, only: [ :show, :update ]

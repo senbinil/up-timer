@@ -1,0 +1,21 @@
+<turbo-frame id="dependency-available-list">
+  <div class="space-y-1 max-h-64 overflow-y-auto">
+    <% if nodes.any? %>
+      <% nodes.each do |n| %>
+        <div class="flex items-center gap-3 px-1 py-2 list-row hover:bg-surface-container-low rounded-default">
+          <%= link_to node_path(n), class: "flex items-center gap-2 flex-1 min-w-0" do %>
+            <span class="w-2 h-2 rounded-full <%= n.paused? ? "bg-[var(--color-warning)]" : (n.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0"></span>
+            <span class="text-sm font-semibold text-navy truncate"><%= n.name %></span>
+            <span class="text-[10px] font-mono text-slate-400"><%= n.status&.upcase %></span>
+          <% end %>
+          <%= button_to node_dependencies_path(node, dependency_id: n.id), method: :post,
+                class: "btn btn-secondary text-[10px] py-1 px-2 cursor-pointer" do %>
+            Add
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-xs text-slate-400 py-4 text-center">No other nodes available to add as dependencies.</p>
+    <% end %>
+  </div>
+</turbo-frame>

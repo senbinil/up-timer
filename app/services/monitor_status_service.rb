@@ -37,6 +37,7 @@ class MonitorStatusService
 
     @monitor.update!(status: "down")
     create_incident_and_alert if @monitor.incidents.where(resolved_at: nil).none?
+    MonitorDependencyCascadeService.cascade_down(@monitor)
   end
 
   def transition_to_up
@@ -51,6 +52,7 @@ class MonitorStatusService
          .update_all(resolved: true, resolved_at: Time.current)
 
     notify_recovery
+    MonitorDependencyCascadeService.cascade_recovery(@monitor)
   end
 
   def create_incident_and_alert

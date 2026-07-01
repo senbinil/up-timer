@@ -7,7 +7,10 @@
       <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Node Detail</p>
       <h1 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]"><%= @node.name %></h1>
     </div>
-    <%= link_to "Edit", edit_node_path(@node), class: "btn btn-primary text-xs" %>
+    <div class="flex items-center gap-2">
+      <%= link_to "Dependencies", node_dependencies_path(@node), class: "btn btn-ghost text-xs" %>
+      <%= link_to "Edit", edit_node_path(@node), class: "btn btn-primary text-xs" %>
+    </div>
   </div>
 
   <div id="<%= dom_id(@node, :paused_banner) %>">
@@ -32,6 +35,8 @@
       <span id="<%= dom_id(@node, :status) %>" class="mt-2 inline-block">
         <% if @node.paused? %>
           <span class="chip chip-warning text-[10px]">Paused</span>
+        <% elsif @node.dependency_affected? %>
+          <span class="chip chip-warning text-[10px]" title="Affected by a dependency failure">Affected</span>
         <% else %>
           <span class="<%= @node.status == "up" ? "chip chip-success" : "chip chip-error" %> text-[10px]"><%= @node.status %></span>
         <% end %>
