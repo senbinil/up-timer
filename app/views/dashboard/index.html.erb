@@ -31,7 +31,7 @@
           <p class="text-lg md:text-2xl font-semibold <%= @stats[:paused_count] > 0 ? "text-[var(--color-warning)]" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:paused_count] %></p>
         </div>
         <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Alerts</p>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Alerts</p>
           <p class="text-lg md:text-2xl font-semibold <%= @alert_counts.values.sum > 0 ? "text-warning" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @alert_counts.values.sum %></p>
           <% if @alert_counts.values.sum > 0 %>
             <p class="text-[10px] font-mono mt-0.5">
@@ -102,7 +102,7 @@
               <span class="font-mono text-slate-400">Status</span>
               <span class="font-mono font-semibold <%= node.paused? ? "text-[var(--color-warning)]" : (node.status == "up" ? "text-primary-container" : "text-error") %>"><%= node.paused? ? "PAUSED" : node.status&.upcase %></span>
             </div>
-            <%= column_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
+            <%= area_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
           </div>
         <% end %>
       <% end %>

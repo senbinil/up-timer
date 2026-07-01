@@ -105,8 +105,8 @@
   <div class="card space-y-3">
     <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Response Time (ms)</h2>
     <% if @checks.any? %>
-      <% chart_data = @checks.first(24).reverse.map { |c| [c.checked_at.strftime("%H:%M"), c.response_time] }.to_h %>
-      <%= column_chart chart_data, height: "200px", colors: ["#2563eb"], library: { scales: { y: { beginAtZero: true } } } %>
+      <% chart_data = @checks.first(24).reverse.map { |c| [c.checked_at.strftime("%I:%M %p"), c.response_time] }.to_h %>
+      <%= area_chart chart_data, height: "200px", colors: ["#2563eb"], library: { scales: { y: { beginAtZero: true } } } %>
     <% else %>
       <p class="text-xs text-slate-400 py-8 text-center">No check data yet.</p>
     <% end %>
@@ -148,7 +148,7 @@
               <span class="text-slate-300">—</span>
             <% end %>
           </span>
-          <span class="text-xs text-slate-400 font-mono md:text-right"><%= check.checked_at.strftime("%b %d, %H:%M:%S") %></span>
+          <span class="text-xs text-slate-400 font-mono md:text-right"><%= check.checked_at.strftime("%b %d, %I:%M:%S %p") %></span>
         </div>
       <% end %>
     <% else %>

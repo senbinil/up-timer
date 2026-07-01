@@ -42,6 +42,23 @@ class UptimeMonitor < ApplicationRecord
     self.tags = value.to_s.split(",").map(&:strip).reject(&:blank?).uniq
   end
 
+  def public_uptime
+    checks = monitor_checks.where(checked_at: 24.hours.ago..).order(checked_at: :desc)
+    total = checks.count
+    return { uptime: nil, response_time: nil, recent_checks: [] } if total.zero?
+
+    recent = checks.limit(10).to_a
+    up_count = checks.where(status: "up").count
+
+    {
+      uptime: (up_count.to_f / total * 100).round(1),
+      response_time: recent.first&.response_time,
+      recent_checks: recent.reverse.map { |c|
+        [ c.checked_at.strftime("%I:%M %p"), c.response_time ]
+      }.to_h
+    }
+  end
+
   def down?
     status == "down"
   end

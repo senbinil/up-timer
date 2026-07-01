@@ -40,7 +40,7 @@ class MonitorStatusService
   end
 
   def transition_to_up
-    return unless @monitor.down?
+    return if @monitor.up?
 
     @monitor.update!(status: "up")
     @monitor.incidents.where(resolved_at: nil).update_all(resolved_at: Time.current)
