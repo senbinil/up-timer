@@ -1,7 +1,12 @@
 <%= turbo_frame_tag "triggers_list" do %>
   <% @triggers.each do |trigger| %>
     <div class="flex items-start gap-3 p-3 border border-border rounded-default">
-      <% dot_color = trigger.severity == "critical" ? "bg-error" : (trigger.severity == "warning" ? "bg-warning" : (trigger.severity == "maintenance" ? "bg-success" : "bg-primary-container")) %>
+      <% dot_color = case trigger.severity
+           when "critical" then "bg-error"
+           when "warning" then "bg-warning"
+           when "maintenance" then "bg-success"
+           else "bg-primary-container"
+         end %>
       <span class="w-2 h-2 rounded-full <%= dot_color %> flex-shrink-0 mt-2"></span>
 
       <div class="flex-1 min-w-0">

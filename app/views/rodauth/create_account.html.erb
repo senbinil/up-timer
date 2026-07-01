@@ -89,7 +89,7 @@
 
       <%# ── Compliance Checkbox ── %>
       <div class="flex items-start gap-3">
-        <input type="checkbox" name="compliance" id="compliance" value="1" class="mt-0.5 h-4 w-4 rounded border border-[#e2e8f0] text-primary-container focus:ring-primary-container #{rodauth.field_error("compliance") ? "!border-error" : ""}" />
+        <input type="checkbox" name="compliance" id="compliance" value="1" class="mt-0.5 h-4 w-4 rounded border border-border text-primary-container focus:ring-primary-container #{rodauth.field_error("compliance") ? "!border-error" : ""}" />
         <label for="compliance" class="text-xs text-slate-400 leading-5">I agree to the terms of service and privacy policy.</label>
       </div>
       <%= content_tag(:p, rodauth.field_error("compliance"), class: "text-xs text-error font-mono mt-1 ml-7") if rodauth.field_error("compliance") %>
