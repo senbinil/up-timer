@@ -70,8 +70,8 @@
               </div>
             </div>
             <% if node.dependency_affected? %>
-              <span class="flex-shrink-0 mt-1.5" title="Affected by dependency">
-                <svg class="w-3 h-3 text-[var(--color-warning)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+              <span class="flex-shrink-0 mt-1" title="Affected by dependency">
+                <%= lucide_icon "fluid", size: 14, class: "text-[var(--color-warning)]" %>
               </span>
             <% else %>
               <span class="w-2 h-2 rounded-full <%= node.paused? ? "bg-[var(--color-warning)]" : (node.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0 mt-1.5"></span>
