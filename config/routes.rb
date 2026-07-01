@@ -28,9 +28,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :settings, only: [ :show, :update ] do
-    post :toggle_email_notifications
-  end
+  resource :settings, only: [ :show, :update ]
 
   resources :alerts do
     member do
@@ -48,6 +46,6 @@ Rails.application.routes.draw do
     get :search_recipients
     post :recipients, to: "alert_integrations#create_recipient", as: :recipients
     post "recipients/:id/toggle", to: "alert_integrations#toggle_recipient", as: :toggle_recipient
-    post "triggers/:id/toggle", to: "alert_integrations#toggle_trigger", as: :toggle_trigger
+    post "triggers/:id/toggle_email", to: "alert_integrations#toggle_trigger_email", as: :toggle_trigger_email
   end
 end

@@ -32,12 +32,6 @@
     <% end %>
   </div>
 
-  <% if MailAdapter.configured? %>
-    <div class="card space-y-3">
-      <%= render "email_notifications" %>
-    </div>
-  <% end %>
-
   <div class="card space-y-3">
     <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Public Status Page</p>
     <p class="text-xs text-on-surface-variant">Share this URL to give anyone a read-only view of your service status.</p>

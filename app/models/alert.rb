@@ -2,6 +2,7 @@ class Alert < ApplicationRecord
   belongs_to :monitor, class_name: "UptimeMonitor", optional: true
   belongs_to :account, optional: true
   belongs_to :resolved_by, class_name: "Account", optional: true
+  belongs_to :alert_trigger, optional: true
 
   validates :severity, inclusion: { in: %w[critical warning info] }
   validates :message, presence: true
