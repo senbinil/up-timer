@@ -81,6 +81,7 @@ See [deploy/README.md](deploy/README.md) for full environment variable reference
 # Without email (auto-verify, no alert emails)
 docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
+  -e SOLID_QUEUE_IN_PUMA=true \
   binilsn/up-timer:latest
 
 # With email (Resend)
@@ -88,6 +89,7 @@ docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
   -e MAIL_PROVIDER=resend \
   -e RESEND_API_KEY=re_xxxxxx \
+  -e SOLID_QUEUE_IN_PUMA=true \
   binilsn/up-timer:latest
 ```
 
@@ -104,6 +106,7 @@ or you can set it manually:
 docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
   -e RAILS_MAX_THREADS=12 \
+  -e SOLID_QUEUE_IN_PUMA=true \
   binilsn/up-timer:latest
 
 # With docker compose
