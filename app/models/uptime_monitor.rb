@@ -72,6 +72,10 @@ class UptimeMonitor < ApplicationRecord
     paused
   end
 
+  def dependency_affected?
+    false
+  end
+
   def last_pause_log
     ActionLog.for_record(self.class.name, id).where(action: "paused").recent.first
   end
