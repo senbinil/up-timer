@@ -13,37 +13,7 @@ Uptime monitoring dashboard for tracking service health, response times, and inc
 - SQLite3
 - [RVM](https://rvm.io) (recommended for Ruby version management)
 
-## Setup (Development)
 
-```bash
-# Clone and enter project
-git clone https://github.com/binilsn/up-timer.git
-cd up-timer
-
-# Configure admin emails (copy and edit)
-cp deploy/.env.example .env
-# Edit .env with your email to get admin access:
-# ADMIN_EMAILS=you@example.com
-
-# Activate Ruby (RVM users)
-rvm use
-
-# Install dependencies
-bundle install
-
-# Setup database
-rails db:create
-rails db:migrate
-rails db:seed
-
-# Start development server
-bin/dev
-```
-
-`bin/dev` starts:
-- **Web server** (Puma) on `http://localhost:3000`
-- **CSS watcher** (Tailwind CSS v4)
-- **Job worker** (SolidQueue) for background jobs
 
 ## Production Deployment
 
@@ -267,6 +237,38 @@ git push origin v1.0.0
 ```
 
 Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via the UI — same result.
+
+## Setup (Development)
+
+```bash
+# Clone and enter project
+git clone https://github.com/binilsn/up-timer.git
+cd up-timer
+
+# Configure admin emails (copy and edit)
+cp deploy/.env.example .env
+# Edit .env with your email to get admin access:
+# ADMIN_EMAILS=you@example.com
+
+# Activate Ruby (RVM users)
+rvm use
+
+# Install dependencies
+bundle install
+
+# Setup database
+rails db:create
+rails db:migrate
+rails db:seed
+
+# Start development server
+bin/dev
+```
+
+`bin/dev` starts:
+- **Web server** (Puma) on `http://localhost:3000`
+- **CSS watcher** (Tailwind CSS v4)
+- **Job worker** (SolidQueue) for background jobs
 
 ## Testing
 
