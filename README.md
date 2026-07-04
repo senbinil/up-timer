@@ -7,11 +7,6 @@ Uptime monitoring dashboard for tracking service health, response times, and inc
 ## Public Status Page
 <img width="1892" height="860" alt="image" src="https://github.com/user-attachments/assets/594a8a1d-618d-44e2-b99d-6535942a6709" />
 
-## Prerequisites
-
-- Ruby 4.0.5 (see `.ruby-version`)
-- SQLite3
-- [RVM](https://rvm.io) (recommended for Ruby version management)
 
 
 
@@ -239,6 +234,12 @@ git push origin v1.0.0
 Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via the UI — same result.
 
 ## Setup (Development)
+
+### Prerequisites
+
+- Ruby 4.0.5 (see `.ruby-version`)
+- SQLite3
+- [RVM](https://rvm.io) (recommended for Ruby version management)
 
 ```bash
 # Clone and enter project
