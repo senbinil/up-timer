@@ -71,20 +71,42 @@ generate() {
         export "$var"="$val"
     done
 
+    # Resolve APP_HOST from DOMAIN if not explicitly set (matches collect_env)
+    : "${APP_HOST:=${DOMAIN:-}}"
+
     MODE="$mode"
     generate_compose 2>/dev/null || true
 
     # Write corresponding .env file (simulates what write_env_file does)
     cat > "$ENV_PATH" << EOF
 TAG=${TAG}
-DOMAIN=${DOMAIN}
-APP_HOST=${APP_HOST:-$DOMAIN}
-RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+RAILS_MASTER_KEY=${RAILS_MASTER_KEY:-}
 RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
-TRAEFIK_NETWORK=${TRAEFIK_NETWORK}
-APP_PORT=${APP_PORT:-80}
-SERVICE_URL=${SERVICE_URL:-http://up-timer:80}
+ADMIN_EMAILS=${ADMIN_EMAILS:-}
+APP_HOST=${APP_HOST:-}
+MAIL_PROVIDER=${MAIL_PROVIDER:-}
+MAIL_FROM=${MAIL_FROM:-noreply@example.com}
+RESEND_API_KEY=${RESEND_API_KEY:-}
+MAILGUN_API_KEY=${MAILGUN_API_KEY:-}
+MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
+DOMAIN=${DOMAIN:-}
+TRAEFIK_NETWORK=${TRAEFIK_NETWORK:-}
+ENTRYPOINT=${ENTRYPOINT:-websecure}
+DEPLOY_MODE=${DEPLOY_MODE}
 EOF
+    # Append mode-specific vars
+    case "$DEPLOY_MODE" in
+        cloudflare)
+            cat >> "$ENV_PATH" << EOF
+CF_TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+EOF
+            ;;
+        ip-only)
+            cat >> "$ENV_PATH" << EOF
+APP_PORT=${APP_PORT:-80}
+EOF
+            ;;
+    esac
 
     unset TAG DOMAIN APP_HOST RAILS_MASTER_KEY RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
 }
@@ -209,11 +231,6 @@ test_existing_traefik_labels_resolved() {
 
 test_cloudflare_env_resolved() {
     setup; generate "cloudflare" "DOMAIN=tunnel.example.com" "CF_TUNNEL_TOKEN=tok-secret"
-    # Write cloudflare-specific env
-    cat >> "$ENV_PATH" << EOF
-CF_TUNNEL_TOKEN=tok-secret
-DOMAIN=tunnel.example.com
-EOF
     assert_resolved "cloudflare: TUNNEL_TOKEN resolved" "TUNNEL_TOKEN: tok-secret"
     teardown
 }

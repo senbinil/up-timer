@@ -460,7 +460,7 @@ detect_thread_count() {
 
     # Reserve ~512MB for OS + Puma, assume ~100MB per thread
     local by_ram=$(( (ram_mb - 512) / 100 ))
-    [ "$by_ram" -lt 0 ] && by_ram=0
+    if [ "$by_ram" -lt 0 ]; then by_ram=0; fi
 
     # Cap by CPU (4 threads per core is a practical CRuby limit)
     local by_cpu=$((cpu_cores * 4))
@@ -468,8 +468,8 @@ detect_thread_count() {
     SUGGESTED_THREADS=$(( by_ram < by_cpu ? by_ram : by_cpu ))
 
     # Clamp between 3 and 16
-    [ "$SUGGESTED_THREADS" -lt 3 ] && SUGGESTED_THREADS=3
-    [ "$SUGGESTED_THREADS" -gt 16 ] && SUGGESTED_THREADS=16
+    if [ "$SUGGESTED_THREADS" -lt 3 ]; then SUGGESTED_THREADS=3; fi
+    if [ "$SUGGESTED_THREADS" -gt 16 ]; then SUGGESTED_THREADS=16; fi
 }
 
 # ── Write .env ───────────────────────────────
@@ -815,8 +815,8 @@ deploy() {
     echo ""
     echo -e "${BOLD}Deploy summary:${NC}"
     echo "  Mode:      $DEPLOY_MODE"
-    [ -n "${DOMAIN:-}" ] && echo "  Domain:    $DOMAIN"
-    [ -n "${TAG:-}" ] && echo "  Image tag: $TAG"
+    if [ -n "${DOMAIN:-}" ]; then echo "  Domain:    $DOMAIN"; fi
+    if [ -n "${TAG:-}" ]; then echo "  Image tag: $TAG"; fi
     echo ""
 
     read -rp "  Start containers now? [Y/n]: " deploy_confirm
