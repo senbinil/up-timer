@@ -41,6 +41,8 @@
             <% if node.paused? %>
               <% pause_log = node.last_pause_log %>
               <span class="chip chip-warning" title="<%= pause_log ? "Paused by #{pause_log.account&.name || pause_log.account&.email || 'unknown'} · #{time_ago_in_words(pause_log.created_at)} ago" : "Paused" %>">Paused</span>
+            <% elsif node.dependency_affected? %>
+              <span class="chip chip-warning" title="Affected by a dependency failure">Affected</span>
             <% else %>
               <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %>"><%= node.status %></span>
             <% end %>
@@ -63,6 +65,8 @@
           <span class="text-[10px]">
             <% if node.paused? %>
               <span class="chip chip-warning">Paused</span>
+            <% elsif node.dependency_affected? %>
+              <span class="chip chip-warning">Affected</span>
             <% else %>
               <span class="<%= node.status == "up" ? "chip chip-success" : "chip chip-error" %>"><%= node.status %></span>
             <% end %>

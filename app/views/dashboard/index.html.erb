@@ -69,7 +69,13 @@
                 <p class="text-[11px] text-slate-400 font-mono truncate"><%= node.url %></p>
               </div>
             </div>
-            <span class="w-2 h-2 rounded-full <%= node.paused? ? "bg-[var(--color-warning)]" : (node.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0 mt-1.5"></span>
+            <% if node.dependency_affected? %>
+              <span class="flex-shrink-0 mt-1" title="Affected by dependency">
+                <%= lucide_icon "fluid", size: 14, class: "text-[var(--color-warning)]" %>
+              </span>
+            <% else %>
+              <span class="w-2 h-2 rounded-full <%= node.paused? ? "bg-[var(--color-warning)]" : (node.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0 mt-1.5"></span>
+            <% end %>
           </div>
 
           <div class="space-y-2 pt-2 border-t border-divider">

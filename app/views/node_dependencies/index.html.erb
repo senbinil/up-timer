@@ -1,0 +1,78 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <%= link_to node_path(@node), class: "text-slate-400 hover:text-navy transition-colors" do %>
+      <%= lucide_icon "arrow-left", size: 20 %>
+    <% end %>
+    <div class="flex-1">
+      <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Dependencies</p>
+      <h1 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]"><%= @node.name %></h1>
+    </div>
+  </div>
+
+  <%# ── Depends On (Parents) ── %>
+  <div class="card space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Depends On</h2>
+      <button data-controller="dependency-picker"
+              data-dependency-picker-node-id-value="<%= @node.id %>"
+              data-action="click->dependency-picker#open"
+              class="btn btn-primary text-xs py-1.5 px-3">Add Dependency +</button>
+    </div>
+
+    <% if @dependencies.any? %>
+      <div class="space-y-2">
+        <% @dependencies.each do |dep| %>
+          <div class="flex items-center gap-3 p-3 border border-border rounded-default">
+            <%= link_to node_path(dep), class: "flex items-center gap-2 flex-1 min-w-0 hover:opacity-80" do %>
+              <span class="w-2 h-2 rounded-full <%= dep.paused? ? "bg-[var(--color-warning)]" : (dep.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0"></span>
+              <span class="text-sm font-semibold text-navy truncate"><%= dep.name %></span>
+              <span class="text-[10px] font-mono text-slate-400"><%= dep.respond_to?(:status) ? dep.status&.upcase : "" %></span>
+            <% end %>
+            <%= button_to node_dependency_path(@node, dep), method: :delete,
+                  class: "text-[10px] text-slate-400 hover:text-error transition-colors cursor-pointer",
+                  form: { data: { turbo_confirm: "Remove this dependency?" } } do %>
+              <%= lucide_icon "x", size: 16 %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-xs text-slate-400 py-4 text-center">No dependencies configured. Add nodes that this service depends on.</p>
+    <% end %>
+  </div>
+
+  <%# ── Affected Services (Dependents) ── %>
+  <% if @dependents.any? %>
+    <div class="card space-y-4">
+      <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Depended On By</h2>
+      <div class="space-y-2">
+        <% @dependents.each do |dep| %>
+          <div class="flex items-center gap-3 p-3 border border-border rounded-default">
+            <%= link_to node_path(dep), class: "flex items-center gap-2 flex-1 min-w-0 hover:opacity-80" do %>
+              <span class="w-2 h-2 rounded-full <%= dep.status == "up" && !dep.dependency_affected? ? "bg-primary-container" : "bg-error" %> flex-shrink-0"></span>
+              <span class="text-sm font-semibold text-navy truncate"><%= dep.name %></span>
+              <% if dep.dependency_affected? %>
+                <span class="chip chip-warning text-[10px]">affected</span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%# ── Dependency Picker Modal ── %>
+<dialog data-dependency-picker-target="modal" class="rounded-lg border border-border shadow-lg p-0 backdrop:bg-black/20 max-w-md w-full">
+  <div class="p-4 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Add Dependency</h3>
+      <button data-action="click->dependency-picker#close" class="text-slate-400 hover:text-navy cursor-pointer">
+        <%= lucide_icon "x", size: 16 %>
+      </button>
+    </div>
+    <turbo-frame id="dependency-available-list" src="<%= available_node_dependencies_path(@node) %>">
+      <p class="text-xs text-slate-400 py-4 text-center">Loading...</p>
+    </turbo-frame>
+  </div>
+</dialog>

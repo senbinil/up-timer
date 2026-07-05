@@ -191,4 +191,84 @@ RSpec.describe "Nodes", type: :request do
       expect(monitor.reload).to be_paused
     end
   end
+
+  describe "dependencies" do
+    let(:other_monitor) { create(:uptime_monitor) }
+
+    describe "GET /nodes/:node_id/dependencies" do
+      it "shows the dependencies page for admins" do
+        sign_in_admin
+        get node_dependencies_path(monitor)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "is inaccessible to viewers" do
+        sign_in_viewer
+        get node_dependencies_path(monitor)
+        expect(response).to have_http_status(:redirect)
+      end
+    end
+
+    describe "POST /nodes/:node_id/dependencies" do
+      it "adds a dependency" do
+        sign_in_admin
+        expect {
+          post node_dependencies_path(monitor), params: { dependency_id: other_monitor.id }
+        }.to change(MonitorDependency, :count).by(1)
+        expect(response).to redirect_to(node_dependencies_path(monitor))
+      end
+
+      it "rejects self-dependency" do
+        sign_in_admin
+        expect {
+          post node_dependencies_path(monitor), params: { dependency_id: monitor.id }
+        }.not_to change(MonitorDependency, :count)
+        expect(response).to redirect_to(node_dependencies_path(monitor))
+      end
+
+      it "rejects duplicates" do
+        create(:monitor_dependency, monitor: monitor, dependency: other_monitor)
+        sign_in_admin
+        expect {
+          post node_dependencies_path(monitor), params: { dependency_id: other_monitor.id }
+        }.not_to change(MonitorDependency, :count)
+      end
+
+      it "rejects circular dependencies" do
+        sign_in_admin
+        create(:monitor_dependency, monitor: other_monitor, dependency: monitor)
+        expect {
+          post node_dependencies_path(monitor), params: { dependency_id: other_monitor.id }
+        }.not_to change(MonitorDependency, :count)
+        expect(response).to redirect_to(node_dependencies_path(monitor))
+      end
+
+      it "requires admin role" do
+        sign_in_collaborator
+        expect {
+          post node_dependencies_path(monitor), params: { dependency_id: other_monitor.id }
+        }.not_to change(MonitorDependency, :count)
+        expect(response).to have_http_status(:redirect)
+      end
+    end
+
+    describe "DELETE /nodes/:node_id/dependencies/:id" do
+      it "removes a dependency" do
+        dep = create(:monitor_dependency, monitor: monitor, dependency: other_monitor)
+        sign_in_admin
+        expect {
+          delete node_dependency_path(monitor, dep.dependency_id)
+        }.to change(MonitorDependency, :count).by(-1)
+        expect(response).to redirect_to(node_dependencies_path(monitor))
+      end
+    end
+
+    describe "GET /nodes/:node_id/dependencies/available" do
+      it "returns available nodes as turbo frame" do
+        sign_in_admin
+        get available_node_dependencies_path(monitor)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
 end
