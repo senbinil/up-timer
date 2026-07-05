@@ -3,8 +3,12 @@ class MailAdapter::Resend
     if ENV["RESEND_API_KEY"].present?
       Resend.api_key = ENV["RESEND_API_KEY"]
 
-      Rails.application.config.after_initialize do
+      if Rails.application.initialized?
         ActionMailer::Base.delivery_method = :resend
+      else
+        Rails.application.config.after_initialize do
+          ActionMailer::Base.delivery_method = :resend
+        end
       end
 
       Rails.logger.info "MailAdapter: using Resend for email delivery"

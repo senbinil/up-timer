@@ -19,7 +19,7 @@ RSpec.describe MailAdapter::Mailgun do
 
       it "sets delivery method to :mailgun" do
         described_class.configure!
-        expect(Rails.application.config.action_mailer.delivery_method).to eq(:mailgun)
+        expect(ActionMailer::Base.delivery_method).to eq(:mailgun)
       end
 
       it "configures Mailgun client" do
