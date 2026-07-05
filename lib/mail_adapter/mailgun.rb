@@ -5,16 +5,14 @@ class MailAdapter::Mailgun
         config.api_key = ENV["MAILGUN_API_KEY"]
       end
 
-      Rails.application.config.action_mailer.delivery_method = :mailgun
-      Rails.application.config.action_mailer.mailgun_settings = {
-        api_key: ENV["MAILGUN_API_KEY"],
-        domain: ENV["MAILGUN_DOMAIN"]
-      }
-
       # Rails' ActionMailer railtie resets delivery_method during boot,
-      # so apply it again after all initializers finish.
+      # so set it after all initializers finish.
       Rails.application.config.after_initialize do
         ActionMailer::Base.delivery_method = :mailgun
+        ActionMailer::Base.mailgun_settings = {
+          api_key: ENV["MAILGUN_API_KEY"],
+          domain: ENV["MAILGUN_DOMAIN"]
+        }
       end
 
       Rails.logger.info "MailAdapter: using Mailgun for email delivery"
