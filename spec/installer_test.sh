@@ -218,6 +218,7 @@ test_all_modes_have_rails_max_threads() {
     for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
         setup; generate "$mode"
         assert_contains "$COMPOSE_PATH" 'RAILS_MAX_THREADS' "$mode: has RAILS_MAX_THREADS env"
+        assert_contains "$COMPOSE_PATH" 'RAILS_MAX_THREADS:-3}' "$mode: RAILS_MAX_THREADS defaults to 3"
         teardown
     done
 }

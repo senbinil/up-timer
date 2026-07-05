@@ -169,6 +169,12 @@ test_rails_max_threads_resolved() {
     teardown
 }
 
+test_rails_max_threads_default_3() {
+    setup; generate "kamal-proxy"
+    assert_resolved "RAILS_MAX_THREADS defaults to 3" "RAILS_MAX_THREADS: \"3\""
+    teardown
+}
+
 test_port_resolved() {
     setup; generate "ip-only" "APP_PORT=8080"
     assert_resolved "port resolves to 8080" "published: \"8080\""
@@ -235,6 +241,7 @@ main() {
     test_app_host_explicit_value
     test_rails_master_key_resolved
     test_rails_max_threads_resolved
+    test_rails_max_threads_default_3
     test_port_resolved
     test_port_default_80
 

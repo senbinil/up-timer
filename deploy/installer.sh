@@ -238,8 +238,8 @@ collect_env() {
 
     # RAILS_MAX_THREADS auto-detection
     detect_thread_count
-    read -rp "  RAILS_MAX_THREADS [$SUGGESTED_THREADS]: " RAILS_MAX_THREADS
-    RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-$SUGGESTED_THREADS}
+    read -rp "  RAILS_MAX_THREADS [3] (auto-detected: $SUGGESTED_THREADS): " RAILS_MAX_THREADS
+    RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
 
     # Email config
     echo ""
