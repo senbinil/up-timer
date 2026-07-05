@@ -6,7 +6,7 @@ RSpec.describe MailAdapter::Mailgun do
   end
 
   describe ".configure!" do
-    context "with valid env vars" do
+    context "with all env vars" do
       before do
         ENV["MAILGUN_API_KEY"] = "key-test-123"
         ENV["MAILGUN_DOMAIN"] = "mg.example.com"
@@ -15,6 +15,7 @@ RSpec.describe MailAdapter::Mailgun do
       after do
         ENV.delete("MAILGUN_API_KEY")
         ENV.delete("MAILGUN_DOMAIN")
+        ENV.delete("MAILGUN_API_HOST")
       end
 
       it "sets delivery method to :mailgun" do
@@ -29,6 +30,32 @@ RSpec.describe MailAdapter::Mailgun do
 
       it "returns true" do
         expect(described_class.configure!).to be true
+      end
+
+      context "with custom API host" do
+        before { ENV["MAILGUN_API_HOST"] = "api.eu.mailgun.net" }
+
+        it "configures Mailgun with custom host" do
+          expect(Mailgun).to receive(:configure) do |&block|
+            config = double
+            expect(config).to receive(:api_key=).with("key-test-123")
+            expect(config).to receive(:api_host=).with("api.eu.mailgun.net")
+            block.call(config)
+          end
+          described_class.configure!
+        end
+      end
+
+      context "without API host" do
+        it "does not set api_host" do
+          expect(Mailgun).to receive(:configure) do |&block|
+            config = double
+            expect(config).to receive(:api_key=).with("key-test-123")
+            expect(config).not_to receive(:api_host=)
+            block.call(config)
+          end
+          described_class.configure!
+        end
       end
     end
 
