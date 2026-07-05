@@ -214,6 +214,14 @@ test_all_modes_have_healthcheck() {
     done
 }
 
+test_all_modes_have_rails_max_threads() {
+    for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
+        setup; generate "$mode"
+        assert_contains "$COMPOSE_PATH" 'RAILS_MAX_THREADS' "$mode: has RAILS_MAX_THREADS env"
+        teardown
+    done
+}
+
 test_all_modes_have_volumes() {
     for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
         setup; generate "$mode"
@@ -250,6 +258,7 @@ main() {
     test_all_modes_include_up_timer
     test_all_modes_have_healthcheck
     test_all_modes_have_volumes
+    test_all_modes_have_rails_max_threads
 
     echo ""; summary
 }

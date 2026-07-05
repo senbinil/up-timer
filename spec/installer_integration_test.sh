@@ -79,6 +79,7 @@ TAG=${TAG}
 DOMAIN=${DOMAIN}
 APP_HOST=${APP_HOST:-$DOMAIN}
 RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
 TRAEFIK_NETWORK=${TRAEFIK_NETWORK}
 APP_PORT=${APP_PORT:-80}
 SERVICE_URL=${SERVICE_URL:-http://up-timer:80}
@@ -162,6 +163,12 @@ test_rails_master_key_resolved() {
     teardown
 }
 
+test_rails_max_threads_resolved() {
+    setup; generate "kamal-proxy" "RAILS_MAX_THREADS=12"
+    assert_resolved "RAILS_MAX_THREADS=12 resolved" "RAILS_MAX_THREADS: \"12\""
+    teardown
+}
+
 test_port_resolved() {
     setup; generate "ip-only" "APP_PORT=8080"
     assert_resolved "port resolves to 8080" "published: \"8080\""
@@ -227,6 +234,7 @@ main() {
     test_app_host_resolved_from_domain
     test_app_host_explicit_value
     test_rails_master_key_resolved
+    test_rails_max_threads_resolved
     test_port_resolved
     test_port_default_80
 
