@@ -55,6 +55,7 @@ generate() {
     export DOMAIN="${DOMAIN:-integration.example.com}"
     export APP_HOST="${APP_HOST:-$DOMAIN}"
     export RAILS_MASTER_KEY="${RAILS_MASTER_KEY:-test-master-key-12345}"
+    export RAILS_MAX_THREADS="${RAILS_MAX_THREADS:-3}"
     export TRAEFIK_NETWORK="${TRAEFIK_NETWORK:-kamal}"
     export ENTRYPOINT="${ENTRYPOINT:-websecure}"
     export APP_PORT="${APP_PORT:-80}"
@@ -79,12 +80,13 @@ TAG=${TAG}
 DOMAIN=${DOMAIN}
 APP_HOST=${APP_HOST:-$DOMAIN}
 RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
 TRAEFIK_NETWORK=${TRAEFIK_NETWORK}
 APP_PORT=${APP_PORT:-80}
 SERVICE_URL=${SERVICE_URL:-http://up-timer:80}
 EOF
 
-    unset TAG DOMAIN APP_HOST RAILS_MASTER_KEY TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
+    unset TAG DOMAIN APP_HOST RAILS_MASTER_KEY RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
 }
 
 # Run docker compose config and grep the resolved output
@@ -162,6 +164,18 @@ test_rails_master_key_resolved() {
     teardown
 }
 
+test_rails_max_threads_resolved() {
+    setup; generate "kamal-proxy" "RAILS_MAX_THREADS=12"
+    assert_resolved "RAILS_MAX_THREADS=12 resolved" "RAILS_MAX_THREADS: \"12\""
+    teardown
+}
+
+test_rails_max_threads_default_3() {
+    setup; generate "kamal-proxy"
+    assert_resolved "RAILS_MAX_THREADS defaults to 3" "RAILS_MAX_THREADS: \"3\""
+    teardown
+}
+
 test_port_resolved() {
     setup; generate "ip-only" "APP_PORT=8080"
     assert_resolved "port resolves to 8080" "published: \"8080\""
@@ -227,6 +241,8 @@ main() {
     test_app_host_resolved_from_domain
     test_app_host_explicit_value
     test_rails_master_key_resolved
+    test_rails_max_threads_resolved
+    test_rails_max_threads_default_3
     test_port_resolved
     test_port_default_80
 

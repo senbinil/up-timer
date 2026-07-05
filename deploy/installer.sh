@@ -238,9 +238,8 @@ collect_env() {
 
     # RAILS_MAX_THREADS auto-detection
     detect_thread_count
-    ask "RAILS_MAX_THREADS [$SUGGESTED_THREADS]"
-    read -rp " " RAILS_MAX_THREADS
-    RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-$SUGGESTED_THREADS}
+    read -rp "  RAILS_MAX_THREADS [3] (auto-detected: $SUGGESTED_THREADS): " RAILS_MAX_THREADS
+    RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
 
     # Email config
     echo ""
@@ -553,6 +552,7 @@ END_PORTS
     environment:
       - RAILS_ENV=production
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
       - SOLID_QUEUE_IN_PUMA=true
       - APP_HOST=${APP_HOST}
       - ADMIN_EMAILS=${ADMIN_EMAILS:-}
