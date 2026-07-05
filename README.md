@@ -28,6 +28,12 @@ Or from a cloned repo:
 
 Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only, Coolify** — all from the same immutable Docker image.
 
+```
+docker pull binilsn/up-timer:latest
+```
+
+[Docker Hub](https://hub.docker.com/r/binilsn/up-timer)
+
 See [deploy/README.md](deploy/README.md) for full environment variable reference.
 ### Deploy Files
 
@@ -91,7 +97,7 @@ docker compose up -d
 
 Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
 
-Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
+
 
 ## Auth
 
