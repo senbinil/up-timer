@@ -62,9 +62,19 @@ Opens at `http://localhost:3000`.
 
 ### Thread count
 
-`RAILS_MAX_THREADS` controls the Puma thread pool shared by web requests and
-Solid Queue workers. The installer auto-detects a value based on available RAM,
-or you can set it manually:
+`RAILS_MAX_THREADS` controls the entire thread pool:
+
+| Component | Threads | Config |
+|---|---|---|
+| Puma web | `RAILS_MAX_THREADS` | `config/puma.rb` |
+| Solid Queue workers | `RAILS_MAX_THREADS` | `config/queue.yml` |
+| DB connection pool | `RAILS_MAX_THREADS x 2` | `config/database.yml` |
+
+The doubled pool covers both Puma web threads and Solid Queue workers
+sharing the same database connections.
+
+The installer auto-detects a value based on available RAM (shown as hint),
+but always defaults the prompt to `3`. You can change it manually:
 
 ```bash
 # With docker run
