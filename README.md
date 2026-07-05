@@ -17,7 +17,7 @@ See **[deploy/](deploy/)** for the full deployment system — interactive instal
 **One-liner deploy (no clone needed):**
 
 ```bash
-bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh)
 ```
 
 Or from a cloned repo:
@@ -243,7 +243,7 @@ Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via t
 
 ```bash
 # Clone and enter project
-git clone https://github.com/binilsn/up-timer.git
+git clone https://github.com/senbinil/up-timer.git
 cd up-timer
 
 # Configure admin emails (copy and edit)
