@@ -19,13 +19,6 @@ RSpec.describe Account, type: :model do
   end
 
   describe "callbacks" do
-    describe "before_create :set_status_token" do
-      it "sets a status_token on create" do
-        account = create(:account)
-        expect(account.status_token).to be_present
-      end
-    end
-
     describe "after_create :build_default_preference" do
       it "creates a default user_preference after create" do
         account = create(:account)

@@ -25,15 +25,27 @@
   <body class="font-body min-h-screen bg-surface">
     <header class="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-container-lowest">
       <div class="flex items-center gap-3">
-        <%= image_tag "logo.svg", alt: "UpTimer", class: "w-7 h-7 rounded" %>
-        <span class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">UpTimer Status</span>
+        <%= link_to root_path, class: "flex items-center gap-3" do %>
+          <%= image_tag "logo.svg", alt: "UpTimer", class: "w-7 h-7 rounded" %>
+          <span class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">UpTimer Status</span>
+        <% end %>
       </div>
-      <div class="flex items-center gap-3">
-        <span class="text-[10px] text-slate-400 font-mono">Public</span>
+      <nav class="flex items-center gap-5">
+        <% if current_account %>
+          <%= link_to dashboard_path, class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors" do %>
+            Dashboard
+          <% end %>
+        <% else %>
+          <%= link_to "/create-account", class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors" do %>
+            Create Account
+          <% end %>
+        <% end %>
+        <span class="h-4 w-px bg-border"></span>
+        <span class="text-[11px] text-slate-400 font-mono uppercase tracking-wider">Public</span>
         <button data-action="theme#toggle" class="p-1.5 text-slate-400 hover:text-navy rounded-default hover:bg-surface-container-low transition-colors" title="Toggle theme">
           <%= lucide_icon "moon", size: 16 %>
         </button>
-      </div>
+      </nav>
     </header>
 
     <main class="max-w-3xl mx-auto px-4 py-8 space-y-6">

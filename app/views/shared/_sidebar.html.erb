@@ -25,6 +25,11 @@
         <span><%= item[:label] %></span>
       <% end %>
     <% end %>
+
+    <%= link_to root_path, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == root_path ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-slate-400 hover:text-navy hover:bg-surface-container-low'}" do %>
+      <%= lucide_icon "globe", size: 16, class: "flex-shrink-0" %>
+      <span>Public Status</span>
+    <% end %>
   </nav>
 
   <%# ── Sidebar Footer ── %>

@@ -9,7 +9,6 @@ class Account < ApplicationRecord
   has_many :resolved_alerts, class_name: "Alert", foreign_key: :resolved_by_id, dependent: :nullify
   has_many :action_logs, dependent: :nullify
 
-  before_create :set_status_token
   after_create :build_default_preference
 
   validates :role, inclusion: { in: ROLES }
@@ -27,10 +26,6 @@ class Account < ApplicationRecord
   end
 
   private
-
-  def set_status_token
-    self.status_token = SecureRandom.urlsafe_base64(24)
-  end
 
   def build_default_preference
     create_user_preference!
