@@ -1,13 +1,13 @@
 <aside data-sidebar-target="sidebar" class="w-60 flex-col bg-surface-container-lowest border-r border-border h-screen sticky top-0 shrink-0 hidden lg:flex z-30">
   <%# ── Brand Header ── %>
   <div class="px-5 py-5 border-b border-border">
-    <div class="flex items-center gap-3">
+    <%= link_to root_path, class: "flex items-center gap-3" do %>
       <%= image_tag "logo.svg", alt: "UpTimer", class: "w-8 h-8 rounded" %>
       <div>
         <h2 class="text-sm font-semibold text-navy leading-tight">UpTimer</h2>
         <p class="text-[10px] uppercase tracking-[0.05em] text-slate-400 font-mono">Operational Hub</p>
       </div>
-    </div>
+    <% end %>
   </div>
 
   <%# ── Navigation Links ── %>
