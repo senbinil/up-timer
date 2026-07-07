@@ -2,6 +2,13 @@
 
 Having a hard time tracking your services? UpTimer gives you real-time monitoring, instant alerts, and a beautiful dashboard — zero infrastructure overhead.
 
+[![CI](https://img.shields.io/github/actions/workflow/status/senbinil/up-timer/ci.yml)](https://github.com/senbinil/up-timer/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer)
+[![Docker Image Size](https://img.shields.io/docker/image-size/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer)
+[![Docker Version](https://img.shields.io/docker/v/binilsn/up-timer?sort=semver)](https://hub.docker.com/r/binilsn/up-timer)
+[![License](https://img.shields.io/github/license/senbinil/up-timer)](https://github.com/senbinil/up-timer/blob/main/LICENSE)
+[![Ruby](https://img.shields.io/badge/Ruby-4.0.5-red)](https://www.ruby-lang.org)
+
 <img width="1886" height="865" alt="Dashboard screenshot" src="https://github.com/user-attachments/assets/67e747b1-fc2d-4cd7-8f96-e27b6a6c7ad3" />
 
 ## Features
