@@ -147,10 +147,10 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
     ┌──────────▼──────────────────────────────────┐
     │              Rails 8 Application             │
     │                                              │
-    │  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-    │  │ Rodauth  │  │  Flipper  │  │  Pagy    │   │
-    │  │  Auth    │  │Features  │  │Pagination│   │
-    │  └──────────┘  └──────────┘  └──────────┘   │
+    │  ┌──────────┐              ┌──────────┐   │
+    │  │ Rodauth  │              │  Pagy    │   │
+    │  │  Auth    │              │Pagination│   │
+    │  └──────────┘              └──────────┘   │
     │                                              │
     │  ┌──────────────────────────────────┐        │
     │  │        SolidQueue Workers         │        │
@@ -162,7 +162,7 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
     │  ┌──────────────────────────────────┐        │
     │  │         SQLite3 Database          │        │
     │  │  monitors / checks / incidents    │        │
-    │  │  users / flipper_features         │        │
+    │  │  users                             │        │
     │  └──────────────────────────────────┘        │
     └──────────────────────────────────────────────┘
 ```
@@ -378,7 +378,7 @@ These run automatically in CI on every pull request.
 | Charts | Chartkick + Chart.js |
 | Jobs | SolidQueue |
 | Mailer | letter_opener (dev), Action Mailer with AlertMailer |
-| Feature Flags | Flipper (email_notifications toggle) |
+| Feature Flags | — (removed, toggle moved to per-trigger email control) |
 | Icons | Lucide |
 | Tools | Tippy.js (tooltips), Pagy (pagination) |
 | Deployment | Docker, Kamal, Docker Compose |
