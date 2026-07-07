@@ -132,39 +132,13 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 
 <img width="1892" height="860" alt="Public status page screenshot" src="https://github.com/user-attachments/assets/594a8a1d-618d-44e2-b99d-6535942a6709" />
 
-### Application Structure
+### Application Overview
 
 ```mermaid
-flowchart TB
-    subgraph Browser["User Browser"]
-        direction TB
-        A["Dashboard /dashboard"]
-        B["Public Status /status/:slug"]
-    end
-
-    subgraph Rails["Rails Application"]
-        direction TB
-
-        subgraph Core["Core"]
-            Rodauth["Rodauth Auth"]
-            Pagy["Pagy Pagination"]
-        end
-
-        subgraph Workers["SolidQueue Workers"]
-            Scheduler["MonitorScheduler ── every 30s"]
-            Check["MonitorCheck ── HTTP GET"]
-            Retention["DataRetention ── daily 3am"]
-        end
-
-        subgraph Database["SQLite3 Database"]
-            M["monitors / checks / incidents"]
-            U["users"]
-        end
-    end
-
-    Browser --> Rails
-    Core --> Workers
-    Workers --> Database
+flowchart LR
+    Browser["User Browser"] --> App["Rails Application"]
+    App --> Jobs["SolidQueue Workers"]
+    Jobs --> DB["SQLite3 Database"]
 ```
 
 ### Key Design Decisions
