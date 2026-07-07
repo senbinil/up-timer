@@ -134,37 +134,37 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 
 ### Application Structure
 
-```
-┌──────────────────────────────────────────────────┐
-│                   User Browser                    │
-└──────────────┬──────────────────┬────────────────┘
-               │                  │
-    ┌──────────▼──────────┐  ┌───▼────────────┐
-    │   Dashboard (auth)   │  │  Public Status  │
-    │   /dashboard         │  │  /status/:slug  │
-    └──────────┬──────────┘  └────────────────┘
-               │
-    ┌──────────▼──────────────────────────────────┐
-    │              Rails 8 Application             │
-    │                                              │
-    │  ┌──────────┐                  ┌──────────┐  │
-    │  │ Rodauth  │                  │  Pagy    │  │
-    │  │  Auth    │                  │Pagination│  │
-    │  └──────────┘                  └──────────┘  │
-    │                                              │
-    │  ┌──────────────────────────────────┐        │
-    │  │        SolidQueue Workers         │        │
-    │  │  MonitorScheduler ──► every 30s  │        │
-    │  │  MonitorCheck      ──► HTTP GET  │        │
-    │  │  DataRetention     ──► daily 3am │        │
-    │  └──────────────────────────────────┘        │
-    │                                              │
-    │  ┌──────────────────────────────────┐        │
-    │  │         SQLite3 Database          │        │
-    │  │  monitors / checks / incidents    │        │
-    │  │  users                             │        │
-    │  └──────────────────────────────────┘        │
-    └──────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Browser["User Browser"]
+        direction TB
+        A["Dashboard /dashboard"]
+        B["Public Status /status/:slug"]
+    end
+
+    subgraph Rails["Rails Application"]
+        direction TB
+
+        subgraph Core["Core"]
+            Rodauth["Rodauth Auth"]
+            Pagy["Pagy Pagination"]
+        end
+
+        subgraph Workers["SolidQueue Workers"]
+            Scheduler["MonitorScheduler ── every 30s"]
+            Check["MonitorCheck ── HTTP GET"]
+            Retention["DataRetention ── daily 3am"]
+        end
+
+        subgraph Database["SQLite3 Database"]
+            M["monitors / checks / incidents"]
+            U["users"]
+        end
+    end
+
+    Browser --> Rails
+    Core --> Workers
+    Workers --> Database
 ```
 
 ### Key Design Decisions
