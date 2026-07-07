@@ -2,12 +2,17 @@
 
 Production deployment for any infrastructure — no application changes needed.
 
+> **The installer covers all scenarios below.** Run `./deploy/installer.sh` for guided setup —
+> it auto-detects your environment, asks a few questions, and generates the right configuration.
+> The compose files in `compose/`, `proxy/`, etc. are assembled by the installer and documented
+> here for reference or manual tweaking.
+
 ## Quick Start
 
 **One-liner (no clone needed):**
 
 ```bash
-bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh)
 ```
 
 **From a cloned repo:**
@@ -23,11 +28,12 @@ Answer a few questions and it auto-detects your environment, generates config, a
 | # | Mode | Best for | Open ports | SSL |
 |---|---|---|---|---|
 | 1 | **Standalone Traefik** | Fresh VPS, want automatic HTTPS | 80, 443 | Auto Let's Encrypt |
-| 2 | **Existing Traefik** | Kamal or another Traefik already running | None | Existing proxy handles it |
-| 3 | **Existing Nginx** | Nginx already on the host | None | Existing proxy handles it |
-| 4 | **Cloudflare Tunnel** | Zero open ports, Cloudflare handles TLS | None | Cloudflare |
-| 5 | **IP-only** | Minimal deployment, testing, or external load balancer | 80 (configurable) | None |
-| 6 | **Coolify** | Self-hosted PaaS — web UI deploy | None | Auto Let's Encrypt |
+| 2 | **Kamal Proxy** | Kamal 2.x with kamal-proxy already running | None | Auto Let's Encrypt (optional) |
+| 3 | **Existing Traefik** | Kamal 1.x or standalone Traefik already running | None | Existing proxy handles it |
+| 4 | **Existing Nginx** | Nginx already on the host | None | Existing proxy handles it |
+| 5 | **Cloudflare Tunnel** | Zero open ports, Cloudflare handles TLS | None | Cloudflare |
+| 6 | **IP-only** | Minimal deployment, testing, or external load balancer | 80 (configurable) | None |
+| 7 | **Coolify** | Self-hosted PaaS — web UI deploy | None | Auto Let's Encrypt |
 
 Coolify is deployed through its own web dashboard, not the installer. See [docs/Coolify.md](docs/Coolify.md).
 
@@ -76,6 +82,7 @@ Only the surrounding infrastructure differs.
 |---|---|---|---|
 | `TAG` | ❌ | `latest` | Docker image tag (pin to a version for stability) |
 | `RAILS_MASTER_KEY` | ❌ | auto-generated | Decrypts config/credentials (auto-generated if empty) |
+| `RAILS_MAX_THREADS` | ❌ | auto-detected | Puma thread pool (web + Solid Queue workers). Auto-detected from available RAM, clamped 3–16 |
 | `ADMIN_EMAILS` | ❌ | — | Comma-separated emails auto-assigned admin role |
 | `APP_HOST` | ❌ | `DOMAIN` | Host used in email links |
 | `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun`. When empty, email delivery is disabled — accounts auto-verify, alert emails are skipped, app still fully functional. |
@@ -104,11 +111,21 @@ Only the surrounding infrastructure differs.
 | `TRAEFIK_NETWORK` | ✅ | — | External Docker network (auto-detected) |
 | `ENTRYPOINT` | ❌ | `websecure` | Traefik entrypoint |
 
+### Kamal Proxy (Kamal 2.x)
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `DOMAIN` | ✅ | — | Public domain for routing rule |
+| `TRAEFIK_NETWORK` | ✅ | `kamal` | Kamal Docker network (auto-detected) |
+| `KAMAL_PROXY_TLS` | ❌ | `true` | Enable automatic HTTPS via Let's Encrypt |
+
 ### Cloudflare Tunnel
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
+| `DOMAIN` | ✅ | — | Public domain for the tunnel |
 | `CF_TUNNEL_TOKEN` | ✅ | — | Tunnel token from Cloudflare Zero Trust |
+| `SERVICE_URL` | ❌ | `http://up-timer:80` | Upstream service URL for the tunnel to proxy to |
 
 ### IP-only
 
@@ -141,10 +158,30 @@ If Kamal is already running on the VPS:
 
 1. Run `./deploy/installer.sh`
 2. It auto-detects the `kamal-proxy` container
-3. Select **Existing Traefik** integration
-4. The installer sets `TRAEFIK_NETWORK=kamal`
+3. Select **Integrate with existing Kamal Proxy**
+4. The installer sets the network to `kamal` and registers the route with kamal-proxy
 
-Your UpTimer instance attaches to Kamal's network with zero port conflicts.
+Your UpTimer instance attaches to Kamal's network with zero port conflicts. The installer
+registers the route via `docker exec kamal-proxy kamal-proxy deploy ...` so kamal-proxy
+forwards traffic to your app.
+
+### Manual route registration
+
+If you need to register the route manually after deployment:
+
+```bash
+docker exec kamal-proxy kamal-proxy deploy up-timer \
+  --target up-timer:80 \
+  --host your-domain.com \
+  --tls \
+  --health-check-path /up
+```
+
+To remove the route:
+
+```bash
+docker exec kamal-proxy kamal-proxy remove up-timer
+```
 
 ## Manual Setup (without installer)
 
@@ -180,7 +217,7 @@ docker compose \
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in CF_TUNNEL_TOKEN (email vars optional, RAILS_MASTER_KEY optional)
+# Fill in DOMAIN, CF_TUNNEL_TOKEN (SERVICE_URL defaults to http://up-timer:80)
 
 docker compose \
   -f deploy/compose/app.yml \

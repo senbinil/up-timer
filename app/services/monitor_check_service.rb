@@ -1,3 +1,5 @@
+require "ostruct"
+
 class MonitorCheckService
   SUPPORTED_METHODS = %w[GET HEAD POST PUT PATCH DELETE OPTIONS].freeze
   BODY_METHODS = %w[POST PUT PATCH].freeze

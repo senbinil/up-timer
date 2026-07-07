@@ -151,6 +151,15 @@ class RodauthMain < Rodauth::Rails::Auth
     extend_remember_deadline? true
 
     # ==> Hooks
+    # Prevent Rodauth's reset_password feature from injecting the forgot password
+    # form/link into the login page after a failed login attempt.
+    auth_class_eval do
+      def after_login_failure
+        super
+        @login_form_header = nil
+      end
+    end
+
     # Validate custom fields in the create account form.
     before_create_account do
       throw_error_status(422, "name", "must be present") if param("name").blank?

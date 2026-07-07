@@ -58,14 +58,14 @@ RSpec.describe "Alert Integrations", type: :request do
     end
   end
 
-  describe "POST /alert_integrations/triggers/:id/toggle" do
-    it "toggles trigger active status" do
+  describe "POST /alert_integrations/triggers/:id/toggle_email" do
+    it "toggles trigger email_notify status" do
       sign_in_admin
-      trigger = create(:alert_trigger, active: true)
+      trigger = create(:alert_trigger, email_notify: false)
       expect {
-        post toggle_trigger_alert_integrations_path(trigger)
+        post toggle_trigger_email_alert_integrations_path(trigger)
       }.to change(ActionLog, :count).by(1)
-      expect(trigger.reload.active).to be(false)
+      expect(trigger.reload.email_notify).to be(true)
     end
   end
 end

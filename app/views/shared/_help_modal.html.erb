@@ -1,4 +1,4 @@
-<dialog id="help-modal" data-controller="help-modal" data-action="click->help-modal#clickOutside" class="m-auto rounded-lg p-0 border border-[#e2e8f0] bg-white shadow-lg backdrop:bg-navy/30 max-w-sm w-full">
+<dialog id="help-modal" data-controller="help-modal" data-action="click->help-modal#clickOutside" class="m-auto rounded-lg p-0 border border-border bg-surface-container-lowest shadow-lg backdrop:bg-inverse-surface/30 max-w-sm w-full">
   <div class="p-4 space-y-3">
     <div class="flex items-center justify-between">
       <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Help</h2>
@@ -10,7 +10,7 @@
     <div class="space-y-2.5 text-xs text-navy leading-relaxed">
       <div>
         <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-1">Intro</p>
-        <p class="text-slate-600">UpTimer is a lightweight uptime monitoring dashboard that helps you track the health, response times, and availability of your services in real time.</p>
+        <p class="text-on-surface-variant">UpTimer is a lightweight uptime monitoring dashboard that helps you track the health, response times, and availability of your services in real time.</p>
       </div>
 
       <div>
@@ -18,7 +18,7 @@
         <div class="space-y-2">
           <div>
             <p class="font-medium mb-0.5">Getting Started</p>
-            <ol class="list-decimal pl-4 space-y-0.5 text-slate-600">
+            <ol class="list-decimal pl-4 space-y-0.5 text-on-surface-variant">
               <li><strong>Add a Node</strong> — Go to Nodes → Create Node, enter a name, URL, check interval, and timeout.</li>
               <li><strong>Monitor</strong> — The scheduler picks up new nodes within 30 seconds and starts running health checks automatically.</li>
               <li><strong>Dashboard</strong> — View all your services at a glance. Each card shows status, response time, and incident count.</li>
@@ -27,7 +27,7 @@
 
           <div>
             <p class="font-medium mb-0.5">Statuses</p>
-            <div class="flex gap-4 text-slate-600">
+            <div class="flex gap-4 text-on-surface-variant">
               <span><span class="font-mono text-success font-semibold">Up</span> — 2xx / 3xx</span>
               <span><span class="font-mono text-error font-semibold">Down</span> — 4xx / 5xx / error</span>
               <span><span class="font-mono text-[var(--color-warning)] font-semibold">Paused</span> — manually stopped</span>
@@ -36,17 +36,17 @@
 
           <div>
             <p class="font-medium mb-0.5">Pause / Resume</p>
-            <p class="text-slate-600">Admins can pause a node to stop health checks temporarily. A paused node shows a <span class="chip chip-warning text-[10px] align-middle">Paused</span> badge and is skipped by the scheduler. Use <strong>Resume</strong> to restart checks. Pause/resume actions are recorded in the audit log.</p>
+            <p class="text-on-surface-variant">Admins can pause a node to stop health checks temporarily. A paused node shows a <span class="chip chip-warning text-[10px] align-middle">Paused</span> badge and is skipped by the scheduler. Use <strong>Resume</strong> to restart checks. Pause/resume actions are recorded in the audit log.</p>
           </div>
 
           <div>
             <p class="font-medium mb-0.5">Incidents</p>
-            <p class="text-slate-600">Created automatically on failure, resolved on recovery.</p>
+            <p class="text-on-surface-variant">Created automatically on failure, resolved on recovery.</p>
           </div>
 
           <div>
             <p class="font-medium mb-0.5">Data Retention</p>
-            <p class="text-slate-600">Checks purged after <strong>30 days</strong>. Resolved incidents after <strong>90 days</strong>.</p>
+            <p class="text-on-surface-variant">Checks purged after <strong>30 days</strong>. Resolved incidents after <strong>90 days</strong>.</p>
           </div>
         </div>
       </div>

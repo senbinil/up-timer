@@ -95,6 +95,19 @@ jobs:
           bin/rails db:test:prepare
           bundle exec rspec
 
+  deploy_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Run installer unit tests
+        run: bash spec/installer_test.sh
+
+      - name: Run installer integration tests (docker compose config)
+        run: bash spec/installer_integration_test.sh
+
   # system-test:
   #   runs-on: ubuntu-latest
 

@@ -95,6 +95,14 @@ Or from a cloned repo:
 
 All modes use the **same immutable Docker image**. Only the surrounding infrastructure differs.
 
+```bash
+docker pull binilsn/up-timer:latest
+```
+
+[Docker Hub](https://hub.docker.com/r/binilsn/up-timer)
+
+See [deploy/README.md](deploy/README.md) for full environment variable reference.
+
 ### Deploy Files
 
 | File | Purpose |
@@ -103,7 +111,7 @@ All modes use the **same immutable Docker image**. Only the surrounding infrastr
 | [deploy/.env.example](deploy/.env.example) | All environment variables documented |
 | [deploy/README.md](deploy/README.md) | Full deployment guide & scenarios |
 | [Dockerfile](Dockerfile) | Application image build |
-| [docker-compose.yml](docker-compose.yml) | Standalone production compose (Traefik + Let's Encrypt) |
+| [docker-compose.yml](docker-compose.yml) | Quick start with Docker (local/testing) |
 | [.kamal/](.kamal/) | Kamal deploy config (optional) |
 
 ### Coexistence with Kamal
@@ -162,6 +170,35 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 - **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
 - **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
 
+### Thread count
+
+`RAILS_MAX_THREADS` controls the entire thread pool:
+
+| Component | Threads | Config |
+|---|---|---|
+| Puma web | `RAILS_MAX_THREADS` | `config/puma.rb` |
+| Solid Queue workers | `RAILS_MAX_THREADS` | `config/queue.yml` |
+| DB connection pool | `RAILS_MAX_THREADS x 2` | `config/database.yml` |
+
+The doubled pool covers both Puma web threads and Solid Queue workers sharing the same database connections.
+
+The installer auto-detects a value based on available RAM (shown as hint), but always defaults the prompt to `3`. You can change it manually:
+
+```bash
+# With docker run
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e RAILS_MAX_THREADS=12 \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  binilsn/up-timer:latest
+
+# With docker compose
+echo "RAILS_MAX_THREADS=12" >> .env
+docker compose up -d
+```
+
+Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
+
 ## Authentication
 
 Authentication is handled by Rodauth.
@@ -203,6 +240,29 @@ Users registering with those emails get the **admin** role. Everyone else defaul
 | **viewer** | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings |
 | **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings |
 | **admin** | Everything above + Integrations, Email notifications toggle, User promotion |
+
+## Alert Triggers
+
+Alert triggers define event types that can fire notifications. The system uses a **single alert per failure** model:
+
+- **Node goes down** → 1 auto-alert created with the "Node Offline" trigger
+- **Node recovers** → the auto-alert is resolved automatically
+- **Manual alerts** → users pick a trigger type, which is saved to the alert
+
+### Email control per trigger
+
+Admins control which triggers send email notifications from the **Integrations** page:
+
+| Trigger | Auto-created | Email notification |
+|---|---|---|
+| Node Offline | ✅ When node goes down | Togglable |
+| Critical Errors | ❌ Manual only | Togglable |
+| Degraded Performance | ❌ Manual only | Togglable |
+| Security Breach | ❌ Manual only | Togglable |
+| Maintenance Window | ❌ Manual only | Togglable |
+| Custom | ❌ Manual only | Togglable |
+
+Email is only sent when the trigger's **Email** toggle is enabled on the Integrations page, regardless of the global email notifications setting.
 
 ## Background Jobs
 
@@ -284,7 +344,7 @@ See [DESIGN.md](DESIGN.md) for the full design token specification (colors, typo
 ## Testing
 
 ```bash
-rails test
+bundle exec rspec
 ```
 
 ### Installer Tests

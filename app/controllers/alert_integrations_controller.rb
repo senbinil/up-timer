@@ -35,11 +35,11 @@ class AlertIntegrationsController < ApplicationController
     render partial: "recipients_list"
   end
 
-  def toggle_trigger
+  def toggle_trigger_email
     @trigger = AlertTrigger.find(params[:id])
-    @trigger.toggle!(:active)
-    ActionLog.log(action: :toggled, record: @trigger, account: current_account,
-                  metadata: { name: @trigger.name, active: @trigger.active, severity: @trigger.severity })
+    @trigger.toggle!(:email_notify)
+    ActionLog.log(action: :toggled_email, record: @trigger, account: current_account,
+                  metadata: { name: @trigger.name, email_notify: @trigger.email_notify })
     @triggers = AlertTrigger.ordered
     render partial: "triggers_list"
   end

@@ -11,6 +11,7 @@ class UptimeMonitor < ApplicationRecord
   validates :expected_status, numericality: { only_integer: true, greater_than: 0, less_than: 600 }, allow_nil: true
   validates :request_body, length: { maximum: 10_000 }, allow_blank: true
   validates :down_threshold, numericality: { only_integer: true, in: 1..10 }
+  validates :check_interval, numericality: { only_integer: true, greater_than_or_equal_to: 30 }
 
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
   scope :top, ->(n = 3) { ranked.limit(n) }
@@ -42,6 +43,23 @@ class UptimeMonitor < ApplicationRecord
     self.tags = value.to_s.split(",").map(&:strip).reject(&:blank?).uniq
   end
 
+  def public_uptime
+    checks = monitor_checks.where(checked_at: 24.hours.ago..).order(checked_at: :desc)
+    total = checks.count
+    return { uptime: nil, response_time: nil, recent_checks: [] } if total.zero?
+
+    recent = checks.limit(10).to_a
+    up_count = checks.where(status: "up").count
+
+    {
+      uptime: (up_count.to_f / total * 100).round(1),
+      response_time: recent.first&.response_time,
+      recent_checks: recent.reverse.map { |c|
+        [ c.checked_at.strftime("%I:%M %p"), c.response_time ]
+      }.to_h
+    }
+  end
+
   def down?
     status == "down"
   end
@@ -52,6 +70,10 @@ class UptimeMonitor < ApplicationRecord
 
   def paused?
     paused
+  end
+
+  def dependency_affected?
+    false
   end
 
   def last_pause_log

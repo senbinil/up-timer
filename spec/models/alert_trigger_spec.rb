@@ -7,15 +7,6 @@ RSpec.describe AlertTrigger, type: :model do
   end
 
   describe "scopes" do
-    describe ".active" do
-      it "returns only active triggers" do
-        active_trigger = create(:alert_trigger, active: true)
-        _inactive_trigger = create(:alert_trigger, active: false)
-
-        expect(AlertTrigger.active).to contain_exactly(active_trigger)
-      end
-    end
-
     describe ".ordered" do
       it "orders by name" do
         b = create(:alert_trigger, name: "B")

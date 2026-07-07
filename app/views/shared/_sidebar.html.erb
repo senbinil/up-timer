@@ -1,6 +1,6 @@
-<aside data-sidebar-target="sidebar" class="w-60 flex-col bg-white border-r border-[#e2e8f0] h-screen sticky top-0 shrink-0 hidden lg:flex z-30">
+<aside data-sidebar-target="sidebar" class="w-60 flex-col bg-surface-container-lowest border-r border-border h-screen sticky top-0 shrink-0 hidden lg:flex z-30">
   <%# ── Brand Header ── %>
-  <div class="px-5 py-5 border-b border-[#e2e8f0]">
+  <div class="px-5 py-5 border-b border-border">
     <div class="flex items-center gap-3">
       <%= image_tag "logo.svg", alt: "UpTimer", class: "w-8 h-8 rounded" %>
       <div>
@@ -42,6 +42,12 @@
         <%= lucide_icon "help-circle", size: 16, class: "flex-shrink-0" %>
         <span>Help</span>
       <% end %>
+    </div>
+
+    <button data-action="theme#toggle" class="flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-400 hover:text-navy hover:bg-surface-container-low transition-colors w-full">
+      <%= lucide_icon "moon", size: 16, class: "flex-shrink-0" %>
+      <span>Theme</span>
+    </button>
     </div>
   </div>
 </aside>

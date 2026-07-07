@@ -245,3 +245,46 @@ Soft (`0.25rem` / 4px) — modern but professional.
 ### Lists
 - 1px `#f1f5f9` dividers
 - `#f8fafc` hover background on interactive rows
+
+## Dark Mode
+
+A class-based dark mode is supported via the `dark` class on `<html>`, persisted to `localStorage`.
+
+### Toggle Mechanism
+
+- A Stimulus `theme` controller toggles the `dark` class and persists to `localStorage`.
+- An inline `<script>` in `<head>` reads storage before paint to prevent flash.
+- Toggle buttons in dashboard header, public header, and auth header.
+
+### Surface Colors
+
+| Token | Light | Dark |
+|---|---|---|
+| `surface` | `#f7f9fb` | `#0f172a` |
+| `surface-dim` | `#d8dadc` | `#1e293b` |
+| `surface-container-lowest` | `#ffffff` | `#020617` |
+| `on-surface` | `#191c1e` | `#f1f5f9` |
+| `on-surface-variant` | `#434655` | `#cbd5e1` |
+
+### Semantic Colors
+
+| Token | Light | Dark |
+|---|---|---|
+| `success` | `#0d7a2e` | `#22c55e` |
+| `error` | `#ba1a1a` | `#f87171` |
+| `warning` | `#8c5000` | `#f59e0b` |
+
+### Functional Colors
+
+| Token | Light | Dark |
+|---|---|---|
+| `navy` | `#1e293b` | `#f1f5f9` |
+| `border` | `#e2e8f0` | `#334155` |
+| `divider` | `#f1f5f9` | `#1e293b` |
+
+### Usage in Templates
+
+Use semantic tokens instead of hardcoded colors:
+- `bg-surface-container-lowest` instead of `bg-white`
+- `border-border` instead of `border-[#e2e8f0]`
+- `text-on-surface-variant` instead of `text-slate-600`

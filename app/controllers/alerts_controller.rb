@@ -67,6 +67,6 @@ class AlertsController < ApplicationController
   end
 
   def alert_params
-    params.require(:alert).permit(:severity, :message, :monitor_id, :resolved)
+    params.require(:alert).permit(:severity, :message, :monitor_id, :resolved, :alert_trigger_id)
   end
 end
