@@ -3,10 +3,10 @@
 # Self-contained — no repo clone needed.
 #
 # One-liner:
-#   bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
+#   bash <(curl -sSL https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh)
 #
 # Or save and run:
-#   curl -sSLO https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh
+#   curl -sSLO https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh
 #   chmod +x installer.sh && ./installer.sh
 
 set -euo pipefail

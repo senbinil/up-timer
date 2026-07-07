@@ -21,6 +21,7 @@ Having a hard time tracking your services? UpTimer gives you real-time monitorin
 ```bash
 docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
+  -e SOLID_QUEUE_IN_PUMA=true \
   binilsn/up-timer:latest
 ```
 
@@ -37,6 +38,7 @@ docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
   -e MAIL_PROVIDER=resend \
   -e RESEND_API_KEY=re_xxxxxx \
+  -e SOLID_QUEUE_IN_PUMA=true \
   binilsn/up-timer:latest
 ```
 
@@ -48,6 +50,7 @@ docker run -d -p 3000:80 \
   -e MAIL_PROVIDER=mailgun \
   -e MAILGUN_API_KEY=key-xxxxxx \
   -e MAILGUN_DOMAIN=mg.example.com \
+  -e SOLID_QUEUE_IN_PUMA=true \
   binilsn/up-timer:latest
 ```
 
@@ -62,6 +65,7 @@ docker run -d -p 3000:80 \
 | `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
 | `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
 | `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
+| `SOLID_QUEUE_IN_PUMA` | ❌ | – | Set to `true` to run job worker in Puma process (required for single-container deploy) |
 
 \* Required when using that provider.
 
@@ -72,7 +76,7 @@ See **[deploy/](deploy/)** for the full deployment system — an interactive ins
 **One-liner deploy (no clone needed):**
 
 ```bash
-bash <(curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh)
 ```
 
 Or from a cloned repo:
@@ -298,7 +302,7 @@ Start the worker with `bin/jobs` (already included in `bin/dev`).
 
 ```bash
 # Clone and enter project
-git clone https://github.com/binilsn/up-timer.git
+git clone https://github.com/senbinil/up-timer.git
 cd up-timer
 
 # Configure admin emails (copy and edit)
@@ -388,4 +392,4 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via the UI — same result.
+Or create a [GitHub Release](https://github.com/senbinil/up-timer/releases) via the UI — same result.
