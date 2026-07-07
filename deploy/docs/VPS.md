@@ -21,13 +21,13 @@ sudo usermod -aG docker $USER
 **One-liner (no clone needed):**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/binilsn/up-timer/main/deploy/installer.sh | bash
+curl -sSL https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh | bash
 ```
 
 **From a cloned repo:**
 
 ```bash
-git clone https://github.com/binilsn/up-timer.git
+git clone https://github.com/senbinil/up-timer.git
 cd up-timer
 ./deploy/installer.sh
 ```

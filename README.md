@@ -1,18 +1,77 @@
 # UpTimer
 
-Uptime monitoring dashboard for tracking service health, response times, and incidents.
+Having a hard time tracking your services? UpTimer gives you real-time monitoring, instant alerts, and a beautiful dashboard — zero infrastructure overhead.
 
-<img width="1886" height="865" alt="image" src="https://github.com/user-attachments/assets/67e747b1-fc2d-4cd7-8f96-e27b6a6c7ad3" />
+<img width="1886" height="865" alt="Dashboard screenshot" src="https://github.com/user-attachments/assets/67e747b1-fc2d-4cd7-8f96-e27b6a6c7ad3" />
 
-## Public Status Page
-<img width="1892" height="860" alt="image" src="https://github.com/user-attachments/assets/594a8a1d-618d-44e2-b99d-6535942a6709" />
+## Features
 
+- **Monitor any HTTP endpoint** — configurable check interval and timeout per monitor
+- **Real-time dashboard** — see up/down status, response times, and uptime percentages at a glance
+- **Public status page** — share a read-only view of your service health
+- **Incident management** — automatic incident creation on failure, resolution on recovery
+- **Role-based access control** — viewer / collaborator / admin roles
+- **Alert emails** — notified when services go down (optional, via Resend or Mailgun)
+- **Data retention** — automatic cleanup of old checks and resolved incidents
+- **Background scheduling** — checks run every 30 seconds via SolidQueue
+- **Dark/light design** — high-contrast light operational system
 
+## Quick Start
 
+```bash
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  binilsn/up-timer:latest
+```
 
-## Production Deployment
+Opens at [http://localhost:3000](http://localhost:3000).
 
-See **[deploy/](deploy/)** for the full deployment system — interactive installer that auto-detects your infrastructure and generates the right configuration.
+Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
+
+## Docker
+
+### With email (Resend)
+
+```bash
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e MAIL_PROVIDER=resend \
+  -e RESEND_API_KEY=re_xxxxxx \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  binilsn/up-timer:latest
+```
+
+### With email (Mailgun)
+
+```bash
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e MAIL_PROVIDER=mailgun \
+  -e MAILGUN_API_KEY=key-xxxxxx \
+  -e MAILGUN_DOMAIN=mg.example.com \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  binilsn/up-timer:latest
+```
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `ADMIN_EMAILS` | ❌ | — | Comma-separated emails assigned admin role |
+| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun`. When empty, accounts auto-verify and alert emails are skipped |
+| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for outgoing emails |
+| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
+| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
+| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
+| `SOLID_QUEUE_IN_PUMA` | ❌ | – | Set to `true` to run job worker in Puma process (required for single-container deploy) |
+
+\* Required when using that provider.
+
+## Production
+
+See **[deploy/](deploy/)** for the full deployment system — an interactive installer that auto-detects your infrastructure and generates the right configuration.
 
 **One-liner deploy (no clone needed):**
 
@@ -26,45 +85,68 @@ Or from a cloned repo:
 ./deploy/installer.sh
 ```
 
-Supports: **Standalone Traefik, Existing Traefik (Kamal), Nginx, Cloudflare Tunnel, IP-only, Coolify** — all from the same immutable Docker image.
+### Supported Modes
 
-```
+| Mode | Best for | Open ports | SSL |
+|---|---|---|---|
+| **Standalone Traefik** | Fresh VPS, want automatic HTTPS | 80, 443 | Auto Let's Encrypt |
+| **Kamal Proxy** | Kamal 2.x with kamal-proxy already running | None | Auto Let's Encrypt (optional) |
+| **Existing Traefik** | Kamal 1.x or standalone Traefik already running | None | Existing proxy handles it |
+| **Nginx** | Nginx already on the host | None | Existing proxy handles it |
+| **Cloudflare Tunnel** | Zero open ports, Cloudflare handles TLS | None | Cloudflare |
+| **IP-only** | Minimal deployment, testing, or external load balancer | 80 (configurable) | None |
+| **Coolify** | Self-hosted PaaS — web UI deploy | None | Auto Let's Encrypt |
+
+All modes use the **same immutable Docker image**. Only the surrounding infrastructure differs.
+
+```bash
 docker pull binilsn/up-timer:latest
 ```
 
 [Docker Hub](https://hub.docker.com/r/binilsn/up-timer)
 
 See [deploy/README.md](deploy/README.md) for full environment variable reference.
+
 ### Deploy Files
 
 | File | Purpose |
 |---|---|
 | [deploy/installer.sh](deploy/installer.sh) | Interactive CLI wizard |
 | [deploy/.env.example](deploy/.env.example) | All environment variables documented |
-| [deploy/README.md](deploy/README.md) | Deployment guide & scenarios |
+| [deploy/README.md](deploy/README.md) | Full deployment guide & scenarios |
 | [Dockerfile](Dockerfile) | Application image build |
 | [docker-compose.yml](docker-compose.yml) | Quick start with Docker (local/testing) |
 | [.kamal/](.kamal/) | Kamal deploy config (optional) |
 
-### Quick start (Docker)
+### Coexistence with Kamal
+
+If Kamal is already running on the VPS, the installer auto-detects the `kamal-proxy` container. Select **Integrate with existing Kamal Proxy** to attach to Kamal's network and register the route with zero port conflicts.
 
 ```bash
-# Without email (auto-verify, no alert emails)
-docker run -d -p 3000:80 \
-  -e ADMIN_EMAILS=admin@example.com \
-  -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
-
-# With email (Resend)
-docker run -d -p 3000:80 \
-  -e ADMIN_EMAILS=admin@example.com \
-  -e MAIL_PROVIDER=resend \
-  -e RESEND_API_KEY=re_xxxxxx \
-  -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
+./deploy/installer.sh
 ```
 
-Opens at `http://localhost:3000`.
+## Architecture
+
+### Public Status Page
+
+<img width="1892" height="860" alt="Public status page screenshot" src="https://github.com/user-attachments/assets/594a8a1d-618d-44e2-b99d-6535942a6709" />
+
+### Application Overview
+
+```mermaid
+flowchart LR
+    Browser["User Browser"] --> App["Rails Application"]
+    App --> Jobs["SolidQueue Workers"]
+    Jobs --> DB["SQLite3 Database"]
+```
+
+### Key Design Decisions
+
+- **SQLite3** — single-file database, zero operational overhead. Suitable for single-server deployments.
+- **SolidQueue** — database-backed job queue (no Redis dependency). Scheduler and workers run in-process.
+- **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
+- **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
 
 ### Thread count
 
@@ -76,11 +158,9 @@ Opens at `http://localhost:3000`.
 | Solid Queue workers | `RAILS_MAX_THREADS` | `config/queue.yml` |
 | DB connection pool | `RAILS_MAX_THREADS x 2` | `config/database.yml` |
 
-The doubled pool covers both Puma web threads and Solid Queue workers
-sharing the same database connections.
+The doubled pool covers both Puma web threads and Solid Queue workers sharing the same database connections.
 
-The installer auto-detects a value based on available RAM (shown as hint),
-but always defaults the prompt to `3`. You can change it manually:
+The installer auto-detects a value based on available RAM (shown as hint), but always defaults the prompt to `3`. You can change it manually:
 
 ```bash
 # With docker run
@@ -97,9 +177,7 @@ docker compose up -d
 
 Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
 
-
-
-## Auth
+## Authentication
 
 Authentication is handled by Rodauth.
 
@@ -123,17 +201,6 @@ Email delivery is **optional**. When a mail provider is configured, the full aut
 - **Login change** and **email verification** are disabled
 - **Alert emails** are skipped silently
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun` |
-| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for outgoing emails |
-| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
-| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
-
-\* Required when using that provider.
-
 ### Admin assignment
 
 Set `ADMIN_EMAILS` environment variable with a comma-separated list:
@@ -144,7 +211,7 @@ ADMIN_EMAILS=admin@example.com docker compose up -d
 
 Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
 
-## Role-Based Access Control
+## RBAC
 
 | Role | Access |
 |---|---|
@@ -173,10 +240,9 @@ Admins control which triggers send email notifications from the **Integrations**
 | Maintenance Window | ❌ Manual only | Togglable |
 | Custom | ❌ Manual only | Togglable |
 
-Email is only sent when the trigger's **Email** toggle is enabled on the Integrations page,
-regardless of the global email notifications setting.
+Email is only sent when the trigger's **Email** toggle is enabled on the Integrations page, regardless of the global email notifications setting.
 
-## Background Jobs & Scheduler
+## Background Jobs
 
 SolidQueue powers all background processing with a recurring schedule defined in `config/recurring.yml`.
 
@@ -190,66 +256,15 @@ SolidQueue powers all background processing with a recurring schedule defined in
 
 ### Jobs
 
-| Job | File | Purpose |
-|---|---|---|
-| `MonitorSchedulerJob` | `app/jobs/monitor_scheduler_job.rb` | Iterates all monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval` |
-| `MonitorCheckJob` | `app/jobs/monitor_check_job.rb` | Performs an HTTP GET against a monitor's URL; records response time, status code, and `up`/`down` state; manages `Incident` lifecycle (creates on first failure, resolves all open incidents on recovery) |
-| `DataRetentionJob` | `app/jobs/data_retention_job.rb` | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days |
+| Job | Purpose |
+|---|---|
+| `MonitorSchedulerJob` | Iterates all monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval` |
+| `MonitorCheckJob` | Performs an HTTP GET against a monitor's URL; records response time, status code, and up/down state; manages incident lifecycle (creates on first failure, resolves all open incidents on recovery) |
+| `DataRetentionJob` | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days |
 
 Start the worker with `bin/jobs` (already included in `bin/dev`).
 
-## Creating Monitored Endpoints
-
-1. Login and navigate to `/nodes`
-2. Click **Create Node**
-3. Fill in name, URL, check interval (seconds), and timeout (seconds)
-4. The scheduler picks it up within 30 seconds
-
-## Mailer
-
-### Development
-
-Emails open in browser via [letter_opener](https://github.com/ryanb/letter_opener). No SMTP configuration needed.
-
-For production email setup, see [Auth → Email configuration](#email-configuration).
-
-## Design System
-
-See `DESIGN.md` for the full design token specification (colors, typography, components).
-
-Built with:
-- **Tailwind CSS v4** — utility-first CSS
-- **Lucide** — icon library (CDN)
-- **Chartkick** + Chart.js — bar/column charts
-- **Stimulus** — JavaScript sprinkles (sidebar toggle, dropdown menu, password toggle)
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Framework | Rails 8.1 |
-| Ruby | 4.0.5 |
-| Database | SQLite3 |
-| Auth | Rodauth with RBAC (viewer / collaborator / admin) |
-| CSS | Tailwind CSS v4 |
-| JS | Stimulus + Turbo |
-| Charts | Chartkick + Chart.js |
-| Jobs | SolidQueue |
-| Mailer | letter_opener (dev), Action Mailer with AlertMailer |
-| Icons | Lucide |
-| Tools | Tippy.js (tooltips), Pagy (pagination) |
-
-## Creating a Release
-
-```bash
-# Tag and push — CI builds and pushes to Docker Hub
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via the UI — same result.
-
-## Setup (Development)
+## Development
 
 ### Prerequisites
 
@@ -257,13 +272,15 @@ Or create a [GitHub Release](https://github.com/binilsn/up-timer/releases) via t
 - SQLite3
 - [RVM](https://rvm.io) (recommended for Ruby version management)
 
+### Setup
+
 ```bash
 # Clone and enter project
 git clone https://github.com/senbinil/up-timer.git
 cd up-timer
 
 # Configure admin emails (copy and edit)
-cp deploy/.env.example .env
+cp .env.example .env
 # Edit .env with your email to get admin access:
 # ADMIN_EMAILS=you@example.com
 
@@ -287,8 +304,66 @@ bin/dev
 - **CSS watcher** (Tailwind CSS v4)
 - **Job worker** (SolidQueue) for background jobs
 
+### Mailer in Development
+
+Emails open in browser via [letter_opener](https://github.com/ryanb/letter_opener). No SMTP configuration needed.
+
+### Creating Monitored Endpoints
+
+1. Login and navigate to `/nodes`
+2. Click **Create Node**
+3. Fill in name, URL, check interval (seconds), and timeout (seconds)
+4. The scheduler picks it up within 30 seconds
+
+### Design System
+
+See [DESIGN.md](DESIGN.md) for the full design token specification (colors, typography, components).
+
 ## Testing
 
 ```bash
 bundle exec rspec
 ```
+
+### Installer Tests
+
+The deployment installer has its own test suite (bash-based):
+
+```bash
+# Unit tests — compose generation
+bash spec/installer_test.sh
+
+# Integration tests — .env to docker-compose config resolution
+bash spec/installer_integration_test.sh
+```
+
+These run automatically in CI on every pull request.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Rails 8.1 |
+| Ruby | 4.0.5 |
+| Database | SQLite3 |
+| Auth | Rodauth with RBAC (viewer / collaborator / admin) |
+| CSS | Tailwind CSS v4 |
+| JS | Stimulus + Turbo |
+| Charts | Chartkick + Chart.js |
+| Jobs | SolidQueue |
+| Mailer | letter_opener (dev), Action Mailer with AlertMailer |
+| Feature Flags | — (removed, toggle moved to per-trigger email control) |
+| Icons | Lucide |
+| Tools | Tippy.js (tooltips), Pagy (pagination) |
+| Deployment | Docker, Kamal, Docker Compose |
+| CI | GitHub Actions (scan, lint, test, deploy_test) |
+
+## Creating a Release
+
+```bash
+# Tag and push — CI builds and pushes to Docker Hub
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Or create a [GitHub Release](https://github.com/senbinil/up-timer/releases) via the UI — same result.
