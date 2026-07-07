@@ -1,6 +1,6 @@
 # UpTimer
 
-Uptime monitoring dashboard for tracking service health, response times, and incidents.
+Having a hard time tracking your services? UpTimer gives you real-time monitoring, instant alerts, and a beautiful dashboard — zero infrastructure overhead.
 
 <img width="1886" height="865" alt="Dashboard screenshot" src="https://github.com/user-attachments/assets/67e747b1-fc2d-4cd7-8f96-e27b6a6c7ad3" />
 
