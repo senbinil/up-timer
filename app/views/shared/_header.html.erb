@@ -1,7 +1,9 @@
 <header class="flex items-center justify-between px-4 py-3 md:px-16 md:py-4 border-b border-border bg-surface-container-lowest">
   <div class="flex items-center gap-2.5">
-    <%= image_tag "logo.svg", alt: "UpTimer", class: "w-7 h-7 rounded" %>
-    <span class="text-lg font-semibold tracking-tight font-[Hanken_Grotesk] text-navy">UpTimer</span>
+    <%= link_to root_path, class: "flex items-center gap-2.5" do %>
+      <%= image_tag "logo.svg", alt: "UpTimer", class: "w-7 h-7 rounded" %>
+      <span class="text-lg font-semibold tracking-tight font-[Hanken_Grotesk] text-navy">UpTimer</span>
+    <% end %>
   </div>
 
   <nav class="flex items-center gap-4">

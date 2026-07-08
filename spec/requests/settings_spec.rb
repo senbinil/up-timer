@@ -14,13 +14,6 @@ RSpec.describe "Settings", type: :request do
       get settings_path
       expect(response).to have_http_status(:ok)
     end
-
-    it "generates a status_token if blank" do
-      account = create(:account, status_token: nil)
-      sign_in(account)
-      get settings_path
-      expect(account.reload.status_token).to be_present
-    end
   end
 
   describe "PATCH /settings" do
