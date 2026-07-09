@@ -1,5 +1,5 @@
 class DashboardBroadcastJob < ApplicationJob
-  queue_as :default
+  queue_as :dashboard_broadcast
 
   CURSOR_KEY = "dashboard:last_broadcast_at"
   FALLBACK_WINDOW = 5.seconds
