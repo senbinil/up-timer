@@ -1,0 +1,47 @@
+<div id="fleet_status">
+  <div class="card space-y-5">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+      <span class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Global Fleet Status</span>
+    </div>
+
+    <div>
+      <h2 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk] capitalize"><%= stats[:status] %></h2>
+      <p class="text-body-md text-slate-400 mt-1"><%= stats[:up_count] %> of <%= stats[:total] %> nodes healthy<% if stats[:down_count] > 0 %>, <%= stats[:down_count] %> degraded<% end %>.</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-4 border-t border-divider">
+      <div>
+        <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
+        <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= stats[:uptime] %>%</p>
+      </div>
+      <div>
+        <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Nodes</p>
+        <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= stats[:total] %></p>
+      </div>
+      <div>
+        <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Downtime</p>
+        <p class="text-lg md:text-2xl font-semibold <%= stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= stats[:error_rate] %>%</p>
+      </div>
+      <div>
+        <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Paused</p>
+        <p class="text-lg md:text-2xl font-semibold <%= stats[:paused_count] > 0 ? "text-[var(--color-warning)]" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= stats[:paused_count] %></p>
+      </div>
+      <div>
+        <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Alerts</p>
+        <p class="text-lg md:text-2xl font-semibold <%= alert_counts.values.sum > 0 ? "text-warning" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= alert_counts.values.sum %></p>
+        <% if alert_counts.values.sum > 0 %>
+          <p class="text-[10px] font-mono mt-0.5">
+            <% if alert_counts["critical"].to_i > 0 %><span class="text-error"><%= alert_counts["critical"] %> crit</span><% end %>
+            <% if alert_counts["warning"].to_i > 0 %><span class="text-warning ml-1"><%= alert_counts["warning"] %> warn</span><% end %>
+          </p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 pt-3 border-t border-divider text-[10px] text-slate-400 font-mono">
+      <%= lucide_icon "archive", size: 12, class: "flex-shrink-0" %>
+      <span>Check data retained for 30 days. Resolved incidents cleared after 90 days.</span>
+    </div>
+  </div>
+</div>
