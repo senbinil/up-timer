@@ -15,15 +15,22 @@ class Alert < ApplicationRecord
   scope :by_severity, ->(sev) { where(severity: sev) if sev.present? }
 
   def self.heatmap(days = 14)
+    start_date = days.days.ago.to_date
+    # Single query: fetch all relevant rows, group in Ruby
+    rows = where(created_at: start_date.beginning_of_day..)
+      .pluck(:created_at, :severity)
+
+    grouped = rows.group_by { |time, _| time.in_time_zone.to_date }
+
     days.downto(0).map do |days_ago|
       date = days_ago.days.ago.to_date
-      day_alerts = where(created_at: date.all_day)
+      day_alerts = grouped[date] || []
       {
         date: date,
-        count: day_alerts.count,
-        critical: day_alerts.where(severity: "critical").count,
-        warning: day_alerts.where(severity: "warning").count,
-        info: day_alerts.where(severity: "info").count
+        count: day_alerts.size,
+        critical: day_alerts.count { |_, s| s == "critical" },
+        warning: day_alerts.count { |_, s| s == "warning" },
+        info: day_alerts.count { |_, s| s == "info" }
       }
     end
   end

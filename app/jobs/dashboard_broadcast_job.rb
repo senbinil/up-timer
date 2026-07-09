@@ -53,7 +53,7 @@ class DashboardBroadcastJob < ApplicationJob
     )
 
     # 6. Broadcast as one message
-    Turbo::StreamsChannel.broadcast_stream_to("dashboard", html)
+    Turbo::StreamsChannel.broadcast_stream_to("dashboard", content: html)
 
     # 7. Advance cursor
     Rails.cache.write(CURSOR_KEY, Time.current)
