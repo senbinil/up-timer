@@ -10,11 +10,16 @@ class GeoLocationService
   # occasional monitor creation / URL changes.
   API_URL = "http://ip-api.com/json/%{ip}?fields=status,lat,lon"
 
-  # RFC 1918 private IPv4 ranges
-  PRIVATE_RANGES = [
-    IPAddr.new("10.0.0.0/8"),
-    IPAddr.new("172.16.0.0/12"),
-    IPAddr.new("192.168.0.0/16")
+  # Non-routable IP ranges that should not be geolocated
+  LOCAL_RANGES = [
+    IPAddr.new("127.0.0.0/8"),       # loopback
+    IPAddr.new("::1/128"),             # IPv6 loopback
+    IPAddr.new("10.0.0.0/8"),         # RFC 1918 private
+    IPAddr.new("172.16.0.0/12"),      # RFC 1918 private
+    IPAddr.new("192.168.0.0/16"),     # RFC 1918 private
+    IPAddr.new("169.254.0.0/16"),    # IPv4 link-local
+    IPAddr.new("fe80::/10"),           # IPv6 link-local
+    IPAddr.new("fc00::/7")            # IPv6 unique-local
   ].freeze
 
   def self.call(url)
@@ -61,10 +66,7 @@ class GeoLocationService
 
   def private_ip?(ip)
     addr = IPAddr.new(ip)
-    addr.loopback? ||
-      PRIVATE_RANGES.any? { |range| range.include?(addr) } ||
-      addr.ipv6_linklocal? ||
-      addr.ipv6_unique_local?
+    LOCAL_RANGES.any? { |range| range.include?(addr) }
   rescue IPAddr::InvalidAddressError
     true
   end
