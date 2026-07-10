@@ -10,8 +10,14 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this._map?.remove();
-    this._map = null;
+    this._removeMap();
+  }
+
+  _removeMap() {
+    if (this._mapInstance) {
+      this._mapInstance.remove();
+      this._mapInstance = null;
+    }
   }
 
   _initMap() {
@@ -33,7 +39,13 @@ export default class extends Controller {
 
       const marker = L.marker(latlng, { icon })
         .addTo(this._map)
-        .bindPopup(popup);
+        .bindPopup(popup)
+        .bindTooltip(node.name, {
+          direction: "top",
+          offset: [0, -32],
+          permanent: true,
+          className: "node-marker-tooltip",
+        });
 
       markers.push(marker);
     }
@@ -43,8 +55,8 @@ export default class extends Controller {
       return;
     }
 
-    // Fit map to markers with padding
-    this._map.fitBounds(bounds, { padding: [40, 40] });
+    // Fit map to markers with padding, cap zoom to country level
+    this._map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
   }
 
   get _map() {

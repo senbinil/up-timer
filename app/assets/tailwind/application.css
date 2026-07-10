@@ -460,3 +460,35 @@
     color: var(--color-slate-400);
     cursor: default;
 }
+
+/* =============================================
+   Leaflet Map Overrides
+   ============================================= */
+
+/* Marker tooltip — sits above the pin */
+.node-marker-tooltip {
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: "Inter", ui-sans-serif, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.dark .node-marker-tooltip {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+.node-marker-tooltip::before {
+  display: none;
+}
+
+/* Ensure map container doesn't collapse during Turbo replace */
+[data-controller="map"] {
+  min-height: 16rem;
+}
