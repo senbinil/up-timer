@@ -54,7 +54,7 @@ generate() {
     export TAG="${TAG:-latest}"
     export DOMAIN="${DOMAIN:-integration.example.com}"
     export APP_HOST="${APP_HOST:-$DOMAIN}"
-    export RAILS_MASTER_KEY="${RAILS_MASTER_KEY:-test-master-key-12345}"
+    export SECRET_KEY_BASE="${SECRET_KEY_BASE:-test-master-key-12345}"
     export RAILS_MAX_THREADS="${RAILS_MAX_THREADS:-3}"
     export TRAEFIK_NETWORK="${TRAEFIK_NETWORK:-kamal}"
     export ENTRYPOINT="${ENTRYPOINT:-websecure}"
@@ -80,7 +80,7 @@ generate() {
     # Write corresponding .env file (simulates what write_env_file does)
     cat > "$ENV_PATH" << EOF
 TAG=${TAG}
-RAILS_MASTER_KEY=${RAILS_MASTER_KEY:-}
+SECRET_KEY_BASE=${SECRET_KEY_BASE:-}
 RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
 ADMIN_EMAILS=${ADMIN_EMAILS:-}
 APP_HOST=${APP_HOST:-}
@@ -109,7 +109,7 @@ EOF
             ;;
     esac
 
-    unset TAG DOMAIN APP_HOST RAILS_MASTER_KEY RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
+    unset TAG DOMAIN APP_HOST SECRET_KEY_BASE RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
 }
 
 # Run docker compose config and grep the resolved output
@@ -181,9 +181,9 @@ test_app_host_explicit_value() {
     teardown
 }
 
-test_rails_master_key_resolved() {
-    setup; generate "kamal-proxy" "RAILS_MASTER_KEY=super-secret-key"
-    assert_resolved "RAILS_MASTER_KEY passed through" "RAILS_MASTER_KEY: super-secret-key"
+test_secret_key_base_resolved() {
+    setup; generate "kamal-proxy" "SECRET_KEY_BASE=super-secret-key"
+    assert_resolved "SECRET_KEY_BASE passed through" "SECRET_KEY_BASE: super-secret-key"
     teardown
 }
 
@@ -258,7 +258,7 @@ main() {
     test_image_tag_default_latest
     test_app_host_resolved_from_domain
     test_app_host_explicit_value
-    test_rails_master_key_resolved
+    test_secret_key_base_resolved
     test_rails_max_threads_resolved
     test_rails_max_threads_default_3
     test_port_resolved

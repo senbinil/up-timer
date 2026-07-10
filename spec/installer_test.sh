@@ -30,7 +30,7 @@ eval "$(sed -n '/^write_app_service/,/^main()/p' deploy/installer.sh | head -n -
 
 setup()    { TEST_DIR=$(mktemp -d); }
 teardown() { rm -rf "$TEST_DIR"; }
-cleanup()  { unset TAG DOMAIN APP_HOST RAILS_MASTER_KEY TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF; }
+cleanup()  { unset TAG DOMAIN APP_HOST SECRET_KEY_BASE TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF; }
 
 pass() { echo -e "  ${GREEN}✓${NC} $1"; TESTS_PASSED=$((TESTS_PASSED + 1)); TESTS_RAN=$((TESTS_RAN + 1)); }
 fail() { echo -e "  ${RED}✗${NC} $1"; TESTS_RAN=$((TESTS_RAN + 1)); }
@@ -66,7 +66,7 @@ generate() {
     export TAG="${TAG:-latest}"
     export DOMAIN="${DOMAIN:-test.example.com}"
     export APP_HOST="${APP_HOST:-$DOMAIN}"
-    export RAILS_MASTER_KEY="${RAILS_MASTER_KEY:-test-key-12345}"
+    export SECRET_KEY_BASE="${SECRET_KEY_BASE:-test-key-12345}"
     export TRAEFIK_NETWORK="${TRAEFIK_NETWORK:-kamal}"
     export ENTRYPOINT="${ENTRYPOINT:-websecure}"
     export APP_PORT="${APP_PORT:-80}"

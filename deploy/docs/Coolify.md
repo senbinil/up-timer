@@ -40,7 +40,7 @@ Under **Environment Variables**, add:
 
 | Variable | Required | Example |
 |---|---|---|
-| `RAILS_MASTER_KEY` | ❌ | From `config/master.key` (auto-generated if omitted) |
+| `SECRET_KEY_BASE` | ❌ | Auto-generated per-session if omitted |
 | `ADMIN_EMAILS` | ❌ | `admin@example.com` |
 | `APP_HOST` | ❌ | `uptime.example.com` |
 | `MAIL_PROVIDER` | ❌ | `resend` or `mailgun` |
@@ -82,16 +82,16 @@ Click **Deploy**. Coolify pulls the image, starts the container, provisions SSL,
 ### Minimal (testing)
 
 ```
-RAILS_MASTER_KEY=
+SECRET_KEY_BASE=
 ADMIN_EMAILS=you@example.com
 ```
 
-No master key needed — key auto-generated per session. Email is optional — without a provider, accounts are auto-verified and alert emails are skipped.
+No secret key needed — auto-generated per session. Email is optional — without a provider, accounts are auto-verified and alert emails are skipped.
 
 ### With Email (Resend)
 
 ```
-RAILS_MASTER_KEY=abc123...
+SECRET_KEY_BASE=abc123...
 ADMIN_EMAILS=admin@example.com
 APP_HOST=uptime.example.com
 MAIL_PROVIDER=resend
@@ -122,5 +122,5 @@ Or enable **Auto-Deploy** on new Docker Hub tags in Coolify's source settings.
 - Add them and redeploy
 
 **Session/cookie issues after redeploy:**
-- You're using auto-generated `SECRET_KEY_BASE` (no master key provided)
-- Provide `RAILS_MASTER_KEY` for persistent sessions
+- You're using auto-generated `SECRET_KEY_BASE` (no secret key provided)
+- Provide a fixed `SECRET_KEY_BASE` for persistent sessions
