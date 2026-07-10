@@ -66,7 +66,6 @@ generate() {
     export TAG="${TAG:-latest}"
     export DOMAIN="${DOMAIN:-test.example.com}"
     export APP_HOST="${APP_HOST:-$DOMAIN}"
-    export SECRET_KEY_BASE="${SECRET_KEY_BASE:-test-key-12345}"
     export TRAEFIK_NETWORK="${TRAEFIK_NETWORK:-kamal}"
     export ENTRYPOINT="${ENTRYPOINT:-websecure}"
     export APP_PORT="${APP_PORT:-80}"
