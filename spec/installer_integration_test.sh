@@ -54,7 +54,6 @@ generate() {
     export TAG="${TAG:-latest}"
     export DOMAIN="${DOMAIN:-integration.example.com}"
     export APP_HOST="${APP_HOST:-$DOMAIN}"
-    export SECRET_KEY_BASE="${SECRET_KEY_BASE:-test-master-key-12345}"
     export RAILS_MAX_THREADS="${RAILS_MAX_THREADS:-3}"
     export TRAEFIK_NETWORK="${TRAEFIK_NETWORK:-kamal}"
     export ENTRYPOINT="${ENTRYPOINT:-websecure}"
@@ -109,7 +108,7 @@ EOF
             ;;
     esac
 
-    unset TAG DOMAIN APP_HOST SECRET_KEY_BASE RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
+    unset TAG DOMAIN APP_HOST RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
 }
 
 # Run docker compose config and grep the resolved output
@@ -181,9 +180,9 @@ test_app_host_explicit_value() {
     teardown
 }
 
-test_secret_key_base_resolved() {
-    setup; generate "kamal-proxy" "SECRET_KEY_BASE=super-secret-key"
-    assert_resolved "SECRET_KEY_BASE passed through" "SECRET_KEY_BASE: super-secret-key"
+test_secret_key_base_not_in_compose_env() {
+    setup; generate "kamal-proxy"
+    assert_resolved_not "SECRET_KEY_BASE not in compose env" "SECRET_KEY_BASE"
     teardown
 }
 
@@ -258,7 +257,7 @@ main() {
     test_image_tag_default_latest
     test_app_host_resolved_from_domain
     test_app_host_explicit_value
-    test_secret_key_base_resolved
+    test_secret_key_base_not_in_compose_env
     test_rails_max_threads_resolved
     test_rails_max_threads_default_3
     test_port_resolved

@@ -234,6 +234,12 @@ collect_env() {
     # App vars (common)
     read -rp "  Image tag [latest]: " TAG; TAG=${TAG:-latest}
 
+    # Auto-generate SECRET_KEY_BASE if not already set
+    if [ -z "${SECRET_KEY_BASE:-}" ]; then
+        SECRET_KEY_BASE=$(openssl rand -hex 64)
+        info "SECRET_KEY_BASE auto-generated"
+    fi
+
     read -rp "  Admin emails (comma-separated, optional): " ADMIN_EMAILS
 
     # RAILS_MAX_THREADS auto-detection
@@ -554,8 +560,7 @@ END_PORTS
     cat << 'END_APP_ENV'
     environment:
       - RAILS_ENV=production
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-      - RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
+      - RAILS_MAX_THREADS=\${RAILS_MAX_THREADS:-3}
       - SOLID_QUEUE_IN_PUMA=true
       - APP_HOST=${APP_HOST}
       - ADMIN_EMAILS=${ADMIN_EMAILS:-}
