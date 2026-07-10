@@ -9,4 +9,4 @@
 <% end %>
 
 <%# Fleet status last (reflects all changes above) %>
-<%= turbo_stream.replace "fleet_status", partial: "dashboard/fleet_status", locals: { stats: @stats, alert_counts: @alert_counts } %>
+<%= turbo_stream.replace "fleet_status", partial: "dashboard/fleet_status", locals: { stats: @stats, alert_counts: @alert_counts, nodes: UptimeMonitor.ranked } %>
