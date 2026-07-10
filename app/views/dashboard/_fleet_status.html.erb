@@ -39,6 +39,18 @@
       </div>
     </div>
 
+    <% located = local_assigns[:nodes]&.with_location %>
+    <% if located&.any? %>
+      <div class="pt-4 border-t border-divider">
+        <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-2">Map View</p>
+        <div data-controller="map"
+             data-map-nodes-value='<%= located.map { |n|
+               { id: n.id, name: n.name, url: n.url, latitude: n.latitude.to_f, longitude: n.longitude.to_f, status: n.status, paused: n.paused?, path: node_path(n) }
+             }.to_json %>'
+             class="w-full h-64 rounded-default border border-border bg-surface-container-lowest z-0"></div>
+      </div>
+    <% end %>
+
     <div class="flex items-center gap-2 pt-3 border-t border-divider text-[10px] text-slate-400 font-mono">
       <%= lucide_icon "archive", size: 12, class: "flex-shrink-0" %>
       <span>Check data retained for 30 days. Resolved incidents cleared after 90 days.</span>

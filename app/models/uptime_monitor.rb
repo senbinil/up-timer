@@ -6,6 +6,8 @@ class UptimeMonitor < ApplicationRecord
   has_many :alerts, dependent: :destroy, foreign_key: :monitor_id
 
   after_create_commit :enqueue_first_check
+  after_create_commit :enqueue_geo_location, unless: :location_set?
+  after_update_commit :enqueue_geo_location, if: :saved_change_to_url?
 
   validates :request_type, inclusion: { in: MonitorCheckService::SUPPORTED_METHODS }
   validates :expected_status, numericality: { only_integer: true, greater_than: 0, less_than: 600 }, allow_nil: true
@@ -18,6 +20,7 @@ class UptimeMonitor < ApplicationRecord
   scope :active, -> { where(paused: false) }
   scope :paused, -> { where(paused: true) }
   scope :public_listed, -> { where(public_listed: true) }
+  scope :with_location, -> { where.not(latitude: nil, longitude: nil) }
 
   def self.fleet_stats
     total = count
@@ -77,6 +80,10 @@ class UptimeMonitor < ApplicationRecord
     false
   end
 
+  def location_set?
+    latitude.present? && longitude.present?
+  end
+
   def last_pause_log
     ActionLog.for_record(self.class.name, id).where(action: "paused").recent.first
   end
@@ -85,5 +92,9 @@ class UptimeMonitor < ApplicationRecord
 
   def enqueue_first_check
     MonitorCheckJob.perform_later(id)
+  end
+
+  def enqueue_geo_location
+    GeoLocationJob.perform_later(id)
   end
 end
