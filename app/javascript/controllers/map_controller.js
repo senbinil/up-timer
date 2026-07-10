@@ -55,8 +55,8 @@ export default class extends Controller {
       return;
     }
 
-    // Fit map to markers with padding, cap zoom to country level
-    this._map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+    // Fit map to markers with padding, cap at continent level
+    this._map.fitBounds(bounds, { padding: [40, 40], maxZoom: 4 });
   }
 
   get _map() {
