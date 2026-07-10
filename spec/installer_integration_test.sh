@@ -180,9 +180,9 @@ test_app_host_explicit_value() {
     teardown
 }
 
-test_secret_key_base_not_in_compose_env() {
-    setup; generate "kamal-proxy"
-    assert_resolved_not "SECRET_KEY_BASE not in compose env" "SECRET_KEY_BASE"
+test_secret_key_base_resolved() {
+    setup; generate "kamal-proxy" "SECRET_KEY_BASE=super-secret-key"
+    assert_resolved "SECRET_KEY_BASE passed through" "SECRET_KEY_BASE: super-secret-key"
     teardown
 }
 
@@ -257,7 +257,7 @@ main() {
     test_image_tag_default_latest
     test_app_host_resolved_from_domain
     test_app_host_explicit_value
-    test_secret_key_base_not_in_compose_env
+    test_secret_key_base_resolved
     test_rails_max_threads_resolved
     test_rails_max_threads_default_3
     test_port_resolved

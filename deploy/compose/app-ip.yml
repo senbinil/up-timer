@@ -11,6 +11,7 @@ services:
       - "${APP_PORT:-80}:80"
     environment:
       - RAILS_ENV=production
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - SOLID_QUEUE_IN_PUMA=true
       - APP_HOST=${APP_HOST:-${DOMAIN}}
       - ADMIN_EMAILS=${ADMIN_EMAILS:-}

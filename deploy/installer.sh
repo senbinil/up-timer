@@ -560,6 +560,7 @@ END_PORTS
     cat << 'END_APP_ENV'
     environment:
       - RAILS_ENV=production
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-3}
       - SOLID_QUEUE_IN_PUMA=true
       - APP_HOST=${APP_HOST}
