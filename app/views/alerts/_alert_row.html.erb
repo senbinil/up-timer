@@ -1,0 +1,11 @@
+<%= content_tag :div, id: dom_id(alert), class: "px-1 py-3 list-row hover:bg-surface-container-low transition-colors flex items-center gap-3" do %>
+  <span class="<%= severity_chip_class(alert.severity) %> text-[10px] flex-shrink-0"><%= alert.severity %></span>
+  <% if alert.resolved? %>
+    <span class="chip chip-success text-[10px] flex-shrink-0">resolved</span>
+  <% end %>
+  <%= link_to alert.message, alert_path(alert), class: "text-xs text-slate-400 truncate flex-1 hover:text-navy transition-colors" %>
+  <span class="text-[10px] text-slate-400 font-mono flex-shrink-0"><%= time_ago_in_words(alert.created_at) %> ago</span>
+  <% unless alert.resolved? %>
+    <button onclick="document.dispatchEvent(new CustomEvent('confirm-modal:open', { detail: { url: '<%= resolve_alert_path(alert) %>', message: 'Mark this alert as resolved?' } }))" class="btn btn-ghost text-[10px] text-success flex-shrink-0">Resolve</button>
+  <% end %>
+<% end %>

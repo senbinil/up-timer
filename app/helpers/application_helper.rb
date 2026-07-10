@@ -32,4 +32,10 @@ module ApplicationHelper
       }
     ]
   end
+
+  def chart_data_for(node)
+    node.monitor_checks.order(checked_at: :desc).limit(24).reverse.map { |c|
+      [ c.checked_at.strftime("%H:%M"), c.response_time ]
+    }.to_h
+  end
 end

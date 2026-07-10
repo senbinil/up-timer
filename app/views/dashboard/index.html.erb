@@ -1,52 +1,10 @@
+<%= turbo_stream_from "dashboard" %>
+
 <div class="space-y-6">
   <%# ═══════════════════════════════════════════════
      Row 1: Global Fleet Status (Full Width)
      ═══════════════════════════════════════════════ %>
-  <div class="card space-y-5">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-primary-container"></span>
-        <span class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Global Fleet Status</span>
-      </div>
-
-      <div>
-        <h2 class="text-2xl md:text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk] capitalize"><%= @stats[:status] %></h2>
-        <p class="text-body-md text-slate-400 mt-1"><%= @stats[:up_count] %> of <%= @stats[:total] %> nodes healthy<% if @stats[:down_count] > 0 %>, <%= @stats[:down_count] %> degraded<% end %>.</p>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-4 border-t border-divider">
-        <div>
-          <p class="text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Uptime</p>
-          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:uptime] %>%</p>
-        </div>
-        <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Nodes</p>
-          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:total] %></p>
-        </div>
-        <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Downtime</p>
-          <p class="text-lg md:text-2xl font-semibold <%= @stats[:error_rate] > 0 ? "text-error" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:error_rate] %>%</p>
-        </div>
-        <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Paused</p>
-          <p class="text-lg md:text-2xl font-semibold <%= @stats[:paused_count] > 0 ? "text-[var(--color-warning)]" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:paused_count] %></p>
-        </div>
-        <div>
-          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Active Alerts</p>
-          <p class="text-lg md:text-2xl font-semibold <%= @alert_counts.values.sum > 0 ? "text-warning" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @alert_counts.values.sum %></p>
-          <% if @alert_counts.values.sum > 0 %>
-            <p class="text-[10px] font-mono mt-0.5">
-              <% if @alert_counts["critical"].to_i > 0 %><span class="text-error"><%= @alert_counts["critical"] %> crit</span><% end %>
-              <% if @alert_counts["warning"].to_i > 0 %><span class="text-warning ml-1"><%= @alert_counts["warning"] %> warn</span><% end %>
-            </p>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2 pt-3 border-t border-divider text-[10px] text-slate-400 font-mono">
-        <%= lucide_icon "archive", size: 12, class: "flex-shrink-0" %>
-        <span>Check data retained for 30 days. Resolved incidents cleared after 90 days.</span>
-      </div>
-    </div>
+  <%= render "dashboard/fleet_status", stats: @stats, alert_counts: @alert_counts %>
 
   <%# ═══════════════════════════════════════════════
      Row 2: Active Services (3-Column)
@@ -58,53 +16,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <% @services.each do |node| %>
-        <%= link_to node_path(node), class: "card space-y-4 block hover:border-primary-container/30 transition-colors" do %>
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-9 h-9 rounded-default bg-primary-container/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-primary-container" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
-              </div>
-              <div class="min-w-0">
-                <h3 class="text-sm font-semibold text-navy truncate"><%= node.name %></h3>
-                <p class="text-[11px] text-slate-400 font-mono truncate"><%= node.url %></p>
-              </div>
-            </div>
-            <span class="w-2 h-2 rounded-full <%= node.paused? ? "bg-[var(--color-warning)]" : (node.status == "up" ? "bg-primary-container" : "bg-error") %> flex-shrink-0 mt-1.5"></span>
-          </div>
-
-          <div class="space-y-2 pt-2 border-t border-divider">
-            <div class="flex justify-between text-xs">
-              <span class="font-mono text-slate-400">Response</span>
-              <span class="font-mono font-semibold text-navy"><%= node.monitor_checks.last&.response_time ? "#{node.monitor_checks.last.response_time}ms" : "-" %></span>
-            </div>
-            <div class="flex justify-between text-xs">
-              <span class="font-mono text-slate-400">Last Check</span>
-              <span class="font-mono font-semibold text-navy"><%= node.monitor_checks.last ? time_ago_in_words(node.monitor_checks.last.checked_at) : "never" %></span>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-1 pt-1" onclick="event.stopPropagation()">
-            <turbo-frame id="<%= dom_id(node, :tags) %>" style="display: contents">
-              <% node.tags.each do |tag| %>
-                <span class="chip chip-success text-[10px]"><%= tag %></span>
-              <% end %>
-            </turbo-frame>
-            <button data-controller="tag-picker"
-                    data-tag-picker-node-id-value="<%= node.id %>"
-                    data-tag-picker-tags-value="<%= node.tags.to_json %>"
-                    data-tag-picker-all-tags-value="<%= UptimeMonitor.all_tags.to_json %>"
-                    data-action="click->tag-picker#toggle"
-                    class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-dashed border-slate-300 text-slate-400 hover:border-primary-container hover:text-primary-container hover:bg-primary-container/5 transition-colors text-xs font-mono cursor-pointer ml-0.5" title="Add tag">+</button>
-          </div>
-
-          <div class="pt-2 border-t border-divider">
-            <div class="flex justify-between text-xs mb-2">
-              <span class="font-mono text-slate-400">Status</span>
-              <span class="font-mono font-semibold <%= node.paused? ? "text-[var(--color-warning)]" : (node.status == "up" ? "text-primary-container" : "text-error") %>"><%= node.paused? ? "PAUSED" : node.status&.upcase %></span>
-            </div>
-            <%= area_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
-          </div>
-        <% end %>
+        <%= render "nodes/node_card", node: node %>
       <% end %>
     </div>
   </div>
@@ -136,22 +48,14 @@
       <%= link_to "View All", alerts_path, class: "text-xs text-primary-container hover:underline font-medium" %>
     </div>
 
-    <% if @alerts.any? %>
-      <% @alerts.each do |alert| %>
-        <div class="px-1 py-3 list-row hover:bg-surface-container-low transition-colors flex items-center gap-3">
-          <span class="<%= severity_chip_class(alert.severity) %> text-[10px] flex-shrink-0"><%= alert.severity %></span>
-          <% if alert.resolved? %>
-            <span class="chip chip-success text-[10px] flex-shrink-0">resolved</span>
-          <% end %>
-          <%= link_to alert.message, alert_path(alert), class: "text-xs text-slate-400 truncate flex-1 hover:text-navy transition-colors" %>
-          <span class="text-[10px] text-slate-400 font-mono flex-shrink-0"><%= time_ago_in_words(alert.created_at) %> ago</span>
-          <% unless alert.resolved? %>
-            <button onclick="document.dispatchEvent(new CustomEvent('confirm-modal:open', { detail: { url: '<%= resolve_alert_path(alert) %>', message: 'Mark this alert as resolved?' } }))" class="btn btn-ghost text-[10px] text-success flex-shrink-0">Resolve</button>
-          <% end %>
-        </div>
+    <div id="recent_alerts">
+      <% if @alerts.any? %>
+        <% @alerts.each do |alert| %>
+          <%= render "alerts/alert_row", alert: alert %>
+        <% end %>
+      <% else %>
+        <div class="py-8 text-center text-xs text-slate-400">No alerts yet.</div>
       <% end %>
-    <% else %>
-      <div class="py-8 text-center text-xs text-slate-400">No alerts yet.</div>
-    <% end %>
+    </div>
   </div>
 </div>

@@ -21,8 +21,6 @@ class DashboardController < ApplicationController
   end
   helper_method :current_dashboard_limit
 
-  helper_method :chart_data_for, :fleet_stats
-
   def fleet_stats
     active_ids = UptimeMonitor.active.pluck(:id)
     stats = UptimeMonitor.fleet_stats
@@ -35,11 +33,5 @@ class DashboardController < ApplicationController
       error_rate: total_checks > 0 ? ((total_checks - up_checks).to_f / total_checks * 100).round(2) : 0,
       paused_count: UptimeMonitor.paused.count
     )
-  end
-
-  def chart_data_for(node)
-    node.monitor_checks.order(checked_at: :desc).limit(24).reverse.map { |c|
-      [ c.checked_at.strftime("%H:%M"), c.response_time ]
-    }.to_h
   end
 end

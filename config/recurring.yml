@@ -13,6 +13,9 @@ development:
     monitor_scheduler:
         class: MonitorSchedulerJob
         schedule: every 30 seconds
+    dashboard_broadcast:
+        class: DashboardBroadcastJob
+        schedule: every 2 seconds
     data_retention:
         class: DataRetentionJob
         schedule: every day at 3am
@@ -24,6 +27,9 @@ production:
     monitor_scheduler:
         class: MonitorSchedulerJob
         schedule: every 30 seconds
+    dashboard_broadcast:
+        class: DashboardBroadcastJob
+        schedule: every 2 seconds
     data_retention:
         class: DataRetentionJob
         schedule: every day at 3am

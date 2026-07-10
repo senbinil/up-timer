@@ -1,0 +1,12 @@
+<%# New alerts first (so fleet stats below reflect the updated count) %>
+<% @new_alerts.each do |alert| %>
+  <%= turbo_stream.prepend "recent_alerts", partial: "alerts/alert_row", locals: { alert: alert } %>
+<% end %>
+
+<%# Updated node cards %>
+<% @updated_nodes.each do |node| %>
+  <%= turbo_stream.replace dom_id(node), partial: "nodes/node_card", locals: { node: node } %>
+<% end %>
+
+<%# Fleet status last (reflects all changes above) %>
+<%= turbo_stream.replace "fleet_status", partial: "dashboard/fleet_status", locals: { stats: @stats, alert_counts: @alert_counts } %>

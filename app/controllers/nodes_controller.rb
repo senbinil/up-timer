@@ -88,6 +88,8 @@ class NodesController < ApplicationController
       format.turbo_stream
       format.html { redirect_to node_path(@node), notice: "#{@node.name} paused." }
     end
+
+    DashboardBroadcastService.call(updated_nodes: @node)
   end
 
   def resume
@@ -105,6 +107,8 @@ class NodesController < ApplicationController
       format.turbo_stream
       format.html { redirect_to node_path(@node), notice: "#{@node.name} resumed." }
     end
+
+    DashboardBroadcastService.call(updated_nodes: @node)
   end
 
   def toggle_public_listed
