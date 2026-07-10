@@ -81,7 +81,7 @@ Only the surrounding infrastructure differs.
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `TAG` | ❌ | `latest` | Docker image tag (pin to a version for stability) |
-| `RAILS_MASTER_KEY` | ❌ | auto-generated | Decrypts config/credentials (auto-generated if empty) |
+| `SECRET_KEY_BASE` | ❌ | auto-generated | Signs session cookies (auto-generated per-session if empty) |
 | `RAILS_MAX_THREADS` | ❌ | auto-detected | Puma thread pool (web + Solid Queue workers). Auto-detected from available RAM, clamped 3–16 |
 | `ADMIN_EMAILS` | ❌ | — | Comma-separated emails auto-assigned admin role |
 | `APP_HOST` | ❌ | `DOMAIN` | Host used in email links |
@@ -189,7 +189,7 @@ docker exec kamal-proxy kamal-proxy remove up-timer
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in DOMAIN, LETSENCRYPT_EMAIL, CF_DNS_API_TOKEN (email vars optional, RAILS_MASTER_KEY optional)
+# Fill in DOMAIN, LETSENCRYPT_EMAIL, CF_DNS_API_TOKEN (email vars optional, SECRET_KEY_BASE optional)
 
 docker compose \
   -f deploy/compose/app.yml \
@@ -203,7 +203,7 @@ docker compose \
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in DOMAIN, TRAEFIK_NETWORK (email vars optional, RAILS_MASTER_KEY optional)
+# Fill in DOMAIN, TRAEFIK_NETWORK (email vars optional, SECRET_KEY_BASE optional)
 
 docker compose \
   -f deploy/compose/app.yml \
@@ -231,7 +231,7 @@ docker compose \
 
 ```bash
 cp deploy/.env.example deploy/.env
-# Fill in APP_PORT if not using default 80 (email vars optional, RAILS_MASTER_KEY optional)
+# Fill in APP_PORT if not using default 80 (email vars optional, SECRET_KEY_BASE optional)
 
 docker compose \
   -f deploy/compose/app-ip.yml \
