@@ -164,6 +164,6 @@
   <% end %>
 
   <div class="flex gap-3 pt-8">
-    <%= button_to "Delete Node", node_path(@node), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo_confirm: "Delete this node and all its checks?" } } %>
+    <%= button_to "Delete Node", node_path(@node), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo: false, turbo_confirm: "Delete this node and all its checks?" } } %>
   </div>
 </div>

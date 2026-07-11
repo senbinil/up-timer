@@ -18,8 +18,7 @@ class AlertIntegrationsController < ApplicationController
   def create_recipient
     @recipient = Recipient.new(recipient_params)
     if @recipient.save
-      @recipients = Recipient.ordered
-      render partial: "recipients_list"
+      redirect_to alert_integrations_path, notice: "Recipient added."
     else
       @recipients = Recipient.ordered
       @triggers = AlertTrigger.ordered
