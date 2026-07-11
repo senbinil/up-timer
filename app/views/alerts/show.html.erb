@@ -35,7 +35,7 @@
 
   <div class="flex gap-3">
     <%= link_to "Edit", edit_alert_path(@alert), class: "btn btn-secondary text-xs" %>
-    <%= button_to "Delete", alert_path(@alert), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo: false, turbo_confirm: "Delete this alert?" } } %>
+    <%= button_to "Delete", alert_path(@alert), method: :delete, class: "btn btn-ghost text-xs text-error", form: { data: { turbo_confirm: "Delete this alert?" } } %>
     <% unless @alert.resolved? %>
       <div class="flex-1"></div>
       <%= button_to "Resolve", resolve_alert_path(@alert), method: :post, class: "btn btn-primary text-xs", form: { data: { turbo: false } } %>

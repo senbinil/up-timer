@@ -1,10 +1,10 @@
 <% if current_account&.admin? %>
   <% if node.paused? %>
-    <%= form_tag resume_node_path(node), method: :post, data: { turbo: false } do %>
+    <%= form_tag resume_node_path(node), method: :post do %>
       <%= button_tag "Resume", type: "submit", class: "btn btn-primary text-xs cursor-pointer" %>
     <% end %>
   <% else %>
-    <%= form_tag pause_node_path(node), method: :post, data: { turbo: false } do %>
+    <%= form_tag pause_node_path(node), method: :post do %>
       <%= button_tag "Pause", type: "submit", class: "bg-warning-container border border-warning text-on-warning-container rounded-default text-xs py-1 px-2 cursor-pointer hover:opacity-90 transition-opacity" %>
     <% end %>
   <% end %>

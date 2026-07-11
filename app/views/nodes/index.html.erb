@@ -46,8 +46,8 @@
             <% end %>
           </span>
           <span class="flex items-center gap-1">
-            <%= button_to "&#9650;".html_safe, move_up_node_path(node), method: :post, class: "text-[10px] text-slate-400 hover:text-navy p-0.5 cursor-pointer", title: "Move up", form: { data: { turbo: false } } %>
-            <%= button_to "&#9660;".html_safe, move_down_node_path(node), method: :post, class: "text-[10px] text-slate-400 hover:text-navy p-0.5 cursor-pointer", title: "Move down", form: { data: { turbo: false } } %>
+            <%= button_to "&#9650;".html_safe, move_up_node_path(node), method: :post, class: "text-[10px] text-slate-400 hover:text-navy p-0.5 cursor-pointer", title: "Move up" %>
+            <%= button_to "&#9660;".html_safe, move_down_node_path(node), method: :post, class: "text-[10px] text-slate-400 hover:text-navy p-0.5 cursor-pointer", title: "Move down" %>
           </span>
           <span id="<%= dom_id(node, :pause) %>" class="flex items-center gap-1">
             <%= render partial: "nodes/pause_button", locals: { node: node } %>
