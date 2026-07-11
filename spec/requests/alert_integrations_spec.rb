@@ -37,9 +37,15 @@ RSpec.describe "Alert Integrations", type: :request do
     it "creates a recipient" do
       sign_in_admin
       expect {
-        post recipients_alert_integrations_path, params: { recipient: { email: "new@example.com" } }
+        post recipients_alert_integrations_path, params: { recipient: { email: "new@example.com" } }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
       }.to change(Recipient, :count).by(1)
       expect(response).to have_http_status(:ok)
+    end
+
+    it "redirects on html request" do
+      sign_in_admin
+      post recipients_alert_integrations_path, params: { recipient: { email: "new@example.com" } }
+      expect(response).to have_http_status(:found)
     end
 
     it "renders show with errors on invalid data" do
