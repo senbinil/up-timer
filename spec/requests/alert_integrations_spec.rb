@@ -41,7 +41,6 @@ RSpec.describe "Alert Integrations", type: :request do
       }.to change(Recipient, :count).by(1)
       expect(response).to have_http_status(:ok)
     end
-    end
 
     it "renders show with errors on invalid data" do
       sign_in_admin
