@@ -33,13 +33,4 @@ module ApplicationHelper
     ]
   end
 
-  def chart_data_for(node)
-    checks = node.monitor_checks.order(checked_at: :desc).limit(24).reverse
-    return {} if checks.empty?
-
-    checks.each_with_object({}) { |c, h|
-      next if c.response_time.nil?
-      h[c.checked_at.strftime("%H:%M")] = c.response_time.to_i
-    }
-  end
 end
