@@ -113,6 +113,7 @@
     <% if @checks.any? %>
       <% chart_data = @checks.first(24).reverse.map { |c| [c.checked_at.strftime("%I:%M %p"), c.response_time] }.to_h %>
       <%= area_chart chart_data, height: "200px", colors: ["#2563eb"], library: { scales: { y: { beginAtZero: true } } } %>
+      <p class="text-[10px] text-slate-400 font-mono mt-2">Last 24 checks</p>
     <% else %>
       <p class="text-xs text-slate-400 py-8 text-center">No check data yet.</p>
     <% end %>

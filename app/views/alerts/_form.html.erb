@@ -1,4 +1,4 @@
-<%= form_with model: @alert, class: "space-y-8", data: { controller: "alert-form" } do |form| %>
+<%= form_with model: @alert, class: "space-y-8", html: { data: { turbo: false } }, data: { controller: "alert-form" } do |form| %>
   <% if @alert.errors.any? %>
     <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
       <strong><%= pluralize(@alert.errors.count, "error") %>:</strong>
