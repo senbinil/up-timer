@@ -22,10 +22,7 @@ class AlertsController < ApplicationController
     @alert = Alert.new(alert_params)
     @alert.account = current_account
     if @alert.save
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, alerts_path) }
-        format.html { redirect_to alerts_path, notice: "Alert created." }
-      end
+      redirect_to alerts_path, notice: "Alert created."
     else
       @monitors = UptimeMonitor.all.order(:name)
       @triggers = AlertTrigger.ordered
@@ -40,10 +37,7 @@ class AlertsController < ApplicationController
 
   def update
     if @alert.update(alert_params)
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, alerts_path) }
-        format.html { redirect_to alerts_path, notice: "Alert updated." }
-      end
+      redirect_to alerts_path, notice: "Alert updated."
     else
       @monitors = UptimeMonitor.all.order(:name)
       @triggers = AlertTrigger.ordered

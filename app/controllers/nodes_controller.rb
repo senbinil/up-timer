@@ -15,10 +15,7 @@ class NodesController < ApplicationController
   def create
     @node = UptimeMonitor.new(node_params)
     if @node.save
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, nodes_path) }
-        format.html { redirect_to nodes_path, notice: "Node created. First check in progress." }
-      end
+      redirect_to nodes_path, notice: "Node created. First check in progress."
     else
       render :new, status: :unprocessable_entity
     end
@@ -31,10 +28,7 @@ class NodesController < ApplicationController
   def update
     @node = UptimeMonitor.find(params[:id])
     if @node.update(node_params)
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, node_path(@node)) }
-        format.html { redirect_to node_path(@node), notice: "Node updated." }
-      end
+      redirect_to node_path(@node), notice: "Node updated."
     else
       render :edit, status: :unprocessable_entity
     end
