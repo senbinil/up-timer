@@ -99,8 +99,8 @@
                     <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= stats[:response_time] ? "#{stats[:response_time]}ms" : "—" %></p>
                   </div>
                   <div>
-                    <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Checks</p>
-                    <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= node.monitor_checks.where(checked_at: 24.hours.ago..).count %></p>
+                    <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Last Check</p>
+                    <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= node.last_check_at ? node.last_check_at.strftime("%I:%M %p") : "—" %></p>
                   </div>
                   <div>
                     <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Incidents</p>
