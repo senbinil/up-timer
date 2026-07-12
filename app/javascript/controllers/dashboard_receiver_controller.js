@@ -14,15 +14,8 @@ export default class extends Controller {
 
   redrawCharts() {
     if (window.Chartkick) {
-      // Clear chart instances in-place (must mutate the internal object,
-      // not replace the reference — Chartkick's render closure uses the
-      // original object and skips elements with existing instance IDs)
-      Object.keys(Chartkick.charts).forEach(function(key) {
-        delete Chartkick.charts[key]
-      })
-      // Trigger Chartkick's DOM scan to create fresh chart instances
-      // for both new Turbo Stream elements and existing stable elements
-      document.dispatchEvent(new Event("turbo:load"))
+      // Clear stale chart instances from previous page
+      window.Chartkick.charts = {}
     }
   }
 }

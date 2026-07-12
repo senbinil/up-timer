@@ -69,7 +69,7 @@
         <% @nodes.each do |node| %>
           <% stats = node.public_uptime %>
           <details id="<%= dom_id(node) %>" class="card p-0 group open:ring-1 open:ring-primary-container/30 transition-all">
-            <summary class="flex items-center gap-4 py-3 px-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface-container-low transition-colors rounded-lg">
+            <summary id="<%= dom_id(node, :summary) %>" class="flex items-center gap-4 py-3 px-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface-container-low transition-colors rounded-lg">
               <span class="w-2.5 h-2.5 rounded-full <%= node.paused? ? 'bg-[var(--color-warning)]' : (node.status == "up" && !node.dependency_affected? ? "bg-success" : node.dependency_affected? ? "bg-warning" : "bg-error") %> flex-shrink-0"></span>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-navy truncate"><%= node.name %></p>
@@ -88,6 +88,7 @@
             </summary>
 
             <div class="px-4 pb-4 pt-2 border-t border-divider space-y-4">
+              <div id="<%= dom_id(node, :stats) %>">
               <% if stats[:uptime] %>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
@@ -117,7 +118,7 @@
               <% else %>
                 <p class="text-xs text-slate-400 py-4 text-center">No check data yet for this service.</p>
               <% end %>
-            </div>
+              </div>
           </details>
         <% end %>
       </div>
