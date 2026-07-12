@@ -50,7 +50,7 @@ class UptimeMonitor < ApplicationRecord
   def public_uptime
     checks = monitor_checks.where(checked_at: 24.hours.ago..).order(checked_at: :desc)
     total = checks.count
-    return { uptime: nil, response_time: nil, recent_checks: [] } if total.zero?
+    return { uptime: nil, response_time: nil, recent_checks: [], last_checked_at: nil } if total.zero?
 
     recent = checks.limit(10).to_a
     up_count = checks.where(status: "up").count
@@ -58,10 +58,23 @@ class UptimeMonitor < ApplicationRecord
     {
       uptime: (up_count.to_f / total * 100).round(1),
       response_time: recent.first&.response_time,
+      last_checked_at: recent.first&.checked_at,
       recent_checks: recent.reverse.map { |c|
         [ c.checked_at.strftime("%I:%M %p"), c.response_time ]
       }.to_h
     }
+  end
+
+  def status_heatmap(count: 24)
+    monitor_checks
+      .order(checked_at: :desc)
+      .limit(count)
+      .pluck(:status, :checked_at)
+      .map { |status, checked_at| { status: status, checked_at: checked_at } }
+  end
+
+  def last_check_at
+    monitor_checks.order(checked_at: :desc).pick(:checked_at)
   end
 
   def down?

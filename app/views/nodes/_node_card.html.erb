@@ -20,7 +20,7 @@
       </div>
       <div class="flex justify-between text-xs">
         <span class="font-mono text-slate-400">Last Check</span>
-        <span class="font-mono font-semibold text-navy"><%= node.monitor_checks.last ? time_ago_in_words(node.monitor_checks.last.checked_at) : "never" %></span>
+        <span class="font-mono font-semibold text-navy"><%= node.last_check_at ? node.last_check_at.strftime("%I:%M %p") : "—" %></span>
       </div>
     </div>
 
@@ -43,7 +43,11 @@
         <span class="font-mono text-slate-400">Status</span>
         <span class="font-mono font-semibold <%= node.paused? ? "text-[var(--color-warning)]" : (node.status == "up" ? "text-primary-container" : "text-error") %>"><%= node.paused? ? "PAUSED" : node.status&.upcase %></span>
       </div>
-      <%= area_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
+      <div class="flex gap-0.5 h-4">
+        <% node.status_heatmap.each do |s| %>
+          <span class="flex-1 rounded-sm <%= s[:status] == "up" ? "bg-success" : "bg-error" %>" data-controller="tooltip" data-tooltip-content-value="<%= s[:checked_at].strftime("%I:%M %p") %> — <%= s[:status].upcase %>"></span>
+        <% end %>
+      </div>
       <span class="text-[9px] text-slate-400 font-mono">Last 24 checks</span>
     </div>
   <% end %>

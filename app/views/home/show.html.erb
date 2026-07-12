@@ -1,3 +1,5 @@
+<%= turbo_stream_from "public_status" %>
+
 <% if @total_nodes == 0 %>
   <div class="card text-center py-12">
     <%= lucide_icon "activity", size: 32, class: "mx-auto text-slate-300 mb-3" %>
@@ -11,7 +13,7 @@
     <p class="text-sm text-slate-400">Services are being monitored but none are marked for public display.</p>
   </div>
 <% else %>
-  <div class="card space-y-5">
+  <div id="public_fleet_status" class="card space-y-5">
     <div class="flex items-center gap-2">
       <span class="w-2 h-2 rounded-full <%= @stats[:status] == "operational" ? "bg-success" : (@stats[:status] == "degraded" ? "bg-warning" : "bg-error") %>"></span>
       <span class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">System Status</span>
@@ -66,7 +68,7 @@
       <div class="space-y-2">
         <% @nodes.each do |node| %>
           <% stats = node.public_uptime %>
-          <details class="card p-0 group open:ring-1 open:ring-primary-container/30 transition-all">
+          <details id="<%= dom_id(node) %>" class="card p-0 group open:ring-1 open:ring-primary-container/30 transition-all">
             <summary class="flex items-center gap-4 py-3 px-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface-container-low transition-colors rounded-lg">
               <span class="w-2.5 h-2.5 rounded-full <%= node.paused? ? 'bg-[var(--color-warning)]' : (node.status == "up" && !node.dependency_affected? ? "bg-success" : node.dependency_affected? ? "bg-warning" : "bg-error") %> flex-shrink-0"></span>
               <div class="flex-1 min-w-0">
@@ -97,8 +99,8 @@
                     <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= stats[:response_time] ? "#{stats[:response_time]}ms" : "—" %></p>
                   </div>
                   <div>
-                    <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Checks</p>
-                    <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= node.monitor_checks.where(checked_at: 24.hours.ago..).count %></p>
+                    <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Last Check</p>
+                    <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= node.last_check_at ? node.last_check_at.strftime("%I:%M %p") : "—" %></p>
                   </div>
                   <div>
                     <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Incidents</p>
@@ -106,12 +108,14 @@
                   </div>
                 </div>
 
-                <% if stats[:recent_checks].size > 1 %>
-                  <div>
-                    <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em] mb-2">Recent Response</p>
-                    <%= area_chart stats[:recent_checks], height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
+                <div>
+                  <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em] mb-2">Last 24 Checks</p>
+                  <div class="flex gap-0.5 h-4">
+                    <% node.status_heatmap.each do |s| %>
+                      <span class="flex-1 rounded-sm <%= s[:status] == "up" ? "bg-success" : "bg-error" %>" data-controller="tooltip" data-tooltip-content-value="<%= s[:checked_at].strftime("%I:%M %p") %> — <%= s[:status].upcase %>"></span>
+                    <% end %>
                   </div>
-                <% end %>
+                </div>
               <% else %>
                 <p class="text-xs text-slate-400 py-4 text-center">No check data yet for this service.</p>
               <% end %>
@@ -128,7 +132,7 @@
      Alerts — Expandable Rows
      ═══════════════════════════════════════════════ %>
   <% if @recent_alerts.any? %>
-  <div class="space-y-3">
+  <div id="public_recent_alerts" class="space-y-3">
     <h2 class="text-sm font-semibold text-navy font-[Hanken_Grotesk]">Recent Alerts</h2>
     <div class="space-y-1">
       <% @recent_alerts.each do |alert| %>

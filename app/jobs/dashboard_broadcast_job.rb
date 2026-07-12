@@ -29,6 +29,7 @@ class DashboardBroadcastJob < ApplicationJob
 
     # 4. Broadcast and advance cursor
     DashboardBroadcastService.call(updated_nodes: updated_nodes, new_alerts: new_alerts)
+    StatusPageBroadcastService.call(updated_nodes: updated_nodes, new_alerts: new_alerts)
     Rails.cache.write(CURSOR_KEY, Time.current)
   end
 end

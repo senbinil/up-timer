@@ -9,46 +9,44 @@
 
     <div class="space-y-2.5 text-xs text-navy leading-relaxed">
       <div>
-        <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-1">Intro</p>
-        <p class="text-on-surface-variant">UpTimer is a lightweight uptime monitoring dashboard that helps you track the health, response times, and availability of your services in real time.</p>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-1">Page Elements</p>
+        <div class="space-y-2">
+          <div>
+            <p class="font-medium mb-0.5">System Status</p>
+            <p class="text-on-surface-variant">Shows overall fleet health — <span class="font-mono text-success font-semibold">Operational</span> (all up),
+            <span class="font-mono text-warning font-semibold">Degraded</span> (some down),
+            <span class="font-mono text-error font-semibold">Down</span> (all down). The grid shows healthy, total, degraded, and alert counts.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-0.5">Service Cards</p>
+            <p class="text-on-surface-variant">Each card shows a service name, URL, and a colored dot:
+            <span class="font-mono text-success">green</span> = up,
+            <span class="font-mono text-error">red</span> = down,
+            <span class="font-mono text-warning">yellow</span> = paused/affected.
+            Expand to see 24h uptime, response time, last check time, and incidents.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-0.5">Heat Strip</p>
+            <p class="text-on-surface-variant">Colored bars for the last 24 checks — <span class="font-mono text-success">green</span> = up, <span class="font-mono text-error">red</span> = down. Hover any bar for the check time and status.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-0.5">Alerts</p>
+            <p class="text-on-surface-variant">Recent unresolved alerts with severity, message, and affected service. Click to expand for full details.</p>
+          </div>
+        </div>
       </div>
 
       <div>
-        <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-1">Usage</p>
-        <div class="space-y-2">
-          <div>
-            <p class="font-medium mb-0.5">Getting Started</p>
-            <ol class="list-decimal pl-4 space-y-0.5 text-on-surface-variant">
-              <li><strong>Add a Node</strong> — Go to Nodes → Create Node, enter a name, URL, check interval, and timeout.</li>
-              <li><strong>Monitor</strong> — The scheduler picks up new nodes within 30 seconds and starts running health checks automatically.</li>
-              <li><strong>Dashboard</strong> — View all your services at a glance. Each card shows status, response time, and incident count.</li>
-            </ol>
-          </div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-1">Live Updates</p>
+        <p class="text-on-surface-variant">Status, stats, and heat strips refresh automatically every few seconds. No page refresh needed.</p>
+      </div>
 
-          <div>
-            <p class="font-medium mb-0.5">Statuses</p>
-            <div class="flex gap-4 text-on-surface-variant">
-              <span><span class="font-mono text-success font-semibold">Up</span> — 2xx / 3xx</span>
-              <span><span class="font-mono text-error font-semibold">Down</span> — 4xx / 5xx / error</span>
-              <span><span class="font-mono text-[var(--color-warning)] font-semibold">Paused</span> — manually stopped</span>
-            </div>
-          </div>
-
-          <div>
-            <p class="font-medium mb-0.5">Pause / Resume</p>
-            <p class="text-on-surface-variant">Admins can pause a node to stop health checks temporarily. A paused node shows a <span class="chip chip-warning text-[10px] align-middle">Paused</span> badge and is skipped by the scheduler. Use <strong>Resume</strong> to restart checks. Pause/resume actions are recorded in the audit log.</p>
-          </div>
-
-          <div>
-            <p class="font-medium mb-0.5">Incidents</p>
-            <p class="text-on-surface-variant">Created automatically on failure, resolved on recovery.</p>
-          </div>
-
-          <div>
-            <p class="font-medium mb-0.5">Data Retention</p>
-            <p class="text-on-surface-variant">Checks purged after <strong>30 days</strong>. Resolved incidents after <strong>90 days</strong>.</p>
-          </div>
-        </div>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono mb-1">UpTimer</p>
+        <p class="text-on-surface-variant">Open-source uptime monitoring. Runs health checks, tracks response times, creates incidents on failure, and sends alerts. <a href="/login" class="text-primary-container hover:underline">Sign in</a> for the full dashboard.</p>
       </div>
     </div>
   </div>
