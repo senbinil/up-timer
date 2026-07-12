@@ -39,7 +39,7 @@
           <%= link_to dashboard_path, class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors" do %>
             Dashboard
           <% end %>
-          <%= link_to "/logout", class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors" do %>
+          <%= button_to "/logout", method: :post, class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors cursor-pointer", data: { turbo: false } do %>
             Log Out
           <% end %>
         <% else %>
@@ -52,6 +52,9 @@
         <% end %>
         <span class="h-4 w-px bg-border"></span>
         <span class="text-[11px] text-slate-400 font-mono uppercase tracking-wider">Public</span>
+        <button onclick="document.getElementById('help-modal')?.showModal()" class="p-1.5 text-slate-400 hover:text-navy rounded-default hover:bg-surface-container-low transition-colors" title="Help">
+          <%= lucide_icon "help-circle", size: 16 %>
+        </button>
         <button data-action="theme#toggle" class="p-1.5 text-slate-400 hover:text-navy rounded-default hover:bg-surface-container-low transition-colors" title="Toggle theme">
           <%= lucide_icon "moon", size: 16 %>
         </button>
@@ -65,5 +68,6 @@
     <footer class="text-center py-6 text-[10px] text-slate-400 font-mono border-t border-border">
       Powered by UpTimer
     </footer>
+    <%= render "shared/help_modal" %>
   </body>
 </html>
