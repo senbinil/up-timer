@@ -44,6 +44,7 @@
         <span class="font-mono font-semibold <%= node.paused? ? "text-[var(--color-warning)]" : (node.status == "up" ? "text-primary-container" : "text-error") %>"><%= node.paused? ? "PAUSED" : node.status&.upcase %></span>
       </div>
       <%= area_chart chart_data_for(node), height: "80px", colors: ["#2563eb"], legend: false, library: { scales: { x: { display: false }, y: { display: false } } } %>
+      <span class="text-[9px] text-slate-400 font-mono">Last 24 checks</span>
     </div>
   <% end %>
 <% end %>

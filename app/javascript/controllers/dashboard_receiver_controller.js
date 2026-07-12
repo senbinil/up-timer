@@ -14,7 +14,10 @@ export default class extends Controller {
 
   redrawCharts() {
     if (window.Chartkick) {
-      window.Chartkick.eachChart((chart) => chart.redraw())
+      // Clear stale chart instances so MutationObserver detects new elements
+      window.Chartkick.charts = {}
+      // Dispatch event so Chartkick re-scans the DOM for chart elements
+      window.dispatchEvent(new Event("chartkick:load"))
     }
   }
 }
