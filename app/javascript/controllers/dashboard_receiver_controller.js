@@ -14,7 +14,8 @@ export default class extends Controller {
 
   redrawCharts() {
     if (window.Chartkick) {
-      window.Chartkick.eachChart((chart) => chart.redraw())
+      // Clear stale chart instances from previous page
+      window.Chartkick.charts = {}
     }
   }
 }

@@ -18,10 +18,8 @@ class AlertIntegrationsController < ApplicationController
   def create_recipient
     @recipient = Recipient.new(recipient_params)
     if @recipient.save
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, alert_integrations_path) }
-        format.html { redirect_to alert_integrations_path, notice: "Recipient added." }
-      end
+      @recipients = Recipient.ordered
+      render partial: "recipients_list"
     else
       @recipients = Recipient.ordered
       @triggers = AlertTrigger.ordered
