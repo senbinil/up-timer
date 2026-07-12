@@ -17,10 +17,14 @@
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="icon" href="/icon.png" type="image/png">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
     <%= javascript_importmap_tags %>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>document.addEventListener("turbo:load", () => lucide.createIcons());document.addEventListener("turbo:render", () => lucide.createIcons());lucide.createIcons();</script>
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
   </head>
   <body class="font-body min-h-screen bg-surface">
     <header class="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-container-lowest">

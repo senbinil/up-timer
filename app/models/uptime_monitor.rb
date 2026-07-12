@@ -65,6 +65,14 @@ class UptimeMonitor < ApplicationRecord
     }
   end
 
+  def status_heatmap(count: 24)
+    monitor_checks
+      .order(checked_at: :desc)
+      .limit(count)
+      .pluck(:status, :checked_at)
+      .map { |status, checked_at| { status: status, checked_at: checked_at } }
+  end
+
   def last_check_at
     monitor_checks.order(checked_at: :desc).pick(:checked_at)
   end
