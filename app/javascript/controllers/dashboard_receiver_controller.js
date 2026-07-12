@@ -16,6 +16,8 @@ export default class extends Controller {
     if (window.Chartkick) {
       // Clear stale chart instances from previous page
       window.Chartkick.charts = {}
+      // Scan DOM for newly injected chart elements from Turbo Streams
+      document.dispatchEvent(new Event("turbo:load"))
     }
   }
 }
