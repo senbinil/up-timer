@@ -49,7 +49,7 @@
 <%# Updated public node detail elements (summary + expanded stats + chart) %>
 <% @updated_nodes.each do |node| %>
   <% stats = node.public_uptime %>
-  <%= turbo_stream.replace dom_id(node) do %>
+  <%= turbo_stream.action :morph, dom_id(node) do %>
     <details id="<%= dom_id(node) %>" class="card p-0 group open:ring-1 open:ring-primary-container/30 transition-all">
       <summary class="flex items-center gap-4 py-3 px-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface-container-low transition-colors rounded-lg">
         <span class="w-2.5 h-2.5 rounded-full <%= node.paused? ? 'bg-[var(--color-warning)]' : (node.status == "up" && !node.dependency_affected? ? "bg-success" : node.dependency_affected? ? "bg-warning" : "bg-error") %> flex-shrink-0"></span>
