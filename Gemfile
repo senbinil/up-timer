@@ -53,6 +53,7 @@ group :development, :test do
   # Debugging with Pry [https://github.com/pry/pry]
   gem "pry-rails"
   gem "pry-byebug"
+  gem "foreman", "~> 0.90.0"
 
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -101,5 +102,4 @@ gem "tilt", "~> 2.4", require: false
 gem "resend"
 gem "mailgun-ruby"
 
-# Security patches
 gem "net-imap", ">= 0.6.4.1"
