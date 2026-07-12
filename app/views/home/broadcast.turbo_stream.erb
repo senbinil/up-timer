@@ -46,7 +46,7 @@
   </div>
 <% end %>
 
-<%# Updated public node cards %>
+<%# Updated public node detail elements (summary + expanded stats + chart) %>
 <% @updated_nodes.each do |node| %>
   <% stats = node.public_uptime %>
   <%= turbo_stream.replace dom_id(node) do %>
@@ -82,7 +82,7 @@
             </div>
             <div>
               <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Checks</p>
-              <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= stats[:total_24h_checks] || node.monitor_checks.where(checked_at: 24.hours.ago..).count %></p>
+              <p class="text-lg font-semibold text-navy font-[Hanken_Grotesk] mt-0.5"><%= node.monitor_checks.where(checked_at: 24.hours.ago..).count %></p>
             </div>
             <div>
               <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.05em]">Incidents</p>
