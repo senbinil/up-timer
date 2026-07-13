@@ -68,6 +68,12 @@ docker run -d -p 3000:80 \
 | `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
 | `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
 | `SOLID_QUEUE_IN_PUMA` | ❌ | – | Set to `true` to run job worker in Puma process (required for single-container deploy) |
+| `DB_PROVIDER` | ❌ | `sqlite` | `sqlite` or `postgres`. Switches database adapter at runtime |
+| `DATABASE_URL` | * | — | PostgreSQL connection string: `postgres://user:pass@host:5432/dbname` |
+| `POSTGRES_USER` | * | — | PostgreSQL username |
+| `POSTGRES_PASSWORD` | * | — | PostgreSQL password |
+
+\* Required when `DB_PROVIDER=postgres`.
 
 \* Required when using that provider.
 
@@ -140,12 +146,14 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 flowchart LR
     Browser["User Browser"] --> App["Rails Application"]
     App --> Jobs["SolidQueue Workers"]
-    Jobs --> DB["SQLite3 Database"]
+    Jobs --> DB[("Database")]
+    DB -->|"DB_PROVIDER=sqlite"| SQLite["SQLite3"]
+    DB -->|"DB_PROVIDER=postgres"| PG["PostgreSQL"]
 ```
 
 ### Key Design Decisions
 
-- **SQLite3** — single-file database, zero operational overhead. Suitable for single-server deployments.
+- **Adapter-based database** — switch between SQLite and PostgreSQL via `DB_PROVIDER` env var. Zero code changes. See [docs/adapter-pattern.md](docs/adapter-pattern.md).
 - **SolidQueue** — database-backed job queue (no Redis dependency). Scheduler and workers run in-process.
 - **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
 - **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
@@ -158,7 +166,7 @@ flowchart LR
 |---|---|---|
 | Puma web | `RAILS_MAX_THREADS` | `config/puma.rb` |
 | Solid Queue workers | `RAILS_MAX_THREADS` | `config/queue.yml` |
-| DB connection pool | `RAILS_MAX_THREADS x 2` | `config/database.yml` |
+| DB connection pool | `RAILS_MAX_THREADS x 2` | `config/database.yml` (overridden by `DATABASE_URL` when using PG) |
 
 The doubled pool covers both Puma web threads and Solid Queue workers sharing the same database connections.
 
@@ -347,7 +355,7 @@ These run automatically in CI on every pull request.
 |---|---|
 | Framework | Rails 8.1 |
 | Ruby | 4.0.5 |
-| Database | SQLite3 |
+| Database | SQLite3 (default) / PostgreSQL (via adapter) |
 | Auth | Rodauth with RBAC (viewer / collaborator / admin) |
 | CSS | Tailwind CSS v4 |
 | JS | Stimulus + Turbo |
