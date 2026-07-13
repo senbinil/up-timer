@@ -58,6 +58,10 @@
       </nav>
     </header>
 
+    <div id="flash" class="max-w-3xl mx-auto px-4 pt-4">
+      <%= render "shared/flash" %>
+    </div>
+
     <main class="max-w-3xl mx-auto px-4 py-8 space-y-6" data-controller="dashboard-receiver">
       <%= yield %>
     </main>

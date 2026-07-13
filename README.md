@@ -58,16 +58,22 @@ docker run -d -p 3000:80 \
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `ADMIN_EMAILS` | ❌ | — | Comma-separated emails assigned admin role |
-| `MAIL_PROVIDER` | ❌ | — | `resend` or `mailgun`. When empty, accounts auto-verify and alert emails are skipped |
-| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for outgoing emails |
-| `RESEND_API_KEY` | * | — | Required when `MAIL_PROVIDER=resend` |
-| `MAILGUN_API_KEY` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `MAILGUN_DOMAIN` | * | — | Required when `MAIL_PROVIDER=mailgun` |
-| `APP_HOST` | ❌ | `example.com` | Host used for links in email templates |
-| `SOLID_QUEUE_IN_PUMA` | ❌ | – | Set to `true` to run job worker in Puma process (required for single-container deploy) |
+| Variable              | Required | Default               | Description                                                                            |
+| --------------------- | -------- | --------------------- | -------------------------------------------------------------------------------------- |
+| `ADMIN_EMAILS`        | ❌       | —                     | Comma-separated emails assigned admin role                                             |
+| `MAIL_PROVIDER`       | ❌       | —                     | `resend` or `mailgun`. When empty, accounts auto-verify and alert emails are skipped   |
+| `MAIL_FROM`           | ❌       | `noreply@example.com` | From address for outgoing emails                                                       |
+| `RESEND_API_KEY`      | \*       | —                     | Required when `MAIL_PROVIDER=resend`                                                   |
+| `MAILGUN_API_KEY`     | \*       | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
+| `MAILGUN_DOMAIN`      | \*       | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
+| `APP_HOST`            | ❌       | `example.com`         | Host used for links in email templates                                                 |
+| `SOLID_QUEUE_IN_PUMA` | ❌       | –                     | Set to `true` to run job worker in Puma process (required for single-container deploy) |
+| `DB_PROVIDER`         | ❌       | `sqlite`              | `sqlite` or `postgres`. Switches database adapter at runtime                           |
+| `DATABASE_URL`        | \*       | —                     | PostgreSQL connection string: `postgres://user:pass@host:5432/dbname`                  |
+| `POSTGRES_USER`       | \*       | —                     | PostgreSQL username                                                                    |
+| `POSTGRES_PASSWORD`   | \*       | —                     | PostgreSQL password                                                                    |
+
+\* Required when `DB_PROVIDER=postgres`.
 
 \* Required when using that provider.
 
@@ -89,15 +95,15 @@ Or from a cloned repo:
 
 ### Supported Modes
 
-| Mode | Best for | Open ports | SSL |
-|---|---|---|---|
-| **Standalone Traefik** | Fresh VPS, want automatic HTTPS | 80, 443 | Auto Let's Encrypt |
-| **Kamal Proxy** | Kamal 2.x with kamal-proxy already running | None | Auto Let's Encrypt (optional) |
-| **Existing Traefik** | Kamal 1.x or standalone Traefik already running | None | Existing proxy handles it |
-| **Nginx** | Nginx already on the host | None | Existing proxy handles it |
-| **Cloudflare Tunnel** | Zero open ports, Cloudflare handles TLS | None | Cloudflare |
-| **IP-only** | Minimal deployment, testing, or external load balancer | 80 (configurable) | None |
-| **Coolify** | Self-hosted PaaS — web UI deploy | None | Auto Let's Encrypt |
+| Mode                   | Best for                                               | Open ports        | SSL                           |
+| ---------------------- | ------------------------------------------------------ | ----------------- | ----------------------------- |
+| **Standalone Traefik** | Fresh VPS, want automatic HTTPS                        | 80, 443           | Auto Let's Encrypt            |
+| **Kamal Proxy**        | Kamal 2.x with kamal-proxy already running             | None              | Auto Let's Encrypt (optional) |
+| **Existing Traefik**   | Kamal 1.x or standalone Traefik already running        | None              | Existing proxy handles it     |
+| **Nginx**              | Nginx already on the host                              | None              | Existing proxy handles it     |
+| **Cloudflare Tunnel**  | Zero open ports, Cloudflare handles TLS                | None              | Cloudflare                    |
+| **IP-only**            | Minimal deployment, testing, or external load balancer | 80 (configurable) | None                          |
+| **Coolify**            | Self-hosted PaaS — web UI deploy                       | None              | Auto Let's Encrypt            |
 
 All modes use the **same immutable Docker image**. Only the surrounding infrastructure differs.
 
@@ -111,14 +117,14 @@ See [deploy/README.md](deploy/README.md) for full environment variable reference
 
 ### Deploy Files
 
-| File | Purpose |
-|---|---|
-| [deploy/installer.sh](deploy/installer.sh) | Interactive CLI wizard |
-| [deploy/.env.example](deploy/.env.example) | All environment variables documented |
-| [deploy/README.md](deploy/README.md) | Full deployment guide & scenarios |
-| [Dockerfile](Dockerfile) | Application image build |
-| [docker-compose.yml](docker-compose.yml) | Quick start with Docker (local/testing) |
-| [.kamal/](.kamal/) | Kamal deploy config (optional) |
+| File                                       | Purpose                                 |
+| ------------------------------------------ | --------------------------------------- |
+| [deploy/installer.sh](deploy/installer.sh) | Interactive CLI wizard                  |
+| [deploy/.env.example](deploy/.env.example) | All environment variables documented    |
+| [deploy/README.md](deploy/README.md)       | Full deployment guide & scenarios       |
+| [Dockerfile](Dockerfile)                   | Application image build                 |
+| [docker-compose.yml](docker-compose.yml)   | Quick start with Docker (local/testing) |
+| [.kamal/](.kamal/)                         | Kamal deploy config (optional)          |
 
 ### Coexistence with Kamal
 
@@ -140,12 +146,14 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 flowchart LR
     Browser["User Browser"] --> App["Rails Application"]
     App --> Jobs["SolidQueue Workers"]
-    Jobs --> DB["SQLite3 Database"]
+    Jobs --> DB[("Database")]
+    DB -->|"DB_PROVIDER=sqlite"| SQLite["SQLite3"]
+    DB -->|"DB_PROVIDER=postgres"| PG["PostgreSQL"]
 ```
 
 ### Key Design Decisions
 
-- **SQLite3** — single-file database, zero operational overhead. Suitable for single-server deployments.
+- **Adapter-based database** — switch between SQLite and PostgreSQL via `DB_PROVIDER` env var. Zero code changes. See [docs/adapter-pattern.md](docs/adapter-pattern.md).
 - **SolidQueue** — database-backed job queue (no Redis dependency). Scheduler and workers run in-process.
 - **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
 - **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
@@ -154,11 +162,11 @@ flowchart LR
 
 `RAILS_MAX_THREADS` controls the entire thread pool:
 
-| Component | Threads | Config |
-|---|---|---|
-| Puma web | `RAILS_MAX_THREADS` | `config/puma.rb` |
-| Solid Queue workers | `RAILS_MAX_THREADS` | `config/queue.yml` |
-| DB connection pool | `RAILS_MAX_THREADS x 2` | `config/database.yml` |
+| Component           | Threads                 | Config                                                             |
+| ------------------- | ----------------------- | ------------------------------------------------------------------ |
+| Puma web            | `RAILS_MAX_THREADS`     | `config/puma.rb`                                                   |
+| Solid Queue workers | `RAILS_MAX_THREADS`     | `config/queue.yml`                                                 |
+| DB connection pool  | `RAILS_MAX_THREADS x 2` | `config/database.yml` (overridden by `DATABASE_URL` when using PG) |
 
 The doubled pool covers both Puma web threads and Solid Queue workers sharing the same database connections.
 
@@ -185,12 +193,12 @@ Authentication is handled by Rodauth.
 
 ### Routes
 
-| Route | Description |
-|---|---|
-| `/login` | Sign in |
-| `/create-account` | Register new user |
+| Route             | Description            |
+| ----------------- | ---------------------- |
+| `/login`          | Sign in                |
+| `/create-account` | Register new user      |
 | `/reset-password` | Request password reset |
-| `/logout` | Sign out |
+| `/logout`         | Sign out               |
 
 After login, users are redirected to `/dashboard`.
 
@@ -215,11 +223,11 @@ Users registering with those emails get the **admin** role. Everyone else defaul
 
 ## RBAC
 
-| Role | Access |
-|---|---|
-| **viewer** | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings |
+| Role             | Access                                                                           |
+| ---------------- | -------------------------------------------------------------------------------- |
+| **viewer**       | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings    |
 | **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings |
-| **admin** | Everything above + Integrations, Email notifications toggle, User promotion |
+| **admin**        | Everything above + Integrations, Email notifications toggle, User promotion      |
 
 ## Alert Triggers
 
@@ -233,14 +241,14 @@ Alert triggers define event types that can fire notifications. The system uses a
 
 Admins control which triggers send email notifications from the **Integrations** page:
 
-| Trigger | Auto-created | Email notification |
-|---|---|---|
-| Node Offline | ✅ When node goes down | Togglable |
-| Critical Errors | ❌ Manual only | Togglable |
-| Degraded Performance | ❌ Manual only | Togglable |
-| Security Breach | ❌ Manual only | Togglable |
-| Maintenance Window | ❌ Manual only | Togglable |
-| Custom | ❌ Manual only | Togglable |
+| Trigger              | Auto-created           | Email notification |
+| -------------------- | ---------------------- | ------------------ |
+| Node Offline         | ✅ When node goes down | Togglable          |
+| Critical Errors      | ❌ Manual only         | Togglable          |
+| Degraded Performance | ❌ Manual only         | Togglable          |
+| Security Breach      | ❌ Manual only         | Togglable          |
+| Maintenance Window   | ❌ Manual only         | Togglable          |
+| Custom               | ❌ Manual only         | Togglable          |
 
 Email is only sent when the trigger's **Email** toggle is enabled on the Integrations page, regardless of the global email notifications setting.
 
@@ -250,19 +258,19 @@ SolidQueue powers all background processing with a recurring schedule defined in
 
 ### Recurring Schedule
 
-| Task | Environment | Frequency |
-|---|---|---|
-| `MonitorSchedulerJob` | dev + prod | Every 30 seconds |
-| `DataRetentionJob` | dev + prod | Every day at 3am |
-| `SolidQueue::Job.clear_finished_in_batches` | prod only | Every hour at minute 12 |
+| Task                                        | Environment | Frequency               |
+| ------------------------------------------- | ----------- | ----------------------- |
+| `MonitorSchedulerJob`                       | dev + prod  | Every 30 seconds        |
+| `DataRetentionJob`                          | dev + prod  | Every day at 3am        |
+| `SolidQueue::Job.clear_finished_in_batches` | prod only   | Every hour at minute 12 |
 
 ### Jobs
 
-| Job | Purpose |
-|---|---|
-| `MonitorSchedulerJob` | Iterates all monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval` |
-| `MonitorCheckJob` | Performs an HTTP GET against a monitor's URL; records response time, status code, and up/down state; manages incident lifecycle (creates on first failure, resolves all open incidents on recovery) |
-| `DataRetentionJob` | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days |
+| Job                   | Purpose                                                                                                                                                                                             |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MonitorSchedulerJob` | Iterates all monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval`                                                                       |
+| `MonitorCheckJob`     | Performs an HTTP GET against a monitor's URL; records response time, status code, and up/down state; manages incident lifecycle (creates on first failure, resolves all open incidents on recovery) |
+| `DataRetentionJob`    | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days                                                                                                 |
 
 Start the worker with `bin/jobs` (already included in `bin/dev`).
 
@@ -302,6 +310,7 @@ bin/dev
 ```
 
 `bin/dev` starts:
+
 - **Web server** (Puma) on `http://localhost:3000`
 - **CSS watcher** (Tailwind CSS v4)
 - **Job worker** (SolidQueue) for background jobs
@@ -343,22 +352,22 @@ These run automatically in CI on every pull request.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Rails 8.1 |
-| Ruby | 4.0.5 |
-| Database | SQLite3 |
-| Auth | Rodauth with RBAC (viewer / collaborator / admin) |
-| CSS | Tailwind CSS v4 |
-| JS | Stimulus + Turbo |
-| Charts | Chartkick + Chart.js |
-| Jobs | SolidQueue |
-| Mailer | letter_opener (dev), Action Mailer with AlertMailer |
+| Layer         | Technology                                             |
+| ------------- | ------------------------------------------------------ |
+| Framework     | Rails 8.1                                              |
+| Ruby          | 4.0.5                                                  |
+| Database      | SQLite3 (default) / PostgreSQL (via adapter)           |
+| Auth          | Rodauth with RBAC (viewer / collaborator / admin)      |
+| CSS           | Tailwind CSS v4                                        |
+| JS            | Stimulus + Turbo                                       |
+| Charts        | Chartkick + Chart.js                                   |
+| Jobs          | SolidQueue                                             |
+| Mailer        | letter_opener (dev), Action Mailer with AlertMailer    |
 | Feature Flags | — (removed, toggle moved to per-trigger email control) |
-| Icons | Lucide |
-| Tools | Tippy.js (tooltips), Pagy (pagination) |
-| Deployment | Docker, Kamal, Docker Compose |
-| CI | GitHub Actions (scan, lint, test, deploy_test) |
+| Icons         | Lucide                                                 |
+| Tools         | Tippy.js (tooltips), Pagy (pagination)                 |
+| Deployment    | Docker, Kamal, Docker Compose                          |
+| CI            | GitHub Actions (scan, lint, test, deploy_test)         |
 
 ## Creating a Release
 
