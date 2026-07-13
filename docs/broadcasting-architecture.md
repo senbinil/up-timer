@@ -203,23 +203,18 @@ Timer tick (every 2s)
 
 ---
 
-## Synchronous (per-check) Broadcasting
+## Why Only the Cursor-Based Job?
 
-In addition to the cursor-based tick, `MonitorCheckJob` also fires a broadcast **immediately** after each individual check:
+Previously, `MonitorCheckJob` also fired a broadcast **immediately** after each individual check. This was removed because the cursor-based `DashboardBroadcastJob` (every 2s) made it redundant:
 
-```ruby
-# app/jobs/monitor_check_job.rb
-def perform(monitor_id)
-  # ... perform check, create MonitorCheck record, evaluate status ...
+| Aspect                    | Cursor job (every 2s)              | Per-check broadcast               |
+| ------------------------- | ---------------------------------- | --------------------------------- |
+| **Coverage**              | Both dashboard + public status     | Dashboard only                    |
+| **Latency**               | ≤ 2s (negligible for 30s+ checks)  | Immediate                         |
+| **Batching**              | Batches updates into one broadcast  | One broadcast per check           |
+| **Reliability**           | Cursor tracks position precisely   | Hardcoded 5-second alert window   |
 
-  new_alerts = Alert.where(created_at: 5.seconds.ago..).recent.to_a
-  DashboardBroadcastService.call(updated_nodes: monitor, new_alerts: new_alerts)
-end
-```
-
-This ensures that the dashboard updates in **real-time** when a check completes, rather than waiting up to 2 seconds for the next cursor tick. The cursor-based job acts as a **safety net** — it catches any updates that the per-check broadcast may have missed.
-
-> Note: `MonitorCheckJob` only broadcasts to the dashboard channel. The public status channel relies on the cursor-based `DashboardBroadcastJob` to stay updated.
+Removing the per-check broadcast reduced cable traffic and simplified `MonitorCheckJob` to a single responsibility — performing the check and persisting results.
 
 ---
 
@@ -318,36 +313,40 @@ The cursor is stored in `Rails.cache`. In development, this defaults to `:memory
 ## Data Flow Diagram (Complete)
 
 ```
-┌──────────────┐     ┌──────────────────┐     ┌──────────────────────┐
-│  User Action  │     │  Recurring Timer  │     │  Monitor Check Job   │
-│  (pause,      │     │  (every 2s)      │     │  (per-check)         │
-│   resolve,    │     │                  │     │                      │
-│   create)     │     │                  │     │                      │
-└──────┬───────┘     └───────┬──────────┘     └──────────┬───────────┘
-       │                     │                           │
-       └─────────┬───────────┴─────────────┬─────────────┘
-                 │                         │
-       ┌─────────▼─────────┐    ┌──────────▼──────────┐
-       │  DashboardBroadcast│   │  Per-check broadcast │
-       │  Job (cursor-based)│   │  (immediate)         │
-       └─────────┬─────────┘    └──────────┬──────────┘
-                 │                         │
-                 └──────────┬──────────────┘
-                            │
-                  ┌─────────▼──────────┐
-                  │  Render broadcast  │
-                  │  templates → HTML  │
-                  └─────────┬──────────┘
-                            │
-              ┌─────────────┼──────────────┐
-              │             │              │
-     ┌────────▼────┐ ┌─────▼──────┐ ┌─────▼──────┐
-     │ Turbo Stream│ │ Turbo Stream│ │ Advance    │
-     │ to          │ │ to          │ │ Cursor in  │
-     │ "dashboard" │ │"public_status│ │ Rails.cache│
-     └────────┬────┘ └─────┬──────┘ └────────────┘
-              │            │
-              ▼            ▼
+┌──────────────┐     ┌──────────────────┐
+│  User Action  │     │  Recurring Timer  │
+│  (pause,      │     │  (every 2s)      │
+│   resolve,    │     │                  │
+│   create)     │     │                  │
+└──────┬───────┘     └───────┬──────────┘
+       │                     │
+       └─────────┬───────────┘
+                 │
+       ┌─────────▼─────────┐
+       │  DashboardBroadcast│
+       │  Job (cursor-based)│
+       └─────────┬─────────┘
+                 │
+       ┌─────────▼──────────┐
+       │  Render broadcast  │
+       │  templates → HTML  │
+       └─────────┬──────────┘
+                 │
+              ┌──┴──┐
+              │     │
+     ┌────────▼────┐ │  ┌─────────────┐
+     │ Turbo Stream│ │  │ Advance     │
+     │ to          │ │  │ Cursor in   │
+     │ "dashboard" │ │  │ Rails.cache │
+     └────────┬────┘ │  └─────────────┘
+              │      │
+     ┌────────▼────┐ │
+     │ Turbo Stream│ │
+     │ to          │ │
+     │"public_status│ │
+     └────────┬────┘ │
+              │      │
+              ▼      ▼
         ┌──────────────────────────┐
         │    Solid Cable           │
         │  (Action Cable adapter)  │
