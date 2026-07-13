@@ -30,7 +30,7 @@ eval "$(sed -n '/^write_app_service/,/^main()/p' deploy/installer.sh | head -n -
 
 setup()    { TEST_DIR=$(mktemp -d); }
 teardown() { rm -rf "$TEST_DIR"; }
-cleanup()  { unset TAG DOMAIN APP_HOST SECRET_KEY_BASE TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF; }
+cleanup()  { unset TAG DOMAIN APP_HOST SECRET_KEY_BASE TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT PG_COMPOSE_OUT DB_PROVIDER DB_USERNAME DB_PASSWORD POSTGRES_USER POSTGRES_PASSWORD; }
 
 pass() { echo -e "  ${GREEN}✓${NC} $1"; TESTS_PASSED=$((TESTS_PASSED + 1)); TESTS_RAN=$((TESTS_RAN + 1)); }
 fail() { echo -e "  ${RED}✗${NC} $1"; TESTS_RAN=$((TESTS_RAN + 1)); }
@@ -72,6 +72,7 @@ generate() {
     export SERVICE_URL="${SERVICE_URL:-http://up-timer:80}"
     export DEPLOY_MODE="$mode"
     export COMPOSE_OUT="$COMPOSE_PATH"
+    export PG_COMPOSE_OUT="${TEST_DIR}/docker-compose.pg.yml"
     export DEPLOY_DIR="$TEST_DIR"
     export NGINX_CONF="$TEST_DIR/nginx.conf"
 
@@ -191,6 +192,50 @@ test_nginx_has_proxy_service() {
     teardown
 }
 
+test_pg_override_generated() {
+    setup; generate "kamal-proxy" "DB_PROVIDER=postgres"
+    local pg_file="${TEST_DIR}/docker-compose.pg.yml"
+    assert_contains "$pg_file" "postgres:17-alpine" \
+        "postgres: generates docker-compose.pg.yml with postgres image"
+    assert_contains "$pg_file" "uptimer-db" \
+        "postgres: container named uptimer-db"
+    assert_contains "$pg_file" 'POSTGRES_USER' \
+        "postgres: has POSTGRES_USER env var"
+    assert_contains "$pg_file" 'POSTGRES_PASSWORD' \
+        "postgres: has POSTGRES_PASSWORD env var"
+    assert_contains "$pg_file" "up-timer-pgdata:" \
+        "postgres: has pgdata volume"
+    assert_contains "$pg_file" "DATABASE_URL" \
+        "postgres: sets DATABASE_URL"
+    teardown
+}
+
+test_pg_override_not_generated_for_sqlite() {
+    setup; generate "kamal-proxy" "DB_PROVIDER=sqlite"
+    local pg_file="${TEST_DIR}/docker-compose.pg.yml"
+    if [ -f "$pg_file" ]; then
+        fail "postgres: override file should not exist for sqlite"
+    else
+        pass "postgres: no override file generated for sqlite"
+    fi
+    teardown
+}
+
+test_pg_override_all_modes() {
+    for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
+        setup
+        if [ "$mode" = "cloudflare" ]; then
+            generate "$mode" "DB_PROVIDER=postgres" "DOMAIN=test.example.com"
+        else
+            generate "$mode" "DB_PROVIDER=postgres"
+        fi
+        local pg_file="${TEST_DIR}/docker-compose.pg.yml"
+        assert_contains "$pg_file" "postgres:17-alpine" \
+            "$mode: generates PG override with postgres image"
+        teardown
+    done
+}
+
 test_all_modes_include_up_timer() {
     for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
         setup
@@ -253,6 +298,11 @@ main() {
     test_ip_only_exposes_port
     test_cloudflare_includes_tunnel
     test_nginx_has_proxy_service
+
+    echo "" && echo -e "${BOLD}PostgreSQL mode:${NC}"
+    test_pg_override_generated
+    test_pg_override_not_generated_for_sqlite
+    test_pg_override_all_modes
 
     echo "" && echo -e "${BOLD}Cross-mode consistency:${NC}"
     test_all_modes_include_up_timer
