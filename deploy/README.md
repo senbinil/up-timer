@@ -100,10 +100,13 @@ Only the surrounding infrastructure differs.
 
 ### Email
 
-| `MAIL_FROM` | ❌ | `noreply@example.com` | From address for outgoing emails |
-| `RESEND_API_KEY` | _ | — | Required if `MAIL_PROVIDER=resend` |
-| `MAILGUN_API_KEY` | _ | — | Required if `MAIL_PROVIDER=mailgun` |
-| `MAILGUN_DOMAIN` | \* | — | Required if `MAIL_PROVIDER=mailgun` |
+| Variable            | Required | Default               | Description                              |
+| ------------------- | -------- | --------------------- | ---------------------------------------- |
+| `MAIL_PROVIDER`     | ❌       | —                     | `resend` or `mailgun`. When empty, email delivery is disabled |
+| `MAIL_FROM`         | ❌       | `noreply@example.com` | From address for outgoing emails         |
+| `RESEND_API_KEY`    | \*       | —                     | Required if `MAIL_PROVIDER=resend`       |
+| `MAILGUN_API_KEY`   | \*       | —                     | Required if `MAIL_PROVIDER=mailgun`      |
+| `MAILGUN_DOMAIN`    | \*       | —                     | Required if `MAIL_PROVIDER=mailgun`      |
 
 \* Required when using that provider.
 
