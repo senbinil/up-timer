@@ -36,10 +36,12 @@ warn() { true; }
 setup() {
     TEST_DIR=$(mktemp -d)
     COMPOSE_PATH="$TEST_DIR/docker-compose.yml"
+    PG_COMPOSE_PATH="$TEST_DIR/docker-compose.pg.yml"
     ENV_PATH="$TEST_DIR/.env"
     DEPLOY_DIR="$TEST_DIR"
     NGINX_CONF="$TEST_DIR/nginx.conf"
     COMPOSE_OUT="$COMPOSE_PATH"
+    PG_COMPOSE_OUT="$PG_COMPOSE_PATH"
 }
 
 teardown() {
@@ -59,8 +61,10 @@ generate() {
     export ENTRYPOINT="${ENTRYPOINT:-websecure}"
     export APP_PORT="${APP_PORT:-80}"
     export SERVICE_URL="${SERVICE_URL:-http://up-timer:80}"
+    export DB_PROVIDER="${DB_PROVIDER:-sqlite}"
     export DEPLOY_MODE="$mode"
     export COMPOSE_OUT="$COMPOSE_PATH"
+    export PG_COMPOSE_OUT="$PG_COMPOSE_PATH"
     export DEPLOY_DIR="$TEST_DIR"
     export NGINX_CONF="$TEST_DIR/nginx.conf"
 
@@ -93,6 +97,9 @@ DOMAIN=${DOMAIN:-}
 TRAEFIK_NETWORK=${TRAEFIK_NETWORK:-}
 ENTRYPOINT=${ENTRYPOINT:-websecure}
 DEPLOY_MODE=${DEPLOY_MODE}
+DB_PROVIDER=${DB_PROVIDER:-sqlite}
+POSTGRES_USER=${POSTGRES_USER:-}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-}
 EOF
     # Append mode-specific vars
     case "$DEPLOY_MODE" in
@@ -108,7 +115,7 @@ EOF
             ;;
     esac
 
-    unset TAG DOMAIN APP_HOST RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT
+    unset TAG DOMAIN APP_HOST RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT PG_COMPOSE_OUT DB_PROVIDER DB_USERNAME DB_PASSWORD POSTGRES_USER POSTGRES_PASSWORD
 }
 
 # Run docker compose config and grep the resolved output
@@ -235,6 +242,79 @@ test_cloudflare_env_resolved() {
     teardown
 }
 
+# ── PostgreSQL tests ─────────────────────────
+
+# Assert pattern in the resolved output of main compose + PG override
+assert_resolved_with_pg() {
+    local label="$1" pattern="$2"
+    local config_out="$TEST_DIR/resolved_pg.yml"
+
+    if ! docker compose -f "$COMPOSE_PATH" -f "$PG_COMPOSE_PATH" --env-file "$ENV_PATH" config 2>"$TEST_DIR/docker_err.txt" > "$config_out"; then
+        fail "$label — docker compose config failed"
+        cat "$TEST_DIR/docker_err.txt" | sed 's/^/    /'
+        return
+    fi
+
+    if grep -q "$pattern" "$config_out"; then
+        pass "$label"
+    else
+        fail "$label — pattern '$pattern' not found in resolved config"
+        head -20 "$config_out" | sed 's/^/      /'
+    fi
+}
+
+test_pg_override_resolved_db_service() {
+    setup
+    generate "kamal-proxy" \
+        "DB_PROVIDER=postgres" \
+        "POSTGRES_USER=uptimer" \
+        "POSTGRES_PASSWORD=secret123"
+    assert_resolved_with_pg "postgres: db service image resolves" "image: postgres:17-alpine"
+    assert_resolved_with_pg "postgres: db container name" "uptimer-db"
+    teardown
+}
+
+test_pg_override_resolved_datatabase_url() {
+    setup
+    generate "kamal-proxy" \
+        "DB_PROVIDER=postgres" \
+        "POSTGRES_USER=myuser" \
+        "POSTGRES_PASSWORD=mypass"
+    assert_resolved_with_pg "postgres: DATABASE_URL uses correct user" "myuser"
+    assert_resolved_with_pg "postgres: DATABASE_URL uses correct password" "mypass"
+    assert_resolved_with_pg "postgres: DATABASE_URL points to db host" "db:5432"
+    teardown
+}
+
+test_pg_override_healthcheck_resolved() {
+    setup
+    generate "kamal-proxy" \
+        "DB_PROVIDER=postgres" \
+        "POSTGRES_USER=uptimer"
+    assert_resolved_with_pg "postgres: healthcheck uses pg_isready" "pg_isready"
+    teardown
+}
+
+test_pg_override_app_depends_on_db() {
+    setup
+    generate "kamal-proxy" \
+        "DB_PROVIDER=postgres" \
+        "POSTGRES_USER=uptimer" \
+        "POSTGRES_PASSWORD=secret"
+    assert_resolved_with_pg "postgres: up-timer depends_on db" "service_healthy"
+    teardown
+}
+
+test_pg_override_volume_resolved() {
+    setup
+    generate "kamal-proxy" \
+        "DB_PROVIDER=postgres" \
+        "POSTGRES_USER=uptimer" \
+        "POSTGRES_PASSWORD=secret"
+    assert_resolved_with_pg "postgres: pgdata volume declared" "up-timer-pgdata"
+    teardown
+}
+
 # ── Main ─────────────────────────────────────
 
 main() {
@@ -269,6 +349,14 @@ main() {
     test_standalone_traefik_labels_resolved
     test_existing_traefik_labels_resolved
     test_cloudflare_env_resolved
+
+    echo ""
+    echo -e "${BOLD}PostgreSQL override:${NC}"
+    test_pg_override_resolved_db_service
+    test_pg_override_resolved_datatabase_url
+    test_pg_override_healthcheck_resolved
+    test_pg_override_app_depends_on_db
+    test_pg_override_volume_resolved
 
     echo ""
     summary
