@@ -20,7 +20,12 @@ class RodauthMain < Rodauth::Rails::Auth
 
     # ==> General
     # Initialize Sequel and have it reuse Active Record's database connection.
-    db Sequel.sqlite(extensions: :activerecord_connection, keep_reference: false)
+    # Dynamically picks the correct Sequel adapter based on the configured ActiveRecord adapter.
+    sequel_adapter = {
+      "sqlite3" => "sqlite",
+      "postgresql" => "postgres"
+    }.fetch(ActiveRecord::Base.connection_db_config.configuration_hash[:adapter]) { "sqlite" }
+    db Sequel.send(sequel_adapter, extensions: :activerecord_connection, keep_reference: false)
     # Avoid DB query that checks accounts table schema at boot time.
     convert_token_id_to_integer? { Account.columns_hash["id"].type == :integer }
 
