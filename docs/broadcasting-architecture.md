@@ -62,11 +62,11 @@ UpTimer uses **Hotwire's Turbo Streams** over **Action Cable** (backed by Solid 
 
 Defined in `config/recurring.yml`:
 
-| Job | Interval | Purpose |
-|---|---|---|
-| `MonitorSchedulerJob` | Every 30s | Enqueues individual checks for monitors due for recheck |
-| `DashboardBroadcastJob` | Every 2s | Polls for recent changes and broadcasts them |
-| `DataRetentionJob` | Daily at 3am | Purges old checks and resolved incidents |
+| Job                     | Interval     | Purpose                                                 |
+| ----------------------- | ------------ | ------------------------------------------------------- |
+| `MonitorSchedulerJob`   | Every 30s    | Enqueues individual checks for monitors due for recheck |
+| `DashboardBroadcastJob` | Every 2s     | Polls for recent changes and broadcasts them            |
+| `DataRetentionJob`      | Daily at 3am | Purges old checks and resolved incidents                |
 
 The `DashboardBroadcastJob` runs independently of the monitor scheduler, acting as a **polling loop**. Every 2 seconds it queries for any new data since the last broadcast.
 
@@ -114,13 +114,13 @@ end
 
 ### Key properties
 
-| Property | Description |
-|---|---|
-| **Shared** | Both dashboard and public status page broadcasts use the same cursor — a single timestamp in `Rails.cache`. |
+| Property       | Description                                                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Shared**     | Both dashboard and public status page broadcasts use the same cursor — a single timestamp in `Rails.cache`.                                             |
 | **Time-based** | The cursor stores `Time.current` after each successful broadcast. The next tick queries for records with `created_at` / `checked_at` >= that timestamp. |
-| **Idempotent** | If two job ticks run simultaneously, the second will find no new records (cursor hasn't advanced) and skip. |
-| **Lossless** | Even if a tick is missed, the next tick picks up everything since the last cursor position. |
-| **Fallback** | If the cache is empty (first run or evicted), it falls back to `5.seconds.ago`, ensuring recent data is still picked up. |
+| **Idempotent** | If two job ticks run simultaneously, the second will find no new records (cursor hasn't advanced) and skip.                                             |
+| **Lossless**   | Even if a tick is missed, the next tick picks up everything since the last cursor position.                                                             |
+| **Fallback**   | If the cache is empty (first run or evicted), it falls back to `5.seconds.ago`, ensuring recent data is still picked up.                                |
 
 ---
 
@@ -241,6 +241,7 @@ html = ApplicationController.render(
 ```
 
 This approach:
+
 - Avoids an HTTP round-trip — rendering happens entirely in-process
 - Reuses existing partials and helpers
 - Produces a complete HTML string that Turbo applies directly to the DOM
@@ -265,27 +266,28 @@ Both views subscribe via the `turbo_stream_from` helper, which establishes an Ac
 
 ```javascript
 // app/javascript/controllers/dashboard_receiver_controller.js
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  connect() {
-    this.boundRedraw = this.redrawCharts.bind(this)
-    document.addEventListener("turbo:render", this.boundRedraw)
-  }
+	connect() {
+		this.boundRedraw = this.redrawCharts.bind(this);
+		document.addEventListener("turbo:render", this.boundRedraw);
+	}
 
-  disconnect() {
-    document.removeEventListener("turbo:render", this.boundRedraw)
-  }
+	disconnect() {
+		document.removeEventListener("turbo:render", this.boundRedraw);
+	}
 
-  redrawCharts() {
-    if (window.Chartkick) {
-      window.Chartkick.charts = {}  // Clear stale chart instances
-    }
-  }
+	redrawCharts() {
+		if (window.Chartkick) {
+			window.Chartkick.charts = {}; // Clear stale chart instances
+		}
+	}
 }
 ```
 
 This controller:
+
 - Attached to `<main data-controller="dashboard-receiver">` in the dashboard layout
 - Listens for `turbo:render` events (fired after Turbo applies stream updates)
 - Re-initializes Chartkick charts that may have been stale after DOM replacement
@@ -367,26 +369,26 @@ The cursor is stored in `Rails.cache`. In development, this defaults to `:memory
 
 ## Configuration Files
 
-| File | Purpose |
-|---|---|
+| File                   | Purpose                                                                                                               |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `config/recurring.yml` | Defines the recurring Solid Queue schedule for `DashboardBroadcastJob`, `MonitorSchedulerJob`, and `DataRetentionJob` |
-| `config/cable.yml` | Configures Solid Cable as the Action Cable adapter |
-| `config/cache.yml` | Configures Solid Cache as the cache store |
+| `config/cable.yml`     | Configures Solid Cable as the Action Cable adapter                                                                    |
+| `config/cache.yml`     | Configures Solid Cache as the cache store                                                                             |
 
 ---
 
 ## Key Files Reference
 
-| File | Role |
-|---|---|
-| `app/jobs/dashboard_broadcast_job.rb` | Cursor-based polling loop (runs every 2s) |
-| `app/services/dashboard_broadcast_service.rb` | Renders & broadcasts dashboard Turbo Stream |
-| `app/services/status_page_broadcast_service.rb` | Renders & broadcasts public status Turbo Stream |
-| `app/jobs/monitor_check_job.rb` | Per-check broadcast (immediate, dashboard only) |
-| `app/views/dashboard/broadcast.turbo_stream.erb` | Dashboard Turbo Stream template |
-| `app/views/home/broadcast.turbo_stream.erb` | Public status Turbo Stream template |
-| `app/views/dashboard/index.html.erb` | Subscribes to `"dashboard"` channel |
-| `app/views/home/show.html.erb` | Subscribes to `"public_status"` channel |
-| `app/views/layouts/dashboard.html.erb` | Attaches `dashboard-receiver` Stimulus controller |
-| `app/javascript/controllers/dashboard_receiver_controller.js` | Re-initializes Chartkick after Turbo updates |
-| `config/recurring.yml` | Recurring job schedule |
+| File                                                          | Role                                              |
+| ------------------------------------------------------------- | ------------------------------------------------- |
+| `app/jobs/dashboard_broadcast_job.rb`                         | Cursor-based polling loop (runs every 2s)         |
+| `app/services/dashboard_broadcast_service.rb`                 | Renders & broadcasts dashboard Turbo Stream       |
+| `app/services/status_page_broadcast_service.rb`               | Renders & broadcasts public status Turbo Stream   |
+| `app/jobs/monitor_check_job.rb`                               | Per-check broadcast (immediate, dashboard only)   |
+| `app/views/dashboard/broadcast.turbo_stream.erb`              | Dashboard Turbo Stream template                   |
+| `app/views/home/broadcast.turbo_stream.erb`                   | Public status Turbo Stream template               |
+| `app/views/dashboard/index.html.erb`                          | Subscribes to `"dashboard"` channel               |
+| `app/views/home/show.html.erb`                                | Subscribes to `"public_status"` channel           |
+| `app/views/layouts/dashboard.html.erb`                        | Attaches `dashboard-receiver` Stimulus controller |
+| `app/javascript/controllers/dashboard_receiver_controller.js` | Re-initializes Chartkick after Turbo updates      |
+| `config/recurring.yml`                                        | Recurring job schedule                            |
