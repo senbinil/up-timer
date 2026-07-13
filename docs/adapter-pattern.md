@@ -44,13 +44,13 @@ MAIL_PROVIDER=resend | mailgun | (unset)
 
 ### Files
 
-| File | Purpose |
-|---|---|
-| `config/initializers/mail_adapter.rb` | Bootstrapper |
-| `lib/mail_adapter.rb` | Module with `configured?` helper |
-| `lib/mail_adapter/null_adapter.rb` | Fallback — logs + swallows emails |
-| `lib/mail_adapter/resend.rb` | Resend provider |
-| `lib/mail_adapter/mailgun.rb` | Mailgun provider |
+| File                                  | Purpose                           |
+| ------------------------------------- | --------------------------------- |
+| `config/initializers/mail_adapter.rb` | Bootstrapper                      |
+| `lib/mail_adapter.rb`                 | Module with `configured?` helper  |
+| `lib/mail_adapter/null_adapter.rb`    | Fallback — logs + swallows emails |
+| `lib/mail_adapter/resend.rb`          | Resend provider                   |
+| `lib/mail_adapter/mailgun.rb`         | Mailgun provider                  |
 
 ### Adding a New Provider
 
@@ -87,19 +87,21 @@ Additionally, when `DB_PROVIDER=postgres`, the app expects `DATABASE_URL` to be 
 
 ### Files
 
-| File | Purpose |
-|---|---|
-| `config/initializers/db_adapter.rb` | Bootstrapper (production only) |
-| `lib/db_adapter.rb` | Module with `configure!` dispatcher |
-| `lib/db_adapter/sqlite.rb` | SQLite provider — no-op (default config) |
-| `lib/db_adapter/postgres.rb` | PostgreSQL provider — routes Solid* to primary |
+| File                                | Purpose                                         |
+| ----------------------------------- | ----------------------------------------------- |
+| `config/initializers/db_adapter.rb` | Bootstrapper (production only)                  |
+| `lib/db_adapter.rb`                 | Module with `configure!` dispatcher             |
+| `lib/db_adapter/sqlite.rb`          | SQLite provider — no-op (default config)        |
+| `lib/db_adapter/postgres.rb`        | PostgreSQL provider — routes Solid\* to primary |
 
 ### What Each Provider Does
 
 #### SQLite (`DbAdapter::Sqlite`)
+
 - **No-op.** The `database.yml` file already configures 4 separate SQLite databases (primary, queue, cache, cable). `production.rb` pins Solid Queue to `:queue`, `cable.yml` pins Solid Cable to `:cable`, `cache.yml` pins Solid Cache to `cache`. All defaults work as-is.
 
 #### PostgreSQL (`DbAdapter::Postgres`)
+
 - Runs in `Rails.application.config.after_initialize` to ensure all configs are loaded
 - Overrides `config.solid_queue.connects_to` to use `:primary` (which connects via `DATABASE_URL`)
 - Overrides `config.solid_cache.connects_to` to use `:primary`
@@ -152,10 +154,10 @@ docker compose -f docker-compose.generated.yml -f deploy/docker-compose.pg.yml -
 
 ## Summary
 
-| Aspect | MailAdapter | DbAdapter |
-|---|---|---|
-| Env var | `MAIL_PROVIDER` | `DB_PROVIDER` |
-| Providers | `null`, `resend`, `mailgun` | `sqlite`, `postgres` |
-| Runtime check | `MailAdapter.configured?` | N/A |
-| Initializer runs | All environments | Production only |
-| Configures | `ActionMailer::Base.delivery_method` | `solid_queue`/`solid_cache` `connects_to` |
+| Aspect           | MailAdapter                          | DbAdapter                                 |
+| ---------------- | ------------------------------------ | ----------------------------------------- |
+| Env var          | `MAIL_PROVIDER`                      | `DB_PROVIDER`                             |
+| Providers        | `null`, `resend`, `mailgun`          | `sqlite`, `postgres`                      |
+| Runtime check    | `MailAdapter.configured?`            | N/A                                       |
+| Initializer runs | All environments                     | Production only                           |
+| Configures       | `ActionMailer::Base.delivery_method` | `solid_queue`/`solid_cache` `connects_to` |
