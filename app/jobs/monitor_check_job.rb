@@ -21,9 +21,5 @@ class MonitorCheckJob < ApplicationJob
     )
 
     MonitorStatusService.call(monitor)
-    monitor.reload
-
-    new_alerts = Alert.where(created_at: 5.seconds.ago..).recent.to_a
-    DashboardBroadcastService.call(updated_nodes: monitor, new_alerts: new_alerts)
   end
 end

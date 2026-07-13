@@ -39,9 +39,6 @@
           <%= link_to dashboard_path, class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors" do %>
             Dashboard
           <% end %>
-          <%= button_to "/logout", method: :post, class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors cursor-pointer", data: { turbo: false } do %>
-            Log Out
-          <% end %>
         <% else %>
           <%= link_to "/login", class: "text-[13px] text-slate-500 hover:text-navy font-medium transition-colors" do %>
             Log In
