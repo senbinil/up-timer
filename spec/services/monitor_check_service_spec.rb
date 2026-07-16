@@ -9,8 +9,7 @@ RSpec.describe MonitorCheckService do
       allow_any_instance_of(described_class).to receive(:perform_http_request) do |instance|
         OpenStruct.new(
           status: OpenStruct.new(to_i: 200, reason: "OK"),
-          certificate: nil,
-          respond_to?: ->(method) { method == :certificate }
+          certificate: nil
         )
       end
     end
@@ -66,8 +65,7 @@ RSpec.describe MonitorCheckService do
         allow_any_instance_of(described_class).to receive(:perform_http_request) do |instance|
           OpenStruct.new(
             status: OpenStruct.new(to_i: 200, reason: "OK"),
-            certificate: fake_cert,
-            respond_to?: ->(method) { method == :certificate }
+            certificate: fake_cert
           )
         end
       end
@@ -89,8 +87,7 @@ RSpec.describe MonitorCheckService do
           # Verify the SESSION.request was called with POST and body
           OpenStruct.new(
             status: OpenStruct.new(to_i: 200, reason: "OK"),
-            certificate: nil,
-            respond_to?: ->(method) { method == :certificate }
+            certificate: nil
           )
         end
       end
