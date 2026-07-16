@@ -1,4 +1,5 @@
 require "ostruct"
+require "httpx"
 
 class MonitorCheckService
   SUPPORTED_METHODS = %w[GET HEAD POST PUT PATCH DELETE OPTIONS].freeze
@@ -7,6 +8,9 @@ class MonitorCheckService
   Result = Struct.new(:code, :message, :up, :duration,
                       :ssl_valid, :ssl_expires_at, :ssl_issuer, :ssl_subject,
                       keyword_init: true)
+
+  # Shared HTTPX session with connection pooling and retry support
+  SESSION = HTTPX.plugin(:retries).with(retries: 1, retry_on_timeout: true)
 
   def self.call(monitor)
     new(monitor).call
@@ -26,22 +30,29 @@ class MonitorCheckService
     response = perform_http_request
     duration = ((Time.current - start) * 1000).round(2)
 
-    code = response.code&.to_i
+    code = response.status.to_i
     up = determine_up(code)
 
     Result.new(
       code: code,
-      message: response.message,
+      message: response.status.reason,
       up: up,
       duration: duration,
       **ssl_info(response)
+    )
+  rescue StandardError => e
+    Result.new(
+      code: nil,
+      message: e.message,
+      up: false,
+      duration: 0
     )
   end
 
   private
 
   def ssl_info(response)
-    cert = response.respond_to?(:peer_cert) ? response.peer_cert : nil
+    cert = response.respond_to?(:certificate) ? response.certificate : nil
     return {} unless cert
 
     expires = cert.not_after
@@ -57,28 +68,19 @@ class MonitorCheckService
 
   def perform_http_request
     uri = URI(@url)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.open_timeout = @timeout
-    http.read_timeout = @timeout
-    http.use_ssl = uri.scheme == "https"
+    headers = { "Content-Type" => "application/json" }
 
-    request = build_request(uri)
-    http.start { |conn| conn.request(request) }
-  rescue StandardError => e
-    OpenStruct.new(code: nil, message: e.message)
-  end
+    session = SESSION.timeout(request: @timeout, connect_timeout: @timeout)
 
-  def build_request(uri)
-    klass = Net::HTTP.const_get(@method.capitalize)
-    req = klass.new(uri.request_uri, { "Content-Type" => "application/json" })
-
-    req.body = @body if BODY_METHODS.include?(@method) && @body.present?
-
-    req
+    if BODY_METHODS.include?(@method) && @body.present?
+      session.request(@method, uri.to_s, headers: headers, body: @body)
+    else
+      session.request(@method, uri.to_s, headers: headers)
+    end
   end
 
   def determine_up(code)
-    return false if code.nil?
+    return false if code.nil? || code.zero?
     @expected.present? ? code == @expected : code.between?(200, 399)
   end
 end
