@@ -9,34 +9,43 @@ class DashboardBroadcastService
   end
 
   def call
-    html = ApplicationController.render(
-      template: "dashboard/broadcast",
-      layout: false,
-      assigns: {
-        updated_nodes: @updated_nodes,
-        new_alerts: @new_alerts,
-        stats: stats,
-        alert_counts: alert_counts
-      }
-    )
-
-    Turbo::StreamsChannel.broadcast_stream_to("dashboard", content: html)
+    Turbo::StreamsChannel.broadcast_stream_to("dashboard", content: broadcast_content)
   end
 
   private
 
-  def stats
-    active_ids = UptimeMonitor.active.pluck(:id)
-    fleet_base = UptimeMonitor.fleet_stats
-    all_checks = MonitorCheck.where(monitor_id: active_ids)
-    total_checks = all_checks.count
-    up_checks = all_checks.where(status: "up").count
+  def broadcast_content
+    streams = []
 
-    fleet_base.merge(
-      uptime: total_checks > 0 ? (up_checks.to_f / total_checks * 100).round(2) : 100,
-      error_rate: total_checks > 0 ? ((total_checks - up_checks).to_f / total_checks * 100).round(2) : 0,
-      paused_count: UptimeMonitor.paused.count
+    @new_alerts.each do |alert|
+      streams << render_stream(:prepend, "recent_alerts",
+        partial: "alerts/alert_row", locals: { alert: alert })
+    end
+
+    @updated_nodes.each do |node|
+      streams << render_stream(:replace, ActionView::RecordIdentifier.dom_id(node),
+        partial: "nodes/node_card", locals: { node: node })
+    end
+
+    streams << render_stream(:replace, "fleet_status",
+      partial: "dashboard/fleet_status", locals: {
+        stats: stats, alert_counts: alert_counts, nodes: UptimeMonitor.ranked
+      })
+
+    streams.join
+  end
+
+  def render_stream(action, target, partial:, locals: {})
+    target_escaped = target.gsub("'", "\\\\'")
+    ApplicationController.render(
+      inline: "<%= turbo_stream.#{action}('#{target_escaped}', partial: '#{partial}', locals: { #{locals.keys.map { |k| "#{k}: #{k}" }.join(', ')} }) %>",
+      type: :erb,
+      locals: locals
     )
+  end
+
+  def stats
+    FleetStatsService.call
   end
 
   def alert_counts

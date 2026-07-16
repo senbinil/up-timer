@@ -30,17 +30,7 @@ class StatusPageBroadcastService
   private
 
   def stats
-    public_nodes = UptimeMonitor.public_listed
-    total = public_nodes.count
-    up_count = public_nodes.where(status: "up").size
-    down_count = total - up_count
-
-    {
-      status: down_count == 0 ? "operational" : (up_count > 0 ? "degraded" : "down"),
-      up_count: up_count,
-      down_count: down_count,
-      total: total
-    }
+    FleetStatsService.call(UptimeMonitor.public_listed)
   end
 
   def alert_counts
