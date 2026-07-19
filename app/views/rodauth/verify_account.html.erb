@@ -1,19 +1,50 @@
-<%= form_with url: rodauth.verify_account_path, method: :post, data: { turbo: false }, class: "w-full max-w-sm" do |form| %>
-  <% if rodauth.verify_account_set_password? %>
-    <div class="mb-6">
-      <%= form.label "password", rodauth.password_label, class: "block text-sm font-semibold" %>
-      <%= form.password_field rodauth.password_param, value: "", id: "password", autocomplete: rodauth.password_field_autocomplete_value, required: true, class: "mt-2 text-sm w-full px-3 py-2 border rounded-md dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800 #{rodauth.field_error(rodauth.password_param) ? "border-red-600 focus:ring-red-600 focus:border-red-600 dark:border-red-400 dark:focus:ring-red-400" : "border-gray-300 dark:border-gray-700 dark:focus:border-emerald-400 dark:focus:ring-emerald-400" }", aria: ({ invalid: true, describedby: "password_error_message" } if rodauth.field_error(rodauth.password_param)) %>
-      <%= content_tag(:span, rodauth.field_error(rodauth.password_param), class: "block mt-1 text-red-600 text-xs dark:text-red-400", id: "password_error_message") if rodauth.field_error(rodauth.password_param) %>
-    </div>
+<%# ── Verify Account ── %>
+<div class="w-full max-w-md space-y-6 mx-auto">
+  <%# ── Section Header ── %>
+  <div class="space-y-2 text-center">
+    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Verification</p>
+    <h1 class="text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Verify Account</h1>
+  </div>
 
-    <% if rodauth.require_password_confirmation? %>
-      <div class="mb-6">
-        <%= form.label "password-confirm", rodauth.password_confirm_label, class: "block text-sm font-semibold" %>
-        <%= form.password_field rodauth.password_confirm_param, value: "", id: "password-confirm", autocomplete: "new-password", required: true, class: "mt-2 text-sm w-full px-3 py-2 border rounded-md dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800 #{rodauth.field_error(rodauth.password_confirm_param) ? "border-red-600 focus:ring-red-600 focus:border-red-600 dark:border-red-400 dark:focus:ring-red-400" : "border-gray-300 dark:border-gray-700 dark:focus:border-emerald-400 dark:focus:ring-emerald-400" }", aria: ({ invalid: true, describedby: "password-confirm_error_message" } if rodauth.field_error(rodauth.password_confirm_param)) %>
-        <%= content_tag(:span, rodauth.field_error(rodauth.password_confirm_param), class: "block mt-1 text-red-600 text-xs dark:text-red-400", id: "password-confirm_error_message") if rodauth.field_error(rodauth.password_confirm_param) %>
+  <%# ── Card ── %>
+  <div class="card space-y-6">
+    <% if rodauth.field_error(rodauth.verify_account_key_param) || flash[:alert] %>
+      <%# ── Error State — show fallback actions ── %>
+      <div class="text-center space-y-4">
+        <div class="bg-error-container border border-error text-on-error-container rounded-default p-3 text-xs">
+          <%= rodauth.field_error(rodauth.verify_account_key_param) || flash[:alert] %>
+        </div>
+        <p class="text-body-md text-slate-400">The verification link may be invalid or expired.</p>
+        <%= link_to "Resend Verification", rodauth.verify_account_resend_path, class: "btn btn-primary w-full justify-center" %>
+        <%= link_to "Back to Log In", rodauth.login_path, class: "text-xs text-primary-container hover:underline font-medium block" %>
       </div>
-    <% end %>
-  <% end %>
+    <% else %>
+      <%# ── Auto-Submit — auto-verifies on page load ── %>
+      <%= form_with url: rodauth.verify_account_path, method: :post, data: { turbo: false, controller: "auto-submit" }, class: "space-y-6 text-center" do |form| %>
+        <% if rodauth.verify_account_set_password? %>
+          <div class="space-y-1.5 text-left">
+            <%= form.label "password", rodauth.password_label, class: "input-label block" %>
+            <%= form.password_field rodauth.password_param, value: "", id: "password", autocomplete: rodauth.password_field_autocomplete_value, required: true, class: "input-field #{rodauth.field_error(rodauth.password_param) ? "!border-error" : ""}" %>
+            <%= content_tag(:p, rodauth.field_error(rodauth.password_param), class: "text-xs text-error font-mono mt-1") if rodauth.field_error(rodauth.password_param) %>
+          </div>
 
-  <%= form.submit rodauth.verify_account_button, class: "w-full px-8 py-3 cursor-pointer font-semibold text-sm rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 dark:bg-emerald-400 dark:hover:bg-emerald-500 dark:text-gray-900 dark:focus:ring-emerald-400 dark:focus:ring-offset-current" %>
-<% end %>
+          <% if rodauth.require_password_confirmation? %>
+            <div class="space-y-1.5 text-left">
+              <%= form.label "password-confirm", rodauth.password_confirm_label, class: "input-label block" %>
+              <%= form.password_field rodauth.password_confirm_param, value: "", id: "password-confirm", autocomplete: "new-password", required: true, class: "input-field #{rodauth.field_error(rodauth.password_confirm_param) ? "!border-error" : ""}" %>
+              <%= content_tag(:p, rodauth.field_error(rodauth.password_confirm_param), class: "text-xs text-error font-mono mt-1") if rodauth.field_error(rodauth.password_confirm_param) %>
+            </div>
+          <% end %>
+        <% end %>
+
+        <div class="flex justify-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary-container border-t-transparent"></div>
+        </div>
+        <p class="text-body-md text-slate-400">Verifying your account...</p>
+        <p class="text-xs text-slate-400">You'll be redirected to your dashboard momentarily.</p>
+
+        <%= form.submit rodauth.verify_account_button, class: "btn btn-primary w-full justify-center" %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
