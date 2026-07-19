@@ -115,7 +115,7 @@ EOF
             ;;
     esac
 
-    unset TAG DOMAIN APP_HOST RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT PG_COMPOSE_OUT DB_PROVIDER DB_USERNAME DB_PASSWORD POSTGRES_USER POSTGRES_PASSWORD
+    unset TAG DOMAIN APP_HOST RAILS_MAX_THREADS TRAEFIK_NETWORK ENTRYPOINT DEPLOY_MODE MODE APP_PORT SERVICE_URL DEPLOY_DIR NGINX_CONF COMPOSE_OUT PG_COMPOSE_OUT DB_PROVIDER DB_USERNAME DB_PASSWORD POSTGRES_USER POSTGRES_PASSWORD MAILGUN_API_KEY MAILGUN_API_HOST MAILGUN_DOMAIN MAIL_PROVIDER MAIL_FROM RESEND_API_KEY
 }
 
 # Run docker compose config and grep the resolved output
@@ -242,6 +242,25 @@ test_cloudflare_env_resolved() {
     teardown
 }
 
+test_mailgun_api_key_resolved() {
+    setup; generate "kamal-proxy" "MAILGUN_API_KEY=key-abc123" "MAILGUN_DOMAIN=mg.example.com"
+    assert_resolved "mailgun: API key resolved" "MAILGUN_API_KEY: key-abc123"
+    assert_resolved "mailgun: domain resolved" "MAILGUN_DOMAIN: mg.example.com"
+    teardown
+}
+
+test_mailgun_api_host_resolved() {
+    setup; generate "kamal-proxy" "MAILGUN_API_HOST=api.eu.mailgun.net" "MAILGUN_API_KEY=key-abc" "MAILGUN_DOMAIN=mg.example.com"
+    assert_resolved "mailgun: custom API host resolved" "MAILGUN_API_HOST: api.eu.mailgun.net"
+    teardown
+}
+
+test_mailgun_api_host_empty_default() {
+    setup; generate "kamal-proxy" "MAILGUN_API_KEY=key-abc" "MAILGUN_DOMAIN=mg.example.com"
+    assert_resolved "mailgun: API host empty string when unset" 'MAILGUN_API_HOST: ""'
+    teardown
+}
+
 # ── PostgreSQL tests ─────────────────────────
 
 # Assert pattern in the resolved output of main compose + PG override
@@ -349,6 +368,9 @@ main() {
     test_standalone_traefik_labels_resolved
     test_existing_traefik_labels_resolved
     test_cloudflare_env_resolved
+    test_mailgun_api_key_resolved
+    test_mailgun_api_host_resolved
+    test_mailgun_api_host_empty_default
 
     echo ""
     echo -e "${BOLD}PostgreSQL override:${NC}"

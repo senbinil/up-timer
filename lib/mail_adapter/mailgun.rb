@@ -10,7 +10,7 @@ class MailAdapter::Mailgun
         config.api_host = api_host if api_host.present?
       end
 
-      ActionMailer::Base.add_delivery_method :mailgun, MailgunDelivery, api_key: api_key, domain: domain
+      ActionMailer::Base.add_delivery_method :mailgun, MailgunDelivery, api_key: api_key, domain: domain, api_host: api_host
 
       if Rails.application.initialized?
         ActionMailer::Base.delivery_method = :mailgun
@@ -39,7 +39,7 @@ class MailAdapter::Mailgun
     end
 
     def deliver!(mail)
-      client = ::Mailgun::Client.new(settings[:api_key], settings[:api_host] || "api.mailgun.net")
+      client = ::Mailgun::Client.new(settings[:api_key], settings[:api_host].presence || "api.mailgun.net")
       client.send_message(settings[:domain], build_message(mail))
     end
 
