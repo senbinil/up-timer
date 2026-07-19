@@ -24,7 +24,7 @@ DEPLOY_DIR=""
 NGINX_CONF=""
 PROJECT_DIR=""
 
-eval "$(sed -n '/^write_app_service/,/^main()/p' deploy/installer.sh | head -n -2)"
+eval "$(sed -n '/^write_env_file/,/^main()/p' deploy/installer.sh | head -n -2)"
 
 # ── Helpers ──────────────────────────────────
 
@@ -267,6 +267,43 @@ test_all_modes_have_rails_max_threads() {
     done
 }
 
+test_write_env_file_mailgun() {
+    setup
+    export ENV_FILE="${TEST_DIR}/.env"
+
+    # Test: custom API host written as literal value
+    export MAILGUN_API_HOST="api.eu.mailgun.net"
+    export MAILGUN_API_KEY="key-abc123"
+    export MAILGUN_DOMAIN="mg.example.com"
+    export MAIL_PROVIDER="mailgun"
+    export MAIL_FROM="noreply@example.com"
+    export TAG="latest"
+    write_env_file
+
+    assert_contains "$ENV_FILE" 'MAILGUN_API_HOST=api.eu.mailgun.net' \
+        "env: MAILGUN_API_HOST is literal value"
+    assert_not_contains "$ENV_FILE" '\${MAILGUN_API_HOST:-api.mailgun.net}' \
+        "env: MAILGUN_API_HOST is not a template"
+    assert_not_contains "$ENV_FILE" '\${MAILGUN_API_HOST:-}' \
+        "env: MAILGUN_API_HOST is not an empty template"
+    teardown
+
+    # Test: empty API host omitted from env file
+    setup
+    export ENV_FILE="${TEST_DIR}/.env"
+    export MAILGUN_API_HOST=""
+    export MAILGUN_API_KEY="key-abc123"
+    export MAILGUN_DOMAIN="mg.example.com"
+    export MAIL_PROVIDER="mailgun"
+    export MAIL_FROM="noreply@example.com"
+    export TAG="latest"
+    write_env_file
+
+    assert_contains "$ENV_FILE" 'MAILGUN_API_HOST=' \
+        "env: MAILGUN_API_HOST present when empty"
+    teardown
+}
+
 test_all_modes_have_volumes() {
     for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
         setup; generate "$mode"
@@ -303,6 +340,9 @@ main() {
     test_pg_override_generated
     test_pg_override_not_generated_for_sqlite
     test_pg_override_all_modes
+
+    echo "" && echo -e "${BOLD}Mailgun env file:${NC}"
+    test_write_env_file_mailgun
 
     echo "" && echo -e "${BOLD}Cross-mode consistency:${NC}"
     test_all_modes_include_up_timer

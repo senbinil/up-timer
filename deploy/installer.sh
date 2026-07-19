@@ -267,7 +267,6 @@ collect_env() {
         read -rp "  Mailgun API key: " MAILGUN_API_KEY
         read -rp "  Mailgun domain: " MAILGUN_DOMAIN
         read -rp "  Mailgun API host [api.mailgun.net]: " MAILGUN_API_HOST
-        MAILGUN_API_HOST=\${MAILGUN_API_HOST:-api.mailgun.net}
         read -rp "  Mail from address [noreply@example.com]: " MAIL_FROM
     fi
     MAIL_FROM=${MAIL_FROM:-noreply@example.com}
