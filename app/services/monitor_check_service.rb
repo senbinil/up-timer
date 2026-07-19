@@ -70,7 +70,7 @@ class MonitorCheckService
     uri = URI(@url)
     headers = { "Content-Type" => "application/json" }
 
-    session = SESSION.timeout(request: @timeout, connect_timeout: @timeout)
+    session = SESSION.with(timeout: { request_timeout: @timeout, connect_timeout: @timeout })
 
     if BODY_METHODS.include?(@method) && @body.present?
       session.request(@method, uri.to_s, headers: headers, body: @body)
