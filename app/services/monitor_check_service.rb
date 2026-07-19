@@ -1,6 +1,6 @@
 require "ostruct"
-require "httpx"
-require "socket"
+require "net/http"
+require "uri"
 
 class MonitorCheckService
   SUPPORTED_METHODS = %w[GET HEAD POST PUT PATCH DELETE OPTIONS].freeze
@@ -9,9 +9,6 @@ class MonitorCheckService
   Result = Struct.new(:code, :message, :up, :duration,
                       :ssl_valid, :ssl_expires_at, :ssl_issuer, :ssl_subject,
                       keyword_init: true)
-
-  # Shared HTTPX session with connection pooling and retry support
-  SESSION = HTTPX.plugin(:retries).with(retries: 1, retry_on_timeout: true)
 
   def self.call(monitor)
     new(monitor).call
@@ -28,18 +25,19 @@ class MonitorCheckService
 
   def call
     start = Time.current
-    response = perform_http_request
+    http, request = build_request
+    response = http.request(request)
     duration = ((Time.current - start) * 1000).round(2)
 
-    code = response.status.to_i
+    code = response.code.to_i
     up = determine_up(code)
 
     Result.new(
       code: code,
-      message: Rack::Utils::HTTP_STATUS_CODES[code] || "Unknown",
+      message: response.message,
       up: up,
       duration: duration,
-      **ssl_info(response)
+      **ssl_info(http)
     )
   rescue StandardError => e
     Result.new(
@@ -52,12 +50,25 @@ class MonitorCheckService
 
   private
 
-  def ssl_info(response)
-    cert = if response.respond_to?(:certificate)
-      response.certificate
-    else
-      fetch_certificate
-    end
+  def build_request
+    uri = URI(@url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.open_timeout = @timeout
+    http.read_timeout = @timeout
+    http.write_timeout = @timeout if http.respond_to?(:write_timeout=)
+    http.use_ssl = uri.scheme == "https"
+
+    request = Net::HTTP.const_get(@method.capitalize).new(uri)
+    request["Content-Type"] = "application/json"
+    request.body = @body if BODY_METHODS.include?(@method) && @body.present?
+
+    [http, request]
+  end
+
+  def ssl_info(http)
+    return {} unless http.use_ssl?
+
+    cert = http.peer_cert
     return {} unless cert
 
     expires = cert.not_after
@@ -69,36 +80,6 @@ class MonitorCheckService
     }
   rescue StandardError
     {}
-  end
-
-  def fetch_certificate
-    uri = URI(@url)
-    return nil unless uri.scheme == "https"
-
-    tcp = TCPSocket.new(uri.host, uri.port || 443)
-    ctx = OpenSSL::SSL::SSLContext.new
-    sock = OpenSSL::SSL::SSLSocket.new(tcp, ctx)
-    sock.hostname = uri.host
-    sock.connect
-    cert = sock.peer_cert
-    sock.close
-    tcp.close
-    cert
-  rescue StandardError
-    nil
-  end
-
-  def perform_http_request
-    uri = URI(@url)
-    headers = { "Content-Type" => "application/json" }
-
-    session = SESSION.with(timeout: { request_timeout: @timeout, connect_timeout: @timeout })
-
-    if BODY_METHODS.include?(@method) && @body.present?
-      session.request(@method, uri.to_s, headers: headers, body: @body)
-    else
-      session.request(@method, uri.to_s, headers: headers)
-    end
   end
 
   def determine_up(code)

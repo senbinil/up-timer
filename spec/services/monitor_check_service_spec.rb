@@ -4,14 +4,18 @@ RSpec.describe MonitorCheckService do
   describe ".call" do
     let(:monitor) { create(:uptime_monitor, url: "https://example.com", timeout: 5, request_type: "GET") }
 
-    # Stub the HTTP request at the instance level to avoid httpx DSL complexity
+    let(:http) { instance_double(Net::HTTP) }
+    let(:response) { instance_double(Net::HTTPResponse, code: "200", message: "OK") }
+
     before do
-      allow_any_instance_of(described_class).to receive(:perform_http_request) do |instance|
-        OpenStruct.new(
-          status: OpenStruct.new(to_i: 200, reason: "OK"),
-          certificate: nil
-        )
-      end
+      allow(Net::HTTP).to receive(:new).and_return(http)
+      allow(http).to receive(:open_timeout=)
+      allow(http).to receive(:read_timeout=)
+      allow(http).to receive(:use_ssl=)
+      allow(http).to receive(:request).and_return(response)
+      allow(http).to receive(:respond_to?).with(:write_timeout=).and_return(false)
+      allow(http).to receive(:use_ssl?).and_return(true)
+      allow(http).to receive(:peer_cert).and_return(nil)
     end
 
     it "returns a Result with status code and message" do
@@ -38,7 +42,7 @@ RSpec.describe MonitorCheckService do
 
     context "when the request fails" do
       before do
-        allow_any_instance_of(described_class).to receive(:perform_http_request).and_raise(StandardError.new("Connection refused"))
+        allow(http).to receive(:request).and_raise(StandardError.new("Connection refused"))
       end
 
       it "returns a Result with no code and up: false" do
@@ -62,12 +66,7 @@ RSpec.describe MonitorCheckService do
       end
 
       before do
-        allow_any_instance_of(described_class).to receive(:perform_http_request) do |instance|
-          OpenStruct.new(
-            status: OpenStruct.new(to_i: 200, reason: "OK"),
-            certificate: fake_cert
-          )
-        end
+        allow(http).to receive(:peer_cert).and_return(fake_cert)
       end
 
       it "extracts SSL validity and issuer info" do
@@ -81,16 +80,6 @@ RSpec.describe MonitorCheckService do
 
     context "with POST and request body" do
       let(:monitor) { create(:uptime_monitor, url: "https://example.com/api", timeout: 5, request_type: "POST", request_body: '{"key":"value"}') }
-
-      before do
-        allow_any_instance_of(described_class).to receive(:perform_http_request) do |instance|
-          # Verify the SESSION.request was called with POST and body
-          OpenStruct.new(
-            status: OpenStruct.new(to_i: 200, reason: "OK"),
-            certificate: nil
-          )
-        end
-      end
 
       it "returns a Result with status code" do
         result = described_class.call(monitor)

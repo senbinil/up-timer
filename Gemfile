@@ -10,8 +10,6 @@ gem "pg", "~> 1.5"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 
-# HTTP client with connection pooling, retries, and SSL support [https://github.com/honeyryderchuck/httpx]
-gem "httpx", "~> 1.4"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
