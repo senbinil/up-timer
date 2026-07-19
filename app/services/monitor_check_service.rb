@@ -62,7 +62,7 @@ class MonitorCheckService
     request["Content-Type"] = "application/json"
     request.body = @body if BODY_METHODS.include?(@method) && @body.present?
 
-    [http, request]
+    [ http, request ]
   end
 
   def ssl_info(http)
