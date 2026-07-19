@@ -1,5 +1,6 @@
 require "ostruct"
 require "httpx"
+require "socket"
 
 class MonitorCheckService
   SUPPORTED_METHODS = %w[GET HEAD POST PUT PATCH DELETE OPTIONS].freeze
@@ -52,7 +53,11 @@ class MonitorCheckService
   private
 
   def ssl_info(response)
-    cert = response.respond_to?(:certificate) ? response.certificate : nil
+    cert = if response.respond_to?(:certificate)
+      response.certificate
+    else
+      fetch_certificate
+    end
     return {} unless cert
 
     expires = cert.not_after
@@ -64,6 +69,23 @@ class MonitorCheckService
     }
   rescue StandardError
     {}
+  end
+
+  def fetch_certificate
+    uri = URI(@url)
+    return nil unless uri.scheme == "https"
+
+    tcp = TCPSocket.new(uri.host, uri.port || 443)
+    ctx = OpenSSL::SSL::SSLContext.new
+    sock = OpenSSL::SSL::SSLSocket.new(tcp, ctx)
+    sock.hostname = uri.host
+    sock.connect
+    cert = sock.peer_cert
+    sock.close
+    tcp.close
+    cert
+  rescue StandardError
+    nil
   end
 
   def perform_http_request
