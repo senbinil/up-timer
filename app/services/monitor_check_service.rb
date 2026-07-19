@@ -35,7 +35,7 @@ class MonitorCheckService
 
     Result.new(
       code: code,
-      message: response.status.reason,
+      message: Rack::Utils::HTTP_STATUS_CODES[code] || "Unknown",
       up: up,
       duration: duration,
       **ssl_info(response)
