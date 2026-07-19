@@ -45,7 +45,7 @@
   <body class="font-body min-h-screen flex" data-controller="sidebar">
     <%= render "shared/sidebar" %>
 
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0" data-controller="dashboard-mobile-nav" data-action="click->dashboard-mobile-nav#close keydown->dashboard-mobile-nav#closeKey@window">
       <%= render "shared/dashboard_header" %>
 
       <% if notice || alert %>
@@ -53,6 +53,60 @@
           <%= render "shared/flash", class: "text-xs" %>
         </div>
       <% end %>
+
+      <%# Mobile nav dropdown — hidden by default, animated slide-down %>
+      <div data-dashboard-mobile-nav-target="menu" class="mobile-menu lg:hidden border-b border-border bg-surface-container-lowest px-4 md:px-6 space-y-3" style="padding-top: 0; padding-bottom: 0;">
+        <div class="pt-3 pb-4 space-y-0.5">
+          <%# Create Node — first item, shown for collaborators outside nodes page %>
+          <% if current_account&.collaborator? && controller_name != "nodes" %>
+            <%= link_to new_node_path, data: { action: "click->dashboard-mobile-nav#toggle" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-primary-container hover:bg-primary-container/10 transition-colors font-medium" do %>
+              <%= lucide_icon "circle-plus", size: 16, class: "flex-shrink-0" %>
+              <span>Create Node</span>
+            <% end %>
+            <hr class="border-border my-2" />
+          <% end %>
+
+          <% nav_items = [
+            { icon: "layout-dashboard", label: "Dashboard", path: dashboard_path },
+            { icon: "server", label: "Nodes", path: nodes_path },
+            { icon: "bell", label: "Alerts", path: alerts_path },
+          ] %>
+          <% nav_items << { icon: "radio", label: "Integrations", path: alert_integrations_path } if current_account&.admin? %>
+          <% nav_items << { icon: "users", label: "Users", path: users_path } if current_account&.admin? %>
+          <% nav_items.each do |item| %>
+            <%= link_to item[:path], data: { action: "click->dashboard-mobile-nav#toggle" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-slate-500 hover:text-navy hover:bg-surface-container-low'}" do %>
+              <%= lucide_icon item[:icon], size: 16, class: "flex-shrink-0" %>
+              <span><%= item[:label] %></span>
+            <% end %>
+          <% end %>
+          <%= link_to root_path, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == root_path ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-slate-500 hover:text-navy hover:bg-surface-container-low'}" do %>
+            <%= lucide_icon "globe", size: 16, class: "flex-shrink-0" %>
+            <span>Public Status</span>
+          <% end %>
+
+          <hr class="border-border my-2" />
+
+          <% if current_account&.admin? %>
+            <%= link_to settings_path, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-500 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
+              <%= lucide_icon "settings", size: 16, class: "flex-shrink-0" %>
+              <span>Settings</span>
+            <% end %>
+          <% end %>
+          <button data-action="theme#toggle" class="flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-500 hover:text-navy hover:bg-surface-container-low transition-colors w-full text-left">
+            <%= lucide_icon "moon", size: 16, class: "flex-shrink-0" %>
+            <span>Theme</span>
+          </button>
+          <hr class="border-border my-2" />
+          <%= link_to settings_path, data: { action: "click->dashboard-mobile-nav#toggle" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-slate-500 hover:text-navy hover:bg-surface-container-low transition-colors" do %>
+            <%= lucide_icon "user", size: 16, class: "flex-shrink-0" %>
+            <span>View Profile</span>
+          <% end %>
+          <%= link_to "/logout", data: { turbo_method: :post }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm text-error hover:bg-error-container/30 transition-colors" do %>
+            <%= lucide_icon "log-out", size: 16, class: "flex-shrink-0" %>
+            <span>Logout</span>
+          <% end %>
+        </div>
+      </div>
 
       <main class="flex-1 bg-surface overflow-auto p-4 md:p-6 lg:p-8" data-controller="dashboard-receiver">
         <%= yield %>
