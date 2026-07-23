@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_113737) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_23_112654) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -112,9 +112,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_113737) do
     t.index ["monitor_id"], name: "index_monitor_checks_on_monitor_id"
   end
 
+  create_table "monitor_dependencies", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "dependency_id", null: false
+    t.integer "monitor_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dependency_id"], name: "index_monitor_dependencies_on_dependency_id"
+    t.index ["monitor_id", "dependency_id"], name: "index_monitor_dependencies_on_monitor_id_and_dependency_id", unique: true
+    t.index ["monitor_id"], name: "index_monitor_dependencies_on_monitor_id"
+  end
+
   create_table "monitors", force: :cascade do |t|
     t.integer "check_interval", null: false
     t.datetime "created_at", null: false
+    t.boolean "dependency_affected", default: false, null: false
     t.integer "down_threshold", default: 1, null: false
     t.integer "expected_status"
     t.decimal "latitude", precision: 10, scale: 7
@@ -272,6 +283,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_113737) do
     t.index ["account_id"], name: "index_user_preferences_on_account_id", unique: true
   end
 
+  create_table "webhook_endpoint_monitors", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "events", default: "check_result,status_change", null: false
+    t.integer "monitor_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "webhook_endpoint_id", null: false
+    t.index ["monitor_id"], name: "index_webhook_endpoint_monitors_on_monitor_id"
+    t.index ["webhook_endpoint_id", "monitor_id"], name: "idx_webhook_endpoint_monitors_on_pair", unique: true
+    t.index ["webhook_endpoint_id"], name: "index_webhook_endpoint_monitors_on_webhook_endpoint_id"
+  end
+
+  create_table "webhook_endpoints", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "last_delivered_at"
+    t.string "token", null: false
+    t.string "token_prefix", null: false
+    t.datetime "updated_at", null: false
+    t.string "url", null: false
+  end
+
   add_foreign_key "account_login_change_keys", "accounts", column: "id"
   add_foreign_key "account_password_reset_keys", "accounts", column: "id"
   add_foreign_key "account_remember_keys", "accounts", column: "id"
@@ -283,6 +315,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_113737) do
   add_foreign_key "alerts", "monitors"
   add_foreign_key "incidents", "monitors"
   add_foreign_key "monitor_checks", "monitors"
+  add_foreign_key "monitor_dependencies", "monitors"
+  add_foreign_key "monitor_dependencies", "monitors", column: "dependency_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
@@ -290,4 +324,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_113737) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "user_preferences", "accounts"
+  add_foreign_key "webhook_endpoint_monitors", "monitors"
+  add_foreign_key "webhook_endpoint_monitors", "webhook_endpoints"
 end

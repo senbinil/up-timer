@@ -4,6 +4,8 @@ class UptimeMonitor < ApplicationRecord
   has_many :monitor_checks, dependent: :destroy, foreign_key: :monitor_id
   has_many :incidents, dependent: :destroy, foreign_key: :monitor_id
   has_many :alerts, dependent: :destroy, foreign_key: :monitor_id
+  has_many :webhook_endpoint_monitors, dependent: :destroy, foreign_key: :monitor_id
+  has_many :webhook_endpoints, through: :webhook_endpoint_monitors
 
   after_create_commit :enqueue_first_check
   after_create_commit :enqueue_geo_location, unless: :location_set?
