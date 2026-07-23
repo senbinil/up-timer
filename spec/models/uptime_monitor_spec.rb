@@ -11,6 +11,8 @@ RSpec.describe UptimeMonitor, type: :model do
     it { is_expected.to have_many(:monitor_checks).dependent(:destroy) }
     it { is_expected.to have_many(:incidents).dependent(:destroy) }
     it { is_expected.to have_many(:alerts).dependent(:destroy) }
+    it { is_expected.to have_many(:webhook_endpoint_monitors).dependent(:destroy).with_foreign_key(:monitor_id) }
+    it { is_expected.to have_many(:webhook_endpoints).through(:webhook_endpoint_monitors) }
   end
 
   describe "validations" do
