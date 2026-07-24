@@ -35,7 +35,7 @@
                     data-action="click->tag-picker#toggle"
                     class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-dashed border-slate-300 text-slate-400 hover:border-primary-container hover:text-primary-container hover:bg-primary-container/5 transition-colors text-xs font-mono cursor-pointer ml-0.5" title="Add tag">+</button>
           </span>
-          <span class="text-xs text-slate-400 font-mono"><%= node.check_interval %>s</span>
+          <span class="text-xs text-slate-400 font-mono"><%= node.check_interval_display %></span>
           <span class="text-xs text-slate-400 font-mono"><%= node.timeout %>s</span>
           <span id="<%= dom_id(node, :status) %>" class="text-[10px]">
             <% if node.paused? %>

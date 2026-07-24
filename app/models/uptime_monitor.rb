@@ -13,7 +13,8 @@ class UptimeMonitor < ApplicationRecord
   validates :expected_status, numericality: { only_integer: true, greater_than: 0, less_than: 600 }, allow_nil: true
   validates :request_body, length: { maximum: 10_000 }, allow_blank: true
   validates :down_threshold, numericality: { only_integer: true, in: 1..10 }
-  validates :check_interval, numericality: { only_integer: true, greater_than_or_equal_to: 30 }
+  validates :check_interval, numericality: { only_integer: true, greater_than_or_equal_to: 10 }
+  validate :check_interval_parsed_successfully
 
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
   scope :top, ->(n = 3) { ranked.limit(n) }
@@ -93,6 +94,24 @@ class UptimeMonitor < ApplicationRecord
     false
   end
 
+  def check_interval_display
+    DurationParser.format(check_interval)
+  end
+
+  def check_interval=(value)
+    if value.is_a?(String) && !value.match?(/\A\d+\z/)
+      parsed = DurationParser.parse(value)
+      if parsed
+        super(parsed)
+      else
+        @check_interval_parse_error = "is not a valid interval. Use formats like 30s, 5m, 2h, or a number of seconds"
+        super(nil)
+      end
+    else
+      super(value)
+    end
+  end
+
   def location_set?
     latitude.present? && longitude.present?
   end
@@ -102,6 +121,13 @@ class UptimeMonitor < ApplicationRecord
   end
 
   private
+
+  def check_interval_parsed_successfully
+    if @check_interval_parse_error
+      errors.add(:check_interval, @check_interval_parse_error)
+      @check_interval_parse_error = nil
+    end
+  end
 
   def enqueue_first_check
     MonitorCheckJob.perform_later(id)

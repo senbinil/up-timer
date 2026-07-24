@@ -54,9 +54,9 @@
 
   <div class="grid grid-cols-3 gap-4">
     <div class="space-y-1.5">
-      <%= form.label :check_interval, "Check Interval (s)", class: "input-label block" %>
-      <p class="text-[10px] text-slate-400 font-mono mb-1">Seconds between health checks</p>
-      <%= form.number_field :check_interval, required: true, min: 10, class: "input-field" %>
+      <%= form.label :check_interval, "Check Interval", class: "input-label block" %>
+      <p class="text-[10px] text-slate-400 font-mono mb-1">e.g. 30s, 5m, 2h, or a plain number of seconds</p>
+      <%= form.text_field :check_interval, required: true, placeholder: "60s", class: "input-field" %>
     </div>
     <div class="space-y-1.5">
       <%= form.label :timeout, "Timeout (s)", class: "input-label block" %>
