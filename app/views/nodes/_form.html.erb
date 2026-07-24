@@ -55,8 +55,15 @@
   <div class="grid grid-cols-3 gap-4">
     <div class="space-y-1.5">
       <%= form.label :check_interval, "Check Interval", class: "input-label block" %>
-      <p class="text-[10px] text-slate-400 font-mono mb-1">e.g. 30s, 5m, 2h, or a plain number of seconds</p>
-      <%= form.text_field :check_interval, required: true, placeholder: "60s", class: "input-field" %>
+      <p class="text-[10px] text-slate-400 font-mono mb-1">Minimum 30 seconds total</p>
+      <div class="flex gap-1 items-center">
+        <%= form.number_field :check_interval_hours, min: 0, max: 99, class: "input-field w-14 text-center" %>
+        <span class="text-xs text-slate-400 font-mono w-4">h</span>
+        <%= form.number_field :check_interval_minutes, min: 0, max: 59, class: "input-field w-14 text-center" %>
+        <span class="text-xs text-slate-400 font-mono w-4">m</span>
+        <%= form.number_field :check_interval_seconds, min: 0, max: 59, class: "input-field w-14 text-center" %>
+        <span class="text-xs text-slate-400 font-mono w-4">s</span>
+      </div>
     </div>
     <div class="space-y-1.5">
       <%= form.label :timeout, "Timeout (s)", class: "input-label block" %>

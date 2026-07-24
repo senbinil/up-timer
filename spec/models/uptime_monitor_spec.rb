@@ -205,10 +205,41 @@ RSpec.describe UptimeMonitor, type: :model do
       expect(monitor.errors[:check_interval]).to include(/not a valid interval/i)
     end
 
-    it "rejects values below 10" do
+    it "rejects values below 30" do
       monitor = build(:uptime_monitor, check_interval: "5s")
       expect(monitor).not_to be_valid
       expect(monitor.errors[:check_interval]).to be_present
+    end
+  end
+
+  describe "virtual attributes" do
+    it "decomposes check_interval into parts" do
+      monitor = build(:uptime_monitor, check_interval: 3661)
+      expect(monitor.check_interval_hours).to eq(1)
+      expect(monitor.check_interval_minutes).to eq(1)
+      expect(monitor.check_interval_seconds).to eq(1)
+    end
+
+    it "composes parts into check_interval via before_validation" do
+      monitor = build(:uptime_monitor, check_interval_hours: 1, check_interval_minutes: 30, check_interval_seconds: 15)
+      expect(monitor).to be_valid
+      expect(monitor.check_interval).to eq(5415)
+    end
+
+    it "defaults parts to 0 when check_interval is nil" do
+      monitor = build(:uptime_monitor, check_interval: nil)
+      expect(monitor.check_interval_hours).to eq(0)
+      expect(monitor.check_interval_minutes).to eq(0)
+      expect(monitor.check_interval_seconds).to eq(0)
+    end
+
+    it "allows setting individual parts with 0 values" do
+      monitor = build(:uptime_monitor)
+      monitor.check_interval_hours = 0
+      monitor.check_interval_minutes = 0
+      monitor.check_interval_seconds = 30
+      expect(monitor).to be_valid
+      expect(monitor.check_interval).to eq(30)
     end
   end
 

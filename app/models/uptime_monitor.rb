@@ -8,12 +8,13 @@ class UptimeMonitor < ApplicationRecord
   after_create_commit :enqueue_first_check
   after_create_commit :enqueue_geo_location, unless: :location_set?
   after_update_commit :enqueue_geo_location, if: :saved_change_to_url?
+  before_validation :combine_check_interval_parts, if: :check_interval_parts_changed?
 
   validates :request_type, inclusion: { in: MonitorCheckService::SUPPORTED_METHODS }
   validates :expected_status, numericality: { only_integer: true, greater_than: 0, less_than: 600 }, allow_nil: true
   validates :request_body, length: { maximum: 10_000 }, allow_blank: true
   validates :down_threshold, numericality: { only_integer: true, in: 1..10 }
-  validates :check_interval, numericality: { only_integer: true, greater_than_or_equal_to: 10 }
+  validates :check_interval, numericality: { only_integer: true, greater_than_or_equal_to: 30 }
   validate :check_interval_parsed_successfully
 
   scope :ranked, -> { order(position: :desc, created_at: :desc) }
@@ -98,6 +99,33 @@ class UptimeMonitor < ApplicationRecord
     DurationParser.format(check_interval)
   end
 
+  def check_interval_hours
+    instance_variable_defined?(:@check_interval_hours) ? @check_interval_hours : (check_interval ? check_interval / 3600 : 0)
+  end
+
+  def check_interval_minutes
+    instance_variable_defined?(:@check_interval_minutes) ? @check_interval_minutes : (check_interval ? (check_interval % 3600) / 60 : 0)
+  end
+
+  def check_interval_seconds
+    instance_variable_defined?(:@check_interval_seconds) ? @check_interval_seconds : (check_interval ? check_interval % 60 : 0)
+  end
+
+  def check_interval_hours=(value)
+    @check_interval_parts_changed = true
+    @check_interval_hours = value.to_i
+  end
+
+  def check_interval_minutes=(value)
+    @check_interval_parts_changed = true
+    @check_interval_minutes = value.to_i
+  end
+
+  def check_interval_seconds=(value)
+    @check_interval_parts_changed = true
+    @check_interval_seconds = value.to_i
+  end
+
   def check_interval=(value)
     if value.is_a?(String) && !value.match?(/\A\d+\z/)
       parsed = DurationParser.parse(value)
@@ -121,6 +149,16 @@ class UptimeMonitor < ApplicationRecord
   end
 
   private
+
+  def check_interval_parts_changed?
+    @check_interval_parts_changed
+  end
+
+  def combine_check_interval_parts
+    self.check_interval = (@check_interval_hours.to_i * 3600) +
+                          (@check_interval_minutes.to_i * 60) +
+                          (@check_interval_seconds.to_i)
+  end
 
   def check_interval_parsed_successfully
     if @check_interval_parse_error
