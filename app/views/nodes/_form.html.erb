@@ -30,14 +30,14 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
-    <div class="space-y-1.5">
+  <div class="flex flex-col sm:flex-row gap-4">
+    <div class="flex-1 space-y-1.5">
       <%= form.label :request_type, "Request Type", class: "input-label block" %>
-      <%= form.select :request_type, MonitorCheckService::SUPPORTED_METHODS, {}, data: { action: "change->request-type#toggle" }, class: "input-field" %>
+      <%= form.select :request_type, MonitorCheckService::SUPPORTED_METHODS, {}, data: { action: "change->request-type#toggle" }, class: "input-field w-full" %>
     </div>
-    <div class="space-y-1.5">
+    <div class="flex-1 space-y-1.5">
       <%= form.label :expected_status, "Expected Status", class: "input-label block" %>
-      <%= form.number_field :expected_status, placeholder: "200-399", min: 100, max: 599, class: "input-field" %>
+      <%= form.number_field :expected_status, placeholder: "200-399", min: 100, max: 599, class: "input-field w-full" %>
     </div>
   </div>
 
@@ -52,21 +52,36 @@
     <%= text_field_tag "uptime_monitor[tag_list]", @node.tag_list, placeholder: "production, api", class: "input-field" %>
   </div>
 
-  <div class="grid grid-cols-3 gap-4">
+  <div class="space-y-4">
     <div class="space-y-1.5">
-      <%= form.label :check_interval, "Check Interval (s)", class: "input-label block" %>
-      <p class="text-[10px] text-slate-400 font-mono mb-1">Seconds between health checks</p>
-      <%= form.number_field :check_interval, required: true, min: 10, class: "input-field" %>
+      <%= form.label :check_interval, "Check Interval", class: "input-label block" %>
+      <p class="text-[10px] text-slate-400 font-mono mb-1">Minimum 30 seconds total</p>
+      <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-4 items-stretch sm:items-center">
+        <div class="flex gap-2 items-center flex-1">
+          <%= form.number_field :check_interval_hours, min: 0, max: 99, class: "input-field w-full text-center" %>
+          <span class="text-xs text-slate-400 font-mono w-4">h</span>
+        </div>
+        <div class="flex gap-2 items-center flex-1">
+          <%= form.number_field :check_interval_minutes, min: 0, max: 59, class: "input-field w-full text-center" %>
+          <span class="text-xs text-slate-400 font-mono w-4">m</span>
+        </div>
+        <div class="flex gap-2 items-center flex-1">
+          <%= form.number_field :check_interval_seconds, min: 0, max: 59, class: "input-field w-full text-center" %>
+          <span class="text-xs text-slate-400 font-mono w-4">s</span>
+        </div>
+      </div>
     </div>
-    <div class="space-y-1.5">
-      <%= form.label :timeout, "Timeout (s)", class: "input-label block" %>
-      <p class="text-[10px] text-slate-400 font-mono mb-1">Max wait for HTTP response</p>
-      <%= form.number_field :timeout, required: true, min: 1, class: "input-field" %>
-    </div>
-    <div class="space-y-1.5">
-      <%= form.label :down_threshold, "Failure Threshold", class: "input-label block" %>
-      <p class="text-[10px] text-slate-400 font-mono mb-1">Consecutive failures before marking down</p>
-      <%= form.number_field :down_threshold, required: true, min: 1, max: 10, class: "input-field" %>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1 space-y-1.5">
+        <%= form.label :timeout, "Timeout (s)", class: "input-label block" %>
+        <p class="text-[10px] text-slate-400 font-mono mb-1">Max wait for HTTP response</p>
+        <%= form.number_field :timeout, required: true, min: 1, class: "input-field w-full" %>
+      </div>
+      <div class="flex-1 space-y-1.5">
+        <%= form.label :down_threshold, "Failure Threshold", class: "input-label block" %>
+        <p class="text-[10px] text-slate-400 font-mono mb-1">Consecutive failures before marking down</p>
+        <%= form.number_field :down_threshold, required: true, min: 1, max: 10, class: "input-field w-full" %>
+      </div>
     </div>
   </div>
 

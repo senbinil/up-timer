@@ -174,6 +174,92 @@ RSpec.describe UptimeMonitor, type: :model do
     end
   end
 
+  describe "#check_interval=" do
+    it "accepts a bare number as seconds" do
+      monitor = build(:uptime_monitor, check_interval: "90")
+      expect(monitor.check_interval).to eq(90)
+    end
+
+    it "parses human-friendly formats" do
+      monitor = build(:uptime_monitor, check_interval: "5m")
+      expect(monitor.check_interval).to eq(300)
+
+      monitor = build(:uptime_monitor, check_interval: "2h")
+      expect(monitor.check_interval).to eq(7200)
+
+      monitor = build(:uptime_monitor, check_interval: "30s")
+      expect(monitor.check_interval).to eq(30)
+
+      monitor = build(:uptime_monitor, check_interval: "1hr")
+      expect(monitor.check_interval).to eq(3600)
+    end
+
+    it "still accepts integer values directly" do
+      monitor = build(:uptime_monitor, check_interval: 120)
+      expect(monitor.check_interval).to eq(120)
+    end
+
+    it "adds error for invalid format" do
+      monitor = build(:uptime_monitor, check_interval: "invalid")
+      expect(monitor).not_to be_valid
+      expect(monitor.errors[:check_interval]).to include(/not a valid interval/i)
+    end
+
+    it "rejects values below 30" do
+      monitor = build(:uptime_monitor, check_interval: "5s")
+      expect(monitor).not_to be_valid
+      expect(monitor.errors[:check_interval]).to be_present
+    end
+  end
+
+  describe "virtual attributes" do
+    it "decomposes check_interval into parts" do
+      monitor = build(:uptime_monitor, check_interval: 3661)
+      expect(monitor.check_interval_hours).to eq(1)
+      expect(monitor.check_interval_minutes).to eq(1)
+      expect(monitor.check_interval_seconds).to eq(1)
+    end
+
+    it "composes parts into check_interval via before_validation" do
+      monitor = build(:uptime_monitor, check_interval_hours: 1, check_interval_minutes: 30, check_interval_seconds: 15)
+      expect(monitor).to be_valid
+      expect(monitor.check_interval).to eq(5415)
+    end
+
+    it "defaults parts to 0 when check_interval is nil" do
+      monitor = build(:uptime_monitor, check_interval: nil)
+      expect(monitor.check_interval_hours).to eq(0)
+      expect(monitor.check_interval_minutes).to eq(0)
+      expect(monitor.check_interval_seconds).to eq(0)
+    end
+
+    it "allows setting individual parts with 0 values" do
+      monitor = build(:uptime_monitor)
+      monitor.check_interval_hours = 0
+      monitor.check_interval_minutes = 0
+      monitor.check_interval_seconds = 30
+      expect(monitor).to be_valid
+      expect(monitor.check_interval).to eq(30)
+    end
+  end
+
+  describe "#check_interval_display" do
+    it "formats seconds" do
+      monitor = build(:uptime_monitor, check_interval: 45)
+      expect(monitor.check_interval_display).to eq("45 seconds")
+    end
+
+    it "formats minutes" do
+      monitor = build(:uptime_monitor, check_interval: 300)
+      expect(monitor.check_interval_display).to eq("5 minutes")
+    end
+
+    it "formats hours" do
+      monitor = build(:uptime_monitor, check_interval: 7200)
+      expect(monitor.check_interval_display).to eq("2 hours")
+    end
+  end
+
   describe "callbacks" do
     describe "after_create_commit :enqueue_first_check" do
       it "enqueues MonitorCheckJob after create" do
