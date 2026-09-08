@@ -14,29 +14,17 @@
       <h2 class="text-xl font-semibold text-navy font-[Hanken_Grotesk]">Active Services</h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <% @services.each do |node| %>
-        <%= render "nodes/node_card", node: node %>
-      <% end %>
-    </div>
-  </div>
-
-  <%# ═══════════════════════════════════════════════
-     Alert Activity Chart
-     ═══════════════════════════════════════════════ %>
-  <div class="card space-y-3">
-    <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Alert Activity — Last 15 Days</p>
-    <%= area_chart alert_chart_data(@heatmap),
-                   discrete: true,
-                   stacked: true,
-                   height: "240px",
-                   library: {
-                     scales: {
-                       x: { type: "category", grid: { display: false } },
-                       y: { beginAtZero: true, ticks: { stepSize: 1 } }
-                     },
-                     plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 16 } } }
-                   } %>
+    <% if @services.present? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @services.each do |node| %>
+          <%= render "nodes/node_card", node: node %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="card space-y-0">
+        <div class="py-8 text-center text-xs text-slate-400">No services added.</div>
+      </div>
+    <% end %>
   </div>
 
   <%# ═══════════════════════════════════════════════
