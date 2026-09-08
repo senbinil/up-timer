@@ -54,7 +54,7 @@
       <% if @last_resolved %>
         Last incident resolved <%= time_ago_in_words(@last_resolved) %> ago ·
       <% end %>
-      Updated <%= time_ago_in_words(MonitorCheck.maximum(:checked_at) || Time.current) %> ago
+      Updated <%= time_ago_in_words(MonitorCheck.where(monitor: @nodes).maximum(:checked_at) || Time.current) %> ago
     </div>
   </div>
 
@@ -68,7 +68,7 @@
       <div class="space-y-2">
         <% @nodes.each do |node| %>
           <% stats = node.public_uptime %>
-          <details id="<%= dom_id(node) %>" class="card p-0 group open:ring-1 open:ring-primary-container/30 transition-all">
+          <details id="<%= dom_id(node) %>" open class="card p-0 group open:ring-1 open:ring-primary-container/30 transition-all">
             <summary class="flex items-center gap-4 py-3 px-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface-container-low transition-colors rounded-lg">
               <span class="w-2.5 h-2.5 rounded-full <%= node.paused? ? 'bg-[var(--color-warning)]' : (node.status == "up" && !node.dependency_affected? ? "bg-success" : node.dependency_affected? ? "bg-warning" : "bg-error") %> flex-shrink-0"></span>
               <div class="flex-1 min-w-0">
