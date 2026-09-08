@@ -1,13 +1,9 @@
 module LoadableFleetStats
   extend ActiveSupport::Concern
 
-  included do
-    before_action :load_fleet_stats, only: [ :index ]
-  end
-
   private
 
-  def load_fleet_stats
-    @stats = FleetStatsService.call
+  def load_fleet_stats(scope: nil)
+    @stats = FleetStatsService.call(scope)
   end
 end

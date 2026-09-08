@@ -11,6 +11,7 @@ class DashboardController < ApplicationController
     @services = @nodes.top(current_dashboard_limit)
     @alerts = Alert.recent.limit(5)
     @alert_counts = Alert.active.group(:severity).count
+    load_fleet_stats(scope: UptimeMonitor.all)
   end
 
   private

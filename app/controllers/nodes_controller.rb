@@ -8,6 +8,7 @@ class NodesController < ApplicationController
 
   def index
     @pagy, @nodes = pagy(UptimeMonitor.ranked, limit: 15)
+    load_fleet_stats(scope: UptimeMonitor.all)
   end
 
   def new
