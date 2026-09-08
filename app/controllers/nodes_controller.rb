@@ -1,4 +1,6 @@
 class NodesController < ApplicationController
+  include LoadableFleetStats
+
   layout "dashboard"
   before_action :authenticate
   before_action -> { require_role!(:collaborator) }, except: [ :index, :show ]

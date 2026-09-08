@@ -1,4 +1,6 @@
 class DashboardController < ApplicationController
+  include LoadableFleetStats
+
   layout "dashboard"
 
   before_action :authenticate
@@ -9,7 +11,6 @@ class DashboardController < ApplicationController
     @services = @nodes.top(current_dashboard_limit)
     @alerts = Alert.recent.limit(5)
     @alert_counts = Alert.active.group(:severity).count
-    @stats = FleetStatsService.call
   end
 
   private

@@ -27,5 +27,8 @@ class FleetStatsService
       error_rate: total_checks > 0 ? ((total_checks - up_checks).to_f / total_checks * 100).round(2) : 0,
       paused_count: @scope.paused.count
     }
+  rescue => e
+    Rails.logger.error("FleetStatsService failed: #{e.message}")
+    { status: "unknown", up_count: 0, down_count: 0, total: 0, uptime: 0, error_rate: 0, paused_count: 0 }
   end
 end

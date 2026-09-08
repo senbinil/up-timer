@@ -4,9 +4,32 @@
     <%= link_to "Create Node +", new_node_path, class: "btn btn-primary text-xs py-1.5 px-3" %>
   </div>
 
+  <div id="fleet_status">
+    <div class="card space-y-5">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-divider">
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Total</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:total] %></p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Up</p>
+          <p class="text-lg md:text-2xl font-semibold text-navy font-[Hanken_Grotesk] mt-1"><%= @stats[:up_count] %></p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Down</p>
+          <p class="text-lg md:text-2xl font-semibold <%= @stats[:down_count] > 0 ? "text-[var(--color-warning)]" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:down_count] %></p>
+        </div>
+        <div>
+          <p class="text-[10px] md:text-xs text-slate-400 font-mono uppercase tracking-[0.05em]">Paused</p>
+          <p class="text-lg md:text-2xl font-semibold <%= @stats[:paused_count] > 0 ? "text-[var(--color-warning)]" : "text-navy" %> font-[Hanken_Grotesk] mt-1"><%= @stats[:paused_count] %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <% if @nodes.any? %>
     <div class="card space-y-0">
-      <div class="hidden md:grid grid-cols-[40px_1fr_1fr_1fr_80px_80px_80px_80px_100px] gap-2 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
+      <div class="hidden md:grid grid-cols-[40px_1fr_1fr_1fr_100px_80px_80px_80px_100px] gap-2 px-1 py-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono border-b border-divider">
         <span>#</span>
         <span>Name</span>
         <span>URL</span>
@@ -18,7 +41,7 @@
         <span>Actions</span>
       </div>
       <% @nodes.each.with_index(1) do |node, index| %>
-        <div class="hidden md:grid md:grid-cols-[40px_1fr_1fr_1fr_80px_80px_80px_80px_100px] gap-2 px-1 py-3 items-center list-row hover:bg-surface-container-low">
+        <div class="hidden md:grid md:grid-cols-[40px_1fr_1fr_1fr_100px_80px_80px_80px_100px] gap-2 px-1 py-3 items-center list-row hover:bg-surface-container-low">
           <span class="text-xs font-mono text-slate-400"><%= index %></span>
           <%= link_to node.name, node_path(node), class: "text-sm font-semibold text-navy hover:underline" %>
           <%= link_to node.url, node_path(node), class: "text-xs text-slate-400 font-mono truncate hover:underline" %>
