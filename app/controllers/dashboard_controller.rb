@@ -1,4 +1,6 @@
 class DashboardController < ApplicationController
+  include LoadableFleetStats
+
   layout "dashboard"
 
   before_action :authenticate
@@ -9,8 +11,7 @@ class DashboardController < ApplicationController
     @services = @nodes.top(current_dashboard_limit)
     @alerts = Alert.recent.limit(5)
     @alert_counts = Alert.active.group(:severity).count
-    @heatmap = Alert.heatmap
-    @stats = FleetStatsService.call
+    load_fleet_stats(scope: UptimeMonitor.all)
   end
 
   private

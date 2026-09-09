@@ -1,4 +1,6 @@
 class NodesController < ApplicationController
+  include LoadableFleetStats
+
   layout "dashboard"
   before_action :authenticate
   before_action -> { require_role!(:collaborator) }, except: [ :index, :show ]
@@ -6,6 +8,7 @@ class NodesController < ApplicationController
 
   def index
     @pagy, @nodes = pagy(UptimeMonitor.ranked, limit: 15)
+    load_fleet_stats(scope: UptimeMonitor.all)
   end
 
   def new
