@@ -32,7 +32,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :settings, only: [ :show, :update ]
+  resource :profile, only: [ :show, :update ]
 
   # Admin settings for feature flags
   namespace :admin do

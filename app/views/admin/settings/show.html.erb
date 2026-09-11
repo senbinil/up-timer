@@ -1,13 +1,14 @@
-<div class="max-w-lg mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6">
   <div class="space-y-2">
     <p class="text-xs font-semibold uppercase tracking-[0.05em] text-slate-400 font-mono">Admin</p>
     <h1 class="text-2xl font-semibold text-navy font-[Hanken_Grotesk]">Site Settings</h1>
     <p class="text-sm text-slate-400">Manage feature flags and system-wide settings.</p>
   </div>
 
-  <%= render "admin/settings/registration_card" %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <%= render "admin/settings/registration_card" %>
 
-  <div class="card">
+    <div class="card">
     <div class="space-y-4">
       <h2 class="text-lg font-semibold text-navy">Activity Log</h2>
       <% if @action_logs.any? %>
@@ -36,5 +37,6 @@
         <p class="text-xs text-slate-400">No changes recorded yet.</p>
       <% end %>
     </div>
+  </div>
   </div>
 </div>
