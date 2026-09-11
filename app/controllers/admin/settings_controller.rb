@@ -14,7 +14,7 @@ module Admin
       @changed = false
 
       if setting[:registration_enabled].present?
-        new_value = setting[:registration_enabled] == "1" ? "true" : "false"
+        new_value = ActiveModel::Type::Boolean.new.cast(setting[:registration_enabled]).to_s
         if SiteSetting.registration_enabled?.to_s != new_value
           SiteSetting.set(:registration_enabled, new_value)
           ActionLog.log(

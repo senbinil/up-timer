@@ -50,7 +50,7 @@ class SiteSetting < ApplicationRecord
     # Creates or updates the setting and busts the cache.
     # Rescues RecordNotUnique to handle the race where a concurrent
     # request inserts the same key between find_by and save!.
-    def set(key, value)
+    def set(key, value, retries: 3)
       key = key.to_s
       setting = find_or_initialize_by(key: key)
       setting.value = value.to_s
@@ -58,6 +58,7 @@ class SiteSetting < ApplicationRecord
       bust_cache(key)
       setting.value
     rescue ActiveRecord::RecordNotUnique
+      raise if (retries -= 1) < 0
       retry
     end
 
