@@ -165,19 +165,12 @@ class RodauthMain < Rodauth::Rails::Auth
       end
     end
 
+    # Registration gate — rejects account creation when disabled.
+    # Rodauth re-renders the create_account view, which displays the
+    # "Registration Closed" card when @registration_enabled is false.
     # NOTE: This is the sole enforcement point for the registration gate.
     # If new Rodauth features are enabled (e.g., verify_account, confirm_account),
     # consider adding redundant checks to prevent bypassing the gate.
-    # Redirect POST to the GET path so the "Registration Closed" card is shown.
-    before_create_account_route do
-      if request.post? && !SiteSetting.registration_enabled?
-        redirect create_account_path
-      end
-    end
-
-    # Validate custom fields in the create account form.
-    # Redundant registration gate — defense-in-depth in case new Rodauth
-    # features (verify_account, confirm_account) bypass before_create_account_route.
     before_create_account do
       unless SiteSetting.registration_enabled?
         throw_error_status(422, "registration", "is currently disabled")

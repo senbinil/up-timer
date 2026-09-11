@@ -21,7 +21,7 @@ module Admin
             action: :registration_toggled,
             record: current_account,
             account: current_account,
-            metadata: { registration_enabled: SiteSetting.registration_enabled? }
+            metadata: { "registration_enabled" => SiteSetting.registration_enabled? }
           )
           @changed = true
         end

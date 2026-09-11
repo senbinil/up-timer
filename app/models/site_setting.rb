@@ -22,9 +22,9 @@ class SiteSetting < ApplicationRecord
   CACHE_MISS = CacheMiss.new.freeze
 
   class << self
-    # Get a setting value by key
-    # Returns the cached value if available, otherwise fetches from DB
-    # Caches misses to avoid repeated queries for non-existent keys
+    # Get a setting value by key.
+    # Returns the cached value if available, otherwise fetches from DB.
+    # Caches misses to avoid repeated queries for non-existent keys.
     def get(key, default: nil)
       key = key.to_s
       cache_key = "site_setting:#{key}"
@@ -46,14 +46,16 @@ class SiteSetting < ApplicationRecord
       end
     end
 
-    # Set a setting value by key
-    # Creates or updates the setting and busts the cache.
+    # Set a setting value by key.
     # Rescues RecordNotUnique to handle the race where a concurrent
     # request inserts the same key between find_by and save!.
+    # Skips the write if the value already matches (compare-and-swap).
     def set(key, value, retries: 3)
       key = key.to_s
+      value = value.to_s
       setting = find_or_initialize_by(key: key)
-      setting.value = value.to_s
+      return setting.value if !setting.new_record? && setting.value == value
+      setting.value = value
       setting.save!
       bust_cache(key)
       setting.value
@@ -62,19 +64,14 @@ class SiteSetting < ApplicationRecord
       retry
     end
 
-    # Sentinel caches non-existent keys for the TTL window. Currently only
-    # one setting exists (registration_enabled); if new settings are added
-    # that aren't seeded in every environment, ensure their defaults are
-    # handled in their accessor methods rather than relying on this sentinel.
-
     # Convenience method for boolean settings
     def enabled?(key)
       get(key, default: "false") == "true"
     end
 
-    # Check if registration is enabled (default: true)
+    # Security-critical: always read fresh from DB, bypassing cache.
     def registration_enabled?
-      get(:registration_enabled, default: "true") == "true"
+      (find_by(key: "registration_enabled")&.value || "true") == "true"
     end
 
     private

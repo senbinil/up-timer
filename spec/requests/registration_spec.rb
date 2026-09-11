@@ -53,7 +53,7 @@ RSpec.describe 'Registration', type: :request do
     context 'when registration is disabled' do
       before { SiteSetting.set(:registration_enabled, 'false') }
 
-      it 'redirects to registration page when disabled' do
+      it 'rejects account creation and shows registration closed card' do
         expect {
           post '/create-account', params: {
             email: 'newuser@example.com',
@@ -62,7 +62,8 @@ RSpec.describe 'Registration', type: :request do
             compliance: '1'
           }
         }.not_to change(Account, :count)
-        expect(response).to redirect_to('/create-account')
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include('Registration Closed')
       end
     end
   end
