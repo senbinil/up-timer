@@ -167,6 +167,9 @@ class RodauthMain < Rodauth::Rails::Auth
 
     # Validate custom fields in the create account form.
     before_create_account do
+      unless SiteSetting.registration_enabled?
+        throw_error_status(403, "registration", "is currently disabled")
+      end
       throw_error_status(422, "name", "must be present") if param("name").blank?
       throw_error_status(422, "compliance", "must be accepted") unless param("compliance") == "1"
     end

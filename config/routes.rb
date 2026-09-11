@@ -34,6 +34,11 @@ Rails.application.routes.draw do
 
   resource :settings, only: [ :show, :update ]
 
+  # Admin settings for feature flags
+  namespace :admin do
+    resource :settings, only: [ :show, :update ]
+  end
+
   resources :alerts do
     member do
       post :resolve

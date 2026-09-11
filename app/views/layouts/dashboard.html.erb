@@ -46,11 +46,11 @@
     <div class="flex-1 flex flex-col min-w-0" data-controller="dashboard-mobile-nav" data-action="click->dashboard-mobile-nav#close keydown->dashboard-mobile-nav#closeKey@window">
       <%= render "shared/dashboard_header" %>
 
-      <% if notice || alert %>
-        <div id="flash">
+      <div id="flash">
+        <% if notice || alert %>
           <%= render "shared/flash", class: "text-xs" %>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
 
       <%# Mobile nav dropdown — hidden by default, animated slide-down %>
       <div data-dashboard-mobile-nav-target="menu" class="mobile-menu lg:hidden border-b border-border bg-surface-container-lowest px-4 md:px-6 space-y-3" style="padding-top: 0; padding-bottom: 0;">
@@ -71,6 +71,7 @@
           ] %>
           <% nav_items << { icon: "radio", label: "Integrations", path: alert_integrations_path } if current_account&.admin? %>
           <% nav_items << { icon: "users", label: "Users", path: users_path } if current_account&.admin? %>
+          <% nav_items << { icon: "settings", label: "Site Settings", path: admin_settings_path } if current_account&.admin? %>
           <% nav_items.each do |item| %>
             <%= link_to item[:path], data: { action: "click->dashboard-mobile-nav#toggle" }, class: "flex items-center gap-3 px-3 py-2 rounded-default text-sm transition-colors #{request.path == item[:path] ? 'bg-primary-container/10 text-primary-container font-medium' : 'text-slate-500 hover:text-navy hover:bg-surface-container-low'}" do %>
               <%= lucide_icon item[:icon], size: 16, class: "flex-shrink-0" %>

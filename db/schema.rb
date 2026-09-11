@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_101525) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_11_043651) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -142,6 +142,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_101525) do
     t.string "role"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_recipients_on_email", unique: true
+  end
+
+  create_table "site_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.string "value", null: false
+    t.index ["key"], name: "index_site_settings_on_key", unique: true
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
