@@ -25,6 +25,7 @@ module Admin
       end
 
       @registration_enabled = SiteSetting.registration_enabled?
+      load_action_logs
 
       respond_to do |format|
         format.turbo_stream
