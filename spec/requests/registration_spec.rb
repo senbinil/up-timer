@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Registration', type: :request do
-  let!(:admin) { Account.create!(email: 'admin@example.com', name: 'Admin', password: 'password123', role: 'admin', status: :verified) }
+  let!(:admin) { create(:account, role: "admin") }
 
   before do
     # Ensure registration is enabled by default
@@ -91,14 +91,5 @@ RSpec.describe 'Registration', type: :request do
         expect(response).to redirect_to(admin_settings_path)
       end
     end
-  end
-
-  private
-
-  def sign_in(account)
-    post '/login', params: {
-      email: account.email,
-      password: 'password123'
-    }
   end
 end
