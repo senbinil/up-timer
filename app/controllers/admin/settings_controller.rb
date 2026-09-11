@@ -35,7 +35,7 @@ module Admin
     private
 
     def load_action_logs
-      @action_logs = ActionLog.where(action: "registration_toggled").includes(:account).recent.limit(5)
+      @action_logs = ActionLog.where(action: :registration_toggled).includes(:account).recent.limit(5)
     end
   end
 end

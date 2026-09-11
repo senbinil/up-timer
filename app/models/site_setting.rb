@@ -2,12 +2,24 @@ class SiteSetting < ApplicationRecord
   validates :key, presence: true, uniqueness: true
   validates :value, presence: true
 
-  # In-memory cache to avoid DB hits on every request
-  # TTL: 5 minutes
-  CACHE_TTL = 5.minutes
-  # Sentinel for caching non-existent keys to avoid repeated DB hits.
-  # Uses a distinct string unlikely to collide with real setting values.
-  CACHE_MISS = "__SiteSetting::CACHE_MISS__"
+  CACHE_TTL = 30.seconds
+
+  # Sentinel for caching non-existent keys. Custom class so it can be
+  # marshaled across cache stores without colliding with real values.
+  class CacheMiss
+    def ==(other)
+      other.is_a?(CacheMiss)
+    end
+
+    def _dump(_level)
+      ""
+    end
+
+    def self._load(_str)
+      new
+    end
+  end
+  CACHE_MISS = CacheMiss.new.freeze
 
   class << self
     # Get a setting value by key
