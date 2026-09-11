@@ -3,7 +3,7 @@ module Admin
     layout "dashboard"
     before_action :authenticate
     before_action -> { require_role!(:admin) }
-    before_action :load_action_logs
+    before_action :load_action_logs, only: :show
 
     def show
       @registration_enabled = SiteSetting.registration_enabled?
@@ -11,6 +11,8 @@ module Admin
 
     def update
       setting = params.require(:setting).permit(:registration_enabled)
+      changed = false
+
       if setting[:registration_enabled].present?
         new_value = setting[:registration_enabled] == "1" ? "true" : "false"
         if SiteSetting.registration_enabled?.to_s != new_value
@@ -21,6 +23,7 @@ module Admin
             account: current_account,
             metadata: { registration_enabled: SiteSetting.registration_enabled? }
           )
+          changed = true
         end
       end
 
@@ -29,7 +32,7 @@ module Admin
 
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to admin_settings_path, notice: "Settings updated." }
+        format.html { redirect_to admin_settings_path, notice: changed ? "Settings updated." : "No changes made." }
       end
     end
 
