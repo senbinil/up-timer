@@ -51,7 +51,7 @@ class SiteSetting < ApplicationRecord
     private
 
     def bust_cache(key)
-      Rails.cache.delete("site_setting:#{key.to_s}")
+      Rails.cache.delete("site_setting:#{key}")
     end
   end
 end
