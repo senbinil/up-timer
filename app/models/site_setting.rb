@@ -38,12 +38,12 @@ class SiteSetting < ApplicationRecord
 
     # Convenience method for boolean settings
     def enabled?(key)
-      get(key, default: "true") == "true"
+      get(key, default: "false") == "true"
     end
 
     # Check if registration is enabled (default: true)
     def registration_enabled?
-      enabled?(:registration_enabled)
+      get(:registration_enabled, default: "true") == "true"
     end
 
     private
