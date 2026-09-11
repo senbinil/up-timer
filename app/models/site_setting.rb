@@ -3,6 +3,7 @@ class SiteSetting < ApplicationRecord
   validates :value, presence: true, length: { minimum: 1 }
 
   CACHE_TTL = 30.seconds
+  SECURITY_CACHE_TTL = 5.seconds
 
   # Sentinel for caching non-existent keys. Custom class so it can be
   # marshaled across cache stores without colliding with real values.
@@ -49,7 +50,7 @@ class SiteSetting < ApplicationRecord
     # Set a setting value by key.
     # Rescues RecordNotUnique to handle the race where a concurrent
     # request inserts the same key between find_by and save!.
-    # Skips the write if the value already matches (compare-and-swap).
+    # Skips the write if the in-memory value already matches.
     def set(key, value, retries: 3)
       key = key.to_s
       value = value.to_s
@@ -61,6 +62,7 @@ class SiteSetting < ApplicationRecord
       setting.value
     rescue ActiveRecord::RecordNotUnique
       raise if (retries -= 1) < 1
+      sleep(0.1 * retries)
       retry
     end
 
@@ -69,9 +71,13 @@ class SiteSetting < ApplicationRecord
       get(key, default: "false") == "true"
     end
 
-    # Security-critical: always read fresh from DB, bypassing cache.
+    # Security-critical setting: short TTL cache. The hard block in
+    # before_create_account is the real security guarantee; this just
+    # avoids a DB hit on every login page view.
     def registration_enabled?
-      (find_by(key: "registration_enabled")&.value || "true") == "true"
+      Rails.cache.fetch("site_setting:registration_enabled", expires_in: SECURITY_CACHE_TTL) do
+        (find_by(key: "registration_enabled")&.value || "true") == "true"
+      end
     end
 
     private
