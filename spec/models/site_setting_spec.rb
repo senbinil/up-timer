@@ -48,8 +48,8 @@ RSpec.describe SiteSetting, type: :model do
       expect(SiteSetting.enabled?('feature')).to be false
     end
 
-    it 'returns default value when setting does not exist' do
-      expect(SiteSetting.enabled?('non_existent')).to be true
+    it 'returns false when setting does not exist' do
+      expect(SiteSetting.enabled?('non_existent')).to be false
     end
   end
 
