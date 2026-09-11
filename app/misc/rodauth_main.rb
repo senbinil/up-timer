@@ -176,7 +176,12 @@ class RodauthMain < Rodauth::Rails::Auth
     end
 
     # Validate custom fields in the create account form.
+    # Redundant registration gate — defense-in-depth in case new Rodauth
+    # features (verify_account, confirm_account) bypass before_create_account_route.
     before_create_account do
+      unless SiteSetting.registration_enabled?
+        throw_error_status(422, "registration", "is currently disabled")
+      end
       throw_error_status(422, "name", "must be present") if param("name").blank?
       throw_error_status(422, "compliance", "must be accepted") unless param("compliance") == "1"
     end

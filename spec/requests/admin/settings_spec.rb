@@ -68,6 +68,20 @@ RSpec.describe "Admin Settings", type: :request do
           }
         }.to change(ActionLog, :count).by(1)
       end
+
+      it "supports a full disable then re-enable toggle cycle" do
+        expect(SiteSetting.registration_enabled?).to be true
+
+        patch admin_settings_path, params: {
+          setting: { registration_enabled: "0" }
+        }
+        expect(SiteSetting.registration_enabled?).to be false
+
+        patch admin_settings_path, params: {
+          setting: { registration_enabled: "1" }
+        }
+        expect(SiteSetting.registration_enabled?).to be true
+      end
     end
 
     context "with turbo stream" do

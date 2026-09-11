@@ -1,6 +1,6 @@
 class SiteSetting < ApplicationRecord
   validates :key, presence: true, uniqueness: true
-  validates :value, presence: true
+  validates :value, presence: true, length: { minimum: 1 }
 
   CACHE_TTL = 30.seconds
 
