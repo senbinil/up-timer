@@ -5,7 +5,9 @@ class SiteSetting < ApplicationRecord
   # In-memory cache to avoid DB hits on every request
   # TTL: 5 minutes
   CACHE_TTL = 5.minutes
-  CACHE_MISS = "__cache_miss__"
+  # Sentinel for caching non-existent keys to avoid repeated DB hits.
+  # Uses a distinct string unlikely to collide with real setting values.
+  CACHE_MISS = "__SiteSetting::CACHE_MISS__"
 
   class << self
     # Get a setting value by key

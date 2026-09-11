@@ -23,6 +23,7 @@ module Admin
       end
 
       @registration_enabled = SiteSetting.registration_enabled?
+      @action_logs = ActionLog.where(action: "registration_toggled").includes(:account).recent.limit(5)
       flash.now[:notice] = "Settings updated."
 
       respond_to do |format|

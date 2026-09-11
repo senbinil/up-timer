@@ -2,6 +2,10 @@
   <%= render "admin/settings/registration_card" %>
 <% end %>
 
+<%= turbo_stream.replace "admin_settings_activity_log" do %>
+  <%= render "admin/settings/activity_log" %>
+<% end %>
+
 <%= turbo_stream.update "flash" do %>
   <div class="flash-notice text-xs">Settings updated.</div>
 <% end %>
