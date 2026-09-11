@@ -10,7 +10,7 @@ module Admin
     end
 
     def update
-      setting = params[:setting]
+      setting = params.require(:setting).permit(:registration_enabled)
       if setting[:registration_enabled].present?
         new_value = setting[:registration_enabled] == "1" ? "true" : "false"
         SiteSetting.set(:registration_enabled, new_value)

@@ -55,7 +55,7 @@ RSpec.describe 'Registration', type: :request do
     context 'when registration is disabled' do
       before { SiteSetting.set(:registration_enabled, 'false') }
 
-      it 'rejects account creation with 403' do
+      it 'rejects account creation when disabled' do
         expect {
           post '/create-account', params: {
             email: 'newuser@example.com',
@@ -64,6 +64,7 @@ RSpec.describe 'Registration', type: :request do
             compliance: '1'
           }
         }.not_to change(Account, :count)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

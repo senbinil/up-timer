@@ -10,6 +10,7 @@ class SiteSetting < ApplicationRecord
     # Get a setting value by key
     # Returns the cached value if available, otherwise fetches from DB
     def get(key, default: nil)
+      key = key.to_s
       cache_key = "site_setting:#{key}"
       cached = Rails.cache.read(cache_key)
 
@@ -29,10 +30,11 @@ class SiteSetting < ApplicationRecord
     # Set a setting value by key
     # Creates or updates the setting and busts the cache
     def set(key, value)
+      key = key.to_s
       setting = find_or_initialize_by(key: key)
       setting.value = value.to_s
-      setting.save!
       bust_cache(key)
+      setting.save!
       setting.value
     end
 
@@ -49,7 +51,7 @@ class SiteSetting < ApplicationRecord
     private
 
     def bust_cache(key)
-      Rails.cache.delete("site_setting:#{key}")
+      Rails.cache.delete("site_setting:#{key.to_s}")
     end
   end
 end

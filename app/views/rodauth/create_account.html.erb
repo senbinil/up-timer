@@ -2,7 +2,7 @@
   <%# ── Section Header ── %>
   <div class="space-y-2">
     <h1 class="text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Create Account</h1>
-    <% if SiteSetting.registration_enabled? %>
+    <% if @registration_enabled %>
       <p class="text-body-lg text-slate-400">Register a new user account to the secure infrastructure cluster.</p>
     <% else %>
       <p class="text-body-lg text-slate-400">Registration is currently disabled. Please contact an administrator for access.</p>
@@ -10,7 +10,7 @@
   </div>
 
   <%# ── Registration Card ── %>
-  <% if SiteSetting.registration_enabled? %>
+  <% if @registration_enabled %>
   <div class="card">
     <%= form_with url: rodauth.create_account_path, method: :post, data: { turbo: false }, class: "space-y-8" do |form| %>
       <%# ── Email Field ── %>
