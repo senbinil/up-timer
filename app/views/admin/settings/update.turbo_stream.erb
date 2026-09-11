@@ -7,5 +7,5 @@
 <% end %>
 
 <%= turbo_stream.update "flash" do %>
-  <div class="flash-notice text-xs">Settings updated.</div>
+  <div class="flash-notice text-xs"><%= @changed ? "Settings updated." : "No changes made." %></div>
 <% end %>

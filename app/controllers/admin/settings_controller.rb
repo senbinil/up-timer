@@ -11,7 +11,7 @@ module Admin
 
     def update
       setting = params.require(:setting).permit(:registration_enabled)
-      changed = false
+      @changed = false
 
       if setting[:registration_enabled].present?
         new_value = setting[:registration_enabled] == "1" ? "true" : "false"
@@ -23,7 +23,7 @@ module Admin
             account: current_account,
             metadata: { registration_enabled: SiteSetting.registration_enabled? }
           )
-          changed = true
+          @changed = true
         end
       end
 
@@ -32,7 +32,7 @@ module Admin
 
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to admin_settings_path, notice: changed ? "Settings updated." : "No changes made." }
+        format.html { redirect_to admin_settings_path, notice: @changed ? "Settings updated." : "No changes made." }
       end
     end
 

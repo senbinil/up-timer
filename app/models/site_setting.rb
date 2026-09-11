@@ -47,14 +47,13 @@ class SiteSetting < ApplicationRecord
     end
 
     # Set a setting value by key
-    # Creates or updates the setting and busts the cache
+    # Creates or updates the setting and busts the cache.
+    # Uses upsert to avoid race conditions on the unique key index.
     def set(key, value)
       key = key.to_s
-      setting = find_or_initialize_by(key: key)
-      setting.value = value.to_s
-      setting.save!
+      upsert({ key: key, value: value.to_s }, unique_by: :key)
       bust_cache(key)
-      setting.value
+      value.to_s
     end
 
     # Sentinel caches non-existent keys for the TTL window. Currently only
