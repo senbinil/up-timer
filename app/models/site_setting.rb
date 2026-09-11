@@ -60,7 +60,7 @@ class SiteSetting < ApplicationRecord
       bust_cache(key)
       setting.value
     rescue ActiveRecord::RecordNotUnique
-      raise if (retries -= 1) < 0
+      raise if (retries -= 1) < 1
       retry
     end
 

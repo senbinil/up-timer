@@ -13,7 +13,7 @@ module Admin
       setting = params.require(:setting).permit(:registration_enabled)
       @changed = false
 
-      if setting[:registration_enabled].present?
+      if %w[true false 1 0].include?(setting[:registration_enabled])
         new_value = ActiveModel::Type::Boolean.new.cast(setting[:registration_enabled]).to_s
         if SiteSetting.registration_enabled?.to_s != new_value
           SiteSetting.set(:registration_enabled, new_value)
