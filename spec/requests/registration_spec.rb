@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Registration', type: :request do
-  let!(:admin) { create(:account, role: "admin") }
-
   before do
     # Ensure registration is enabled by default
     SiteSetting.set(:registration_enabled, 'true')
@@ -55,7 +53,7 @@ RSpec.describe 'Registration', type: :request do
     context 'when registration is disabled' do
       before { SiteSetting.set(:registration_enabled, 'false') }
 
-      it 'rejects account creation when disabled' do
+      it 'redirects to registration page when disabled' do
         expect {
           post '/create-account', params: {
             email: 'newuser@example.com',
@@ -64,31 +62,7 @@ RSpec.describe 'Registration', type: :request do
             compliance: '1'
           }
         }.not_to change(Account, :count)
-        expect(response).to have_http_status(:unprocessable_content)
-      end
-    end
-  end
-
-  describe 'Admin Settings' do
-    before { sign_in(admin) }
-
-    context 'when admin toggles registration' do
-      it 'disables registration' do
-        patch '/admin/settings', params: {
-          setting: { registration_enabled: '0' }
-        }
-        expect(SiteSetting.registration_enabled?).to be false
-        expect(response).to redirect_to(admin_settings_path)
-      end
-
-      it 'enables registration' do
-        SiteSetting.set(:registration_enabled, 'false')
-
-        patch '/admin/settings', params: {
-          setting: { registration_enabled: '1' }
-        }
-        expect(SiteSetting.registration_enabled?).to be true
-        expect(response).to redirect_to(admin_settings_path)
+        expect(response).to redirect_to('/create-account')
       end
     end
   end

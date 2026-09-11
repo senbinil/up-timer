@@ -12,7 +12,7 @@ class SiteSetting < ApplicationRecord
     end
 
     def _dump(_level)
-      ""
+      "site_setting_cache_miss"
     end
 
     def self._load(_str)
@@ -48,12 +48,17 @@ class SiteSetting < ApplicationRecord
 
     # Set a setting value by key
     # Creates or updates the setting and busts the cache.
-    # Uses upsert to avoid race conditions on the unique key index.
+    # Rescues RecordNotUnique to handle the race where a concurrent
+    # request inserts the same key between find_by and save!.
     def set(key, value)
       key = key.to_s
-      upsert({ key: key, value: value.to_s }, unique_by: :key)
+      setting = find_or_initialize_by(key: key)
+      setting.value = value.to_s
+      setting.save!
       bust_cache(key)
-      value.to_s
+      setting.value
+    rescue ActiveRecord::RecordNotUnique
+      retry
     end
 
     # Sentinel caches non-existent keys for the TTL window. Currently only

@@ -165,14 +165,18 @@ class RodauthMain < Rodauth::Rails::Auth
       end
     end
 
-    # Validate custom fields in the create account form.
     # NOTE: This is the sole enforcement point for the registration gate.
     # If new Rodauth features are enabled (e.g., verify_account, confirm_account),
     # consider adding redundant checks to prevent bypassing the gate.
-    before_create_account do
-      unless SiteSetting.registration_enabled?
-        throw_error_status(422, "registration", "is currently disabled")
+    # Redirect POST to the GET path so the "Registration Closed" card is shown.
+    before_create_account_route do
+      if request.post? && !SiteSetting.registration_enabled?
+        redirect create_account_path
       end
+    end
+
+    # Validate custom fields in the create account form.
+    before_create_account do
       throw_error_status(422, "name", "must be present") if param("name").blank?
       throw_error_status(422, "compliance", "must be accepted") unless param("compliance") == "1"
     end
