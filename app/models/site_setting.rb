@@ -57,6 +57,11 @@ class SiteSetting < ApplicationRecord
       setting.value
     end
 
+    # Sentinel caches non-existent keys for the TTL window. Currently only
+    # one setting exists (registration_enabled); if new settings are added
+    # that aren't seeded in every environment, ensure their defaults are
+    # handled in their accessor methods rather than relying on this sentinel.
+
     # Convenience method for boolean settings
     def enabled?(key)
       get(key, default: "false") == "true"
