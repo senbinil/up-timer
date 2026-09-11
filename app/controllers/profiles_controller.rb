@@ -1,4 +1,4 @@
-class SettingsController < ApplicationController
+class ProfilesController < ApplicationController
   layout "dashboard"
   before_action :authenticate
 
@@ -17,7 +17,7 @@ class SettingsController < ApplicationController
     if updated
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to settings_path, notice: "Settings updated." }
+        format.html { redirect_to profile_path, notice: "Settings updated." }
       end
     else
       render :show, status: :unprocessable_entity

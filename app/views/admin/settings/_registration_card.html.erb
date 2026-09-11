@@ -1,0 +1,24 @@
+<%= turbo_frame_tag "admin_settings_registration" do %>
+  <div class="card">
+    <%= form_with url: admin_settings_path, method: :patch, data: { turbo_frame: "admin_settings_registration", confirm: "Are you sure you want to change the registration setting? This affects whether new users can sign up." } do |form| %>
+      <div class="space-y-4">
+        <h2 class="text-lg font-semibold text-navy">Registration</h2>
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 p-4 bg-surface rounded-default border border-divider">
+          <div class="space-y-1">
+            <div class="font-medium text-navy">User Registration</div>
+            <p class="text-xs text-slate-400">Allow new users to register accounts through the public registration page.</p>
+          </div>
+
+          <label class="relative inline-flex items-center cursor-pointer self-center sm:self-auto sm:ml-auto">
+            <%= form.check_box "setting[registration_enabled]",
+                { checked: @registration_enabled, class: "sr-only peer", onchange: "this.form.requestSubmit()" },
+                "1", "0" %>
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-container/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-success"></div>
+          </label>
+        </div>
+
+      </div>
+    <% end %>
+  </div>
+<% end %>

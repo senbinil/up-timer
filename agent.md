@@ -178,6 +178,9 @@ fix(api): handle null responses safely
 - Agent MUST NOT exceed defined scope
 - Agent MUST NOT modify unrelated code
 - Agent MUST NOT bypass verification
+- Agent MUST ONLY read/scan files within the project root directory
+- Agent MUST NOT read parent directories (e.g., home dir) or sibling directories
+- Agent MUST start all exploration from the current working directory
 
 ---
 
