@@ -13,7 +13,7 @@
   </div>
 
   <%# ── Sub-Card Navigation ── %>
-  <% if SiteSetting.registration_enabled? %>
+  <% if @registration_enabled %>
   <p class="text-center text-sm text-slate-400">
     Don't have an account?
     <%= link_to "Create Account", rodauth.create_account_path, class: "text-primary-container hover:underline font-medium" %>

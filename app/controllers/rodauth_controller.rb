@@ -23,7 +23,7 @@ class RodauthController < ApplicationController
   # / goes through the Rails router (root to: "rodauth#login") and bypasses
   # the already_logged_in check defined in the Rodauth config.
   before_action :redirect_authenticated_user, only: :login
-  before_action :set_registration_enabled, only: :create_account
+  before_action :set_registration_enabled, only: %i[login create_account]
 
   private
 

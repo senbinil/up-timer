@@ -33,8 +33,8 @@ class SiteSetting < ApplicationRecord
       key = key.to_s
       setting = find_or_initialize_by(key: key)
       setting.value = value.to_s
-      bust_cache(key)
       setting.save!
+      bust_cache(key)
       setting.value
     end
 
