@@ -2,10 +2,15 @@
   <%# ── Section Header ── %>
   <div class="space-y-2">
     <h1 class="text-[32px] font-semibold leading-10 tracking-[-0.01em] text-navy font-[Hanken_Grotesk]">Create Account</h1>
-    <p class="text-body-lg text-slate-400">Register a new user account to the secure infrastructure cluster.</p>
+    <% if @registration_enabled %>
+      <p class="text-body-lg text-slate-400">Register a new user account to the secure infrastructure cluster.</p>
+    <% else %>
+      <p class="text-body-lg text-slate-400">Registration is currently disabled. Please contact an administrator for access.</p>
+    <% end %>
   </div>
 
   <%# ── Registration Card ── %>
+  <% if @registration_enabled %>
   <div class="card">
     <%= form_with url: rodauth.create_account_path, method: :post, data: { turbo: false }, class: "space-y-8" do |form| %>
       <%# ── Email Field ── %>
@@ -100,6 +105,21 @@
       <% end %>
     <% end %>
   </div>
+  <% else %>
+  <%# ── Registration Disabled Card ── %>
+  <div class="card">
+    <div class="text-center space-y-4">
+      <div class="text-slate-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+      <h2 class="text-lg font-semibold text-navy">Registration Closed</h2>
+      <p class="text-sm text-slate-400">New account registration is currently disabled by the administrator.</p>
+      <p class="text-xs text-slate-400">Please contact your system administrator to request access.</p>
+    </div>
+  </div>
+  <% end %>
 
   <%# ── Sub-Card Navigation ── %>
   <p class="text-center text-sm text-slate-400">
