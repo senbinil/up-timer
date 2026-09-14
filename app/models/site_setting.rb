@@ -5,8 +5,9 @@ class SiteSetting < ApplicationRecord
   CACHE_TTL = 30.seconds
   SECURITY_CACHE_TTL = 5.seconds
 
-  # Nil is never a valid cached value (validation enforces non-empty string),
-  # so it serves as a safe cache-miss sentinel across all serializer backends.
+  # Empty string sentinel: validation guarantees non-empty values,
+  # so "" is safe across all serializer backends (Marshal, JSON, etc.).
+  CACHE_MISS = "".freeze
 
   class << self
     # Get a setting value by key.
@@ -17,6 +18,7 @@ class SiteSetting < ApplicationRecord
       cache_key = "site_setting:#{key}"
       cached = Rails.cache.read(cache_key)
 
+      return default if cached == CACHE_MISS
       return cached unless cached.nil?
 
       setting = find_by(key: key)
@@ -24,6 +26,7 @@ class SiteSetting < ApplicationRecord
         Rails.cache.write(cache_key, setting.value, expires_in: CACHE_TTL)
         setting.value
       else
+        Rails.cache.write(cache_key, CACHE_MISS, expires_in: CACHE_TTL)
         default
       end
     end
