@@ -55,10 +55,10 @@ class SiteSetting < ApplicationRecord
     end
 
     # Security-critical setting: reads directly from DB to enforce
-    # immediately across all app instances. No cache — the DB hit
-    # is negligible and correctness matters more here.
+    # immediately across all app instances. Bypasses get() to avoid
+    # the 30s cache — correctness matters more here.
     def registration_enabled?
-      get("registration_enabled", default: "true") == "true"
+      (find_by(key: "registration_enabled")&.value || "true") == "true"
     end
 
     private
