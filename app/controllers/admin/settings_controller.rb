@@ -34,6 +34,13 @@ module Admin
         format.turbo_stream
         format.html { redirect_to admin_settings_path, notice: @changed ? "Settings updated." : "No changes made." }
       end
+    rescue ActiveRecord::RecordNotUnique
+      @registration_enabled = SiteSetting.registration_enabled?
+      load_action_logs
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("admin_settings_registration", partial: "admin/settings/registration_card") }
+        format.html { redirect_to admin_settings_path, alert: "A concurrent change occurred. Please try again." }
+      end
     end
 
     private
