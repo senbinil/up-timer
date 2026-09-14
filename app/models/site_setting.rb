@@ -5,22 +5,8 @@ class SiteSetting < ApplicationRecord
   CACHE_TTL = 30.seconds
   SECURITY_CACHE_TTL = 5.seconds
 
-  # Sentinel for caching non-existent keys. Custom class so it can be
-  # marshaled across cache stores without colliding with real values.
-  class CacheMiss
-    def ==(other)
-      other.is_a?(CacheMiss)
-    end
-
-    def _dump(_level)
-      "site_setting_cache_miss"
-    end
-
-    def self._load(_str)
-      new
-    end
-  end
-  CACHE_MISS = CacheMiss.new.freeze
+  # Nil is never a valid cached value (validation enforces non-empty string),
+  # so it serves as a safe cache-miss sentinel across all serializer backends.
 
   class << self
     # Get a setting value by key.
@@ -31,19 +17,14 @@ class SiteSetting < ApplicationRecord
       cache_key = "site_setting:#{key}"
       cached = Rails.cache.read(cache_key)
 
-      if cached == CACHE_MISS
-        default
-      elsif cached.nil?
-        setting = find_by(key: key)
-        if setting
-          Rails.cache.write(cache_key, setting.value, expires_in: CACHE_TTL)
-          setting.value
-        else
-          Rails.cache.write(cache_key, CACHE_MISS, expires_in: CACHE_TTL)
-          default
-        end
+      return cached unless cached.nil?
+
+      setting = find_by(key: key)
+      if setting
+        Rails.cache.write(cache_key, setting.value, expires_in: CACHE_TTL)
+        setting.value
       else
-        cached
+        default
       end
     end
 
@@ -62,7 +43,7 @@ class SiteSetting < ApplicationRecord
       setting.value
     rescue ActiveRecord::RecordNotUnique
       raise if (retries -= 1) < 1
-      sleep(0.1 * retries)
+      sleep(0.1 * (4 - retries))
       retry
     end
 
