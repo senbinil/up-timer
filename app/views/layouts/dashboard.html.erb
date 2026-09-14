@@ -31,7 +31,7 @@
     <%= javascript_importmap_tags %>
 
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>document.addEventListener("turbo:load", () => lucide.createIcons());document.addEventListener("turbo:render", () => lucide.createIcons());lucide.createIcons();</script>
+    <script>document.addEventListener("turbo:load", () => lucide.createIcons());document.addEventListener("turbo:render", () => lucide.createIcons());document.addEventListener("turbo:before-stream-render", (e) => { const r = e.detail.render; e.detail.render = (s) => { r(s); lucide.createIcons(); }; });lucide.createIcons();</script>
 
     <script>
       if ('serviceWorker' in navigator) {
