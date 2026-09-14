@@ -92,5 +92,27 @@ RSpec.describe "Admin Settings", type: :request do
         expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       end
     end
+
+    context "when concurrent change occurs" do
+      before do
+        allow(SiteSetting).to receive(:set).and_raise(ActiveRecord::RecordNotUnique)
+      end
+
+      it "redirects with alert on HTML request" do
+        patch admin_settings_path, params: {
+          setting: { registration_enabled: "0" }
+        }
+        expect(response).to redirect_to(admin_settings_path)
+        expect(flash[:alert]).to include("concurrent change")
+      end
+
+      it "re-renders registration card on turbo stream request" do
+        patch admin_settings_path, params: {
+          setting: { registration_enabled: "0" }
+        }, as: :turbo_stream
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+        expect(response.body).to include("admin_settings_registration")
+      end
+    end
   end
 end
