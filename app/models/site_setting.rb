@@ -3,7 +3,6 @@ class SiteSetting < ApplicationRecord
   validates :value, presence: true, length: { minimum: 1 }
 
   CACHE_TTL = 30.seconds
-  SECURITY_CACHE_TTL = 5.seconds
 
   # Empty string sentinel: validation guarantees non-empty values,
   # so "" is safe across all serializer backends (Marshal, JSON, etc.).
@@ -55,24 +54,17 @@ class SiteSetting < ApplicationRecord
       get(key, default: "false") == "true"
     end
 
-    # Security-critical setting: short TTL cache. Uses a distinct cache
-    # key to avoid type collision with `get`, which caches the raw string
-    # value under "site_setting:registration_enabled".
+    # Security-critical setting: reads directly from DB to enforce
+    # immediately across all app instances. No cache — the DB hit
+    # is negligible and correctness matters more here.
     def registration_enabled?
-      cache_key = "site_setting:registration_enabled:bool"
-      cached = Rails.cache.read(cache_key)
-      return cached unless cached.nil?
-
-      value = get("registration_enabled", default: "true") == "true"
-      Rails.cache.write(cache_key, value, expires_in: SECURITY_CACHE_TTL)
-      value
+      get("registration_enabled", default: "true") == "true"
     end
 
     private
 
     def bust_cache(key)
       Rails.cache.delete("site_setting:#{key}")
-      Rails.cache.delete("site_setting:#{key}:bool")
     end
   end
 end
