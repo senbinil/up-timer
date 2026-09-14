@@ -71,13 +71,17 @@ class SiteSetting < ApplicationRecord
       get(key, default: "false") == "true"
     end
 
-    # Security-critical setting: short TTL cache. The hard block in
-    # before_create_account is the real security guarantee; this just
-    # avoids a DB hit on every login page view.
+    # Security-critical setting: short TTL cache. Uses a distinct cache
+    # key to avoid type collision with `get`, which caches the raw string
+    # value under "site_setting:registration_enabled".
     def registration_enabled?
-      Rails.cache.fetch("site_setting:registration_enabled", expires_in: SECURITY_CACHE_TTL) do
-        (find_by(key: "registration_enabled")&.value || "true") == "true"
-      end
+      cache_key = "site_setting:registration_enabled:bool"
+      cached = Rails.cache.read(cache_key)
+      return cached unless cached.nil?
+
+      value = get("registration_enabled", default: "true") == "true"
+      Rails.cache.write(cache_key, value, expires_in: SECURITY_CACHE_TTL)
+      value
     end
 
     private
