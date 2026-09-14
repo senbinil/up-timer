@@ -5,6 +5,12 @@ export default class extends Controller {
 
   connect() {
     this.open = false
+    this._closeKeyHandler = this.closeKey.bind(this)
+    window.addEventListener("keydown", this._closeKeyHandler)
+  }
+
+  disconnect() {
+    window.removeEventListener("keydown", this._closeKeyHandler)
   }
 
   toggle() {
