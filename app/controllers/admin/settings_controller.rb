@@ -4,6 +4,7 @@ module Admin
     before_action :authenticate
     before_action -> { require_role!(:admin) }
     before_action :load_action_logs, only: :show
+    rescue_from ActiveRecord::RecordNotUnique, with: :handle_concurrent_change
 
     def show
       @registration_enabled = SiteSetting.registration_enabled?
@@ -40,6 +41,15 @@ module Admin
 
     def load_action_logs
       @action_logs = ActionLog.where(action: :registration_toggled).includes(:account).recent.limit(5)
+    end
+
+    def handle_concurrent_change
+      @registration_enabled = SiteSetting.registration_enabled?
+      load_action_logs
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("admin_settings_registration", partial: "admin/settings/registration_card") }
+        format.html { redirect_to admin_settings_path, alert: "A concurrent change occurred. Please try again." }
+      end
     end
   end
 end
