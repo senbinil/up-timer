@@ -43,3 +43,8 @@ AlertTrigger.find_or_create_by!(name: "Custom") do |t|
   t.severity = "info"
   t.email_notify = true
 end
+
+# Site Settings — Feature Flags
+SiteSetting.find_or_create_by!(key: :registration_enabled) do |s|
+  s.value = "true"
+end
