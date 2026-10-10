@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_101525) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_10_000002) do
   create_table "account_login_change_keys", force: :cascade do |t|
     t.datetime "deadline", null: false
     t.string "key", null: false
@@ -87,11 +87,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_101525) do
   end
 
   create_table "incidents", force: :cascade do |t|
+    t.integer "alert_id"
     t.datetime "created_at", null: false
     t.integer "monitor_id", null: false
     t.datetime "resolved_at"
     t.datetime "started_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["alert_id"], name: "index_incidents_on_alert_id"
     t.index ["monitor_id"], name: "index_incidents_on_monitor_id"
     t.index ["started_at"], name: "index_incidents_on_started_at"
   end
@@ -115,7 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_101525) do
   create_table "monitors", force: :cascade do |t|
     t.integer "check_interval", null: false
     t.datetime "created_at", null: false
-    t.integer "down_threshold", default: 1, null: false
+    t.integer "down_threshold", default: 2, null: false
     t.integer "expected_status"
     t.decimal "latitude", precision: 10, scale: 7
     t.json "location", default: {}
@@ -282,6 +284,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_101525) do
   add_foreign_key "alerts", "accounts", column: "resolved_by_id"
   add_foreign_key "alerts", "alert_triggers"
   add_foreign_key "alerts", "monitors"
+  add_foreign_key "incidents", "alerts", on_delete: :nullify
   add_foreign_key "incidents", "monitors"
   add_foreign_key "monitor_checks", "monitors"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

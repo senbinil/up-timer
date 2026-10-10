@@ -78,8 +78,8 @@
         <%= form.number_field :timeout, required: true, min: 1, class: "input-field w-full" %>
       </div>
       <div class="flex-1 space-y-1.5">
-        <%= form.label :down_threshold, "Failure Threshold", class: "input-label block" %>
-        <p class="text-[10px] text-slate-400 font-mono mb-1">Consecutive failures before marking down</p>
+        <%= form.label :down_threshold, "Alert Threshold", class: "input-label block" %>
+        <p class="text-[10px] text-slate-400 font-mono mb-1">Consecutive failures before alerting</p>
         <%= form.number_field :down_threshold, required: true, min: 1, max: 10, class: "input-field w-full" %>
       </div>
     </div>
