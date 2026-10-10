@@ -8,15 +8,44 @@ Having a hard time tracking your services? UpTimer gives you real-time monitorin
 
 ## Features
 
-- **Monitor any HTTP endpoint** — configurable check interval and timeout per monitor
-- **Real-time dashboard** — see up/down status, response times, and uptime percentages at a glance
+- **Monitor any HTTP endpoint** — configurable check interval, timeout, and HTTP method per monitor
+- **Flexible checks** — GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS; custom request bodies and expected status codes
+- **Down threshold** — only alert after a configurable number of consecutive failures
+- **SSL monitoring** — tracks certificate validity and expiry for HTTPS endpoints
+- **Real-time dashboard** — up/down status, response times, and uptime percentages at a glance
 - **Public status page** — share a read-only view of your service health
 - **Incident management** — automatic incident creation on failure, resolution on recovery
+- **Alert emails** — per-trigger email toggles delivered to configured recipients (optional, via Resend or Mailgun)
 - **Role-based access control** — viewer / collaborator / admin roles
-- **Alert emails** — notified when services go down (optional, via Resend or Mailgun)
 - **Data retention** — automatic cleanup of old checks and resolved incidents
 - **Background scheduling** — checks run every 30 seconds via SolidQueue
+- **Organization** — tags, pause/resume, and custom ordering for your monitors
+- **Geo-location** — resolves each service's geographic location
 - **Dark/light design** — high-contrast light operational system
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+  - [Docker](#docker)
+  - [Production deployment](#production-deployment)
+  - [Local development](#local-development)
+- [Usage](#usage)
+  - [Creating monitored endpoints](#creating-monitored-endpoints)
+  - [Public status page](#public-status-page)
+  - [Authentication](#authentication)
+  - [RBAC](#rbac)
+  - [Alert triggers](#alert-triggers)
+- [Configuration](#configuration)
+  - [Environment variables](#environment-variables)
+  - [Thread count](#thread-count)
+- [Architecture](#architecture)
+- [Background jobs](#background-jobs)
+- [Testing](#testing)
+- [Tech stack](#tech-stack)
+- [Creating a release](#creating-a-release)
+- [Troubleshooting](#troubleshooting)
 
 ## Quick Start
 
@@ -27,13 +56,19 @@ docker run -d -p 3000:80 \
   binilsn/up-timer:latest
 ```
 
-Opens at [http://localhost:3000](http://localhost:3000).
+Opens at [http://localhost:3000](http://localhost:3000). Register with `admin@example.com` to get the admin role.
 
-Repository: [hub.docker.com/r/binilsn/up-timer](https://hub.docker.com/r/binilsn/up-timer)
+## Installation
 
-## Docker
+### Docker
 
-### With email (Resend)
+```bash
+docker pull binilsn/up-timer:latest
+```
+
+[Docker Hub](https://hub.docker.com/r/binilsn/up-timer) · [docker-compose.yml](docker-compose.yml) for local/test runs.
+
+#### With email (Resend)
 
 ```bash
 docker run -d -p 3000:80 \
@@ -44,7 +79,7 @@ docker run -d -p 3000:80 \
   binilsn/up-timer:latest
 ```
 
-### With email (Mailgun)
+#### With email (Mailgun)
 
 ```bash
 docker run -d -p 3000:80 \
@@ -57,29 +92,9 @@ docker run -d -p 3000:80 \
   binilsn/up-timer:latest
 ```
 
-### Environment Variables
+See [Environment variables](#environment-variables) for the full reference.
 
-| Variable              | Required | Default               | Description                                                                            |
-| --------------------- | -------- | --------------------- | -------------------------------------------------------------------------------------- |
-| `ADMIN_EMAILS`        | ❌       | —                     | Comma-separated emails assigned admin role                                             |
-| `MAIL_PROVIDER`       | ❌       | —                     | `resend` or `mailgun`. When empty, accounts auto-verify and alert emails are skipped   |
-| `MAIL_FROM`           | ❌       | `noreply@example.com` | From address for outgoing emails                                                       |
-| `RESEND_API_KEY`      | *       | —                     | Required when `MAIL_PROVIDER=resend`                                                   |
-| `MAILGUN_API_KEY`     | *       | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
-| `MAILGUN_API_HOST`    | ❌       | `api.mailgun.net`      | Mailgun API hostname (e.g. `api.eu.mailgun.net` for EU region)                         |
-| `MAILGUN_DOMAIN`      | *       | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
-| `APP_HOST`            | ❌       | `example.com`         | Host used for links in email templates                                                 |
-| `SOLID_QUEUE_IN_PUMA` | ❌       | –                     | Set to `true` to run job worker in Puma process (required for single-container deploy) |
-| `DB_PROVIDER`         | ❌       | `sqlite`              | `sqlite` or `postgres`. Switches database adapter at runtime                           |
-| `DATABASE_URL`        | \*       | —                     | PostgreSQL connection string: `postgres://user:pass@host:5432/dbname`                  |
-| `POSTGRES_USER`       | \*       | —                     | PostgreSQL username                                                                    |
-| `POSTGRES_PASSWORD`   | \*       | —                     | PostgreSQL password                                                                    |
-
-\* Required when `DB_PROVIDER=postgres`.
-
-\* Required when using that provider.
-
-## Production
+### Production deployment
 
 See **[deploy/](deploy/)** for the full deployment system — an interactive installer that auto-detects your infrastructure and generates the right configuration.
 
@@ -95,7 +110,7 @@ Or from a cloned repo:
 ./deploy/installer.sh
 ```
 
-### Supported Modes
+#### Supported modes
 
 | Mode                   | Best for                                               | Open ports        | SSL                           |
 | ---------------------- | ------------------------------------------------------ | ----------------- | ----------------------------- |
@@ -109,15 +124,7 @@ Or from a cloned repo:
 
 All modes use the **same immutable Docker image**. Only the surrounding infrastructure differs.
 
-```bash
-docker pull binilsn/up-timer:latest
-```
-
-[Docker Hub](https://hub.docker.com/r/binilsn/up-timer)
-
-See [deploy/README.md](deploy/README.md) for full environment variable reference.
-
-### Deploy Files
+#### Deploy files
 
 | File                                       | Purpose                                 |
 | ------------------------------------------ | --------------------------------------- |
@@ -128,7 +135,7 @@ See [deploy/README.md](deploy/README.md) for full environment variable reference
 | [docker-compose.yml](docker-compose.yml)   | Quick start with Docker (local/testing) |
 | [.kamal/](.kamal/)                         | Kamal deploy config (optional)          |
 
-### Coexistence with Kamal
+#### Coexistence with Kamal
 
 If Kamal is already running on the VPS, the installer auto-detects the `kamal-proxy` container. Select **Integrate with existing Kamal Proxy** to attach to Kamal's network and register the route with zero port conflicts.
 
@@ -136,155 +143,15 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 ./deploy/installer.sh
 ```
 
-## Architecture
+### Local development
 
-### Public Status Page
-
-<img width="1920" height="946" alt="Screenshot 2026-10-10 185810" src="https://github.com/user-attachments/assets/91f022e2-1e3b-4646-8e03-1fa45c89698e" />
-
-### Application Overview
-
-```mermaid
-flowchart LR
-    Browser["User Browser"] --> App["Rails Application"]
-    App --> Jobs["SolidQueue Workers"]
-    Jobs --> DB[("Database")]
-    DB -->|"DB_PROVIDER=sqlite"| SQLite["SQLite3"]
-    DB -->|"DB_PROVIDER=postgres"| PG["PostgreSQL"]
-```
-
-### Key Design Decisions
-
-- **Adapter-based database** — switch between SQLite and PostgreSQL via `DB_PROVIDER` env var. Zero code changes. See [docs/adapter-pattern.md](docs/adapter-pattern.md).
-- **SolidQueue** — database-backed job queue (no Redis dependency). Scheduler and workers run in-process.
-- **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
-- **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
-
-### Thread count
-
-`RAILS_MAX_THREADS` controls the entire thread pool:
-
-| Component           | Threads                 | Config                                                             |
-| ------------------- | ----------------------- | ------------------------------------------------------------------ |
-| Puma web            | `RAILS_MAX_THREADS`     | `config/puma.rb`                                                   |
-| Solid Queue workers | `RAILS_MAX_THREADS`     | `config/queue.yml`                                                 |
-| DB connection pool  | `RAILS_MAX_THREADS x 2` | `config/database.yml` (overridden by `DATABASE_URL` when using PG) |
-
-The doubled pool covers both Puma web threads and Solid Queue workers sharing the same database connections.
-
-The installer auto-detects a value based on available RAM (shown as hint), but always defaults the prompt to `3`. You can change it manually:
-
-```bash
-# With docker run
-docker run -d -p 3000:80 \
-  -e ADMIN_EMAILS=admin@example.com \
-  -e RAILS_MAX_THREADS=12 \
-  -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
-
-# With docker compose
-echo "RAILS_MAX_THREADS=12" >> .env
-docker compose up -d
-```
-
-Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
-
-## Authentication
-
-Authentication is handled by Rodauth.
-
-### Routes
-
-| Route             | Description            |
-| ----------------- | ---------------------- |
-| `/login`          | Sign in                |
-| `/create-account` | Register new user      |
-| `/reset-password` | Request password reset |
-| `/logout`         | Sign out               |
-
-After login, users are redirected to `/dashboard`.
-
-### Email configuration
-
-Email delivery is **optional**. When a mail provider is configured, the full auth flow works as expected — verification emails, password reset emails, and login change confirmations are sent. Without a provider, the app degrades gracefully:
-
-- **Self-registration** works and accounts are auto-verified
-- **Password reset** remains functional (token is generated but not emailed)
-- **Login change** and **email verification** are disabled
-- **Alert emails** are skipped silently
-
-### Admin assignment
-
-Set `ADMIN_EMAILS` environment variable with a comma-separated list:
-
-```bash
-ADMIN_EMAILS=admin@example.com docker compose up -d
-```
-
-Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
-
-## RBAC
-
-| Role             | Access                                                                           |
-| ---------------- | -------------------------------------------------------------------------------- |
-| **viewer**       | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings    |
-| **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings |
-| **admin**        | Everything above + Integrations, Email notifications toggle, User promotion      |
-
-## Alert Triggers
-
-Alert triggers define event types that can fire notifications. The system uses a **single alert per failure** model:
-
-- **Node goes down** → 1 auto-alert created with the "Node Offline" trigger
-- **Node recovers** → the auto-alert is resolved automatically
-- **Manual alerts** → users pick a trigger type, which is saved to the alert
-
-### Email control per trigger
-
-Admins control which triggers send email notifications from the **Integrations** page:
-
-| Trigger              | Auto-created           | Email notification |
-| -------------------- | ---------------------- | ------------------ |
-| Node Offline         | ✅ When node goes down | Togglable          |
-| Critical Errors      | ❌ Manual only         | Togglable          |
-| Degraded Performance | ❌ Manual only         | Togglable          |
-| Security Breach      | ❌ Manual only         | Togglable          |
-| Maintenance Window   | ❌ Manual only         | Togglable          |
-| Custom               | ❌ Manual only         | Togglable          |
-
-Email is only sent when the trigger's **Email** toggle is enabled on the Integrations page, regardless of the global email notifications setting.
-
-## Background Jobs
-
-SolidQueue powers all background processing with a recurring schedule defined in `config/recurring.yml`.
-
-### Recurring Schedule
-
-| Task                                        | Environment | Frequency               |
-| ------------------------------------------- | ----------- | ----------------------- |
-| `MonitorSchedulerJob`                       | dev + prod  | Every 30 seconds        |
-| `DataRetentionJob`                          | dev + prod  | Every day at 3am        |
-| `SolidQueue::Job.clear_finished_in_batches` | prod only   | Every hour at minute 12 |
-
-### Jobs
-
-| Job                   | Purpose                                                                                                                                                                                             |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MonitorSchedulerJob` | Iterates all monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval`                                                                       |
-| `MonitorCheckJob`     | Performs an HTTP GET against a monitor's URL; records response time, status code, and up/down state; manages incident lifecycle (creates on first failure, resolves all open incidents on recovery) |
-| `DataRetentionJob`    | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days                                                                                                 |
-
-Start the worker with `bin/jobs` (already included in `bin/dev`).
-
-## Development
-
-### Prerequisites
+#### Prerequisites
 
 - Ruby 4.0.5 (see `.ruby-version`)
 - SQLite3
 - [RVM](https://rvm.io) (recommended for Ruby version management)
 
-### Setup
+#### Setup
 
 ```bash
 # Clone and enter project
@@ -303,9 +170,7 @@ rvm use
 bundle install
 
 # Setup database
-rails db:create
-rails db:migrate
-rails db:seed
+bin/rails db:create db:migrate db:seed
 
 # Start development server
 bin/dev
@@ -317,20 +182,183 @@ bin/dev
 - **CSS watcher** (Tailwind CSS v4)
 - **Job worker** (SolidQueue) for background jobs
 
-### Mailer in Development
-
 Emails open in browser via [letter_opener](https://github.com/ryanb/letter_opener). No SMTP configuration needed.
 
-### Creating Monitored Endpoints
+## Usage
+
+### Creating monitored endpoints
 
 1. Login and navigate to `/nodes`
 2. Click **Create Node**
-3. Fill in name, URL, check interval (seconds), and timeout (seconds)
+3. Fill in name, URL, HTTP method, check interval, and timeout
 4. The scheduler picks it up within 30 seconds
 
-### Design System
+### Public status page
 
-See [DESIGN.md](DESIGN.md) for the full design token specification (colors, typography, components).
+<img width="1920" height="946" alt="Screenshot 2026-10-10 185810" src="https://github.com/user-attachments/assets/91f022e2-1e3b-4646-8e03-1fa45c89698e" />
+
+The public status page lives at the root URL (`/`) and shows a read-only view of your service health. Toggle a monitor's public listing from its detail page.
+
+### Authentication
+
+Authentication is handled by Rodauth.
+
+| Route                    | Description            |
+| ------------------------ | ---------------------- |
+| `/login`                 | Sign in                |
+| `/create-account`        | Register new user      |
+| `/reset-password-request` | Request password reset |
+| `/reset-password`        | Set a new password     |
+| `/logout`                | Sign out               |
+
+After login, users are redirected to `/dashboard`.
+
+#### Email configuration
+
+Email delivery is **optional**. When a mail provider is configured, the full auth flow works as expected — verification emails, password reset emails, and login change confirmations are sent. Without a provider, the app degrades gracefully:
+
+- **Self-registration** works and accounts are auto-verified
+- **Password reset** remains functional (token is generated but not emailed)
+- **Login change** and **email verification** are disabled
+- **Alert emails** are skipped silently
+
+#### Admin assignment
+
+Set `ADMIN_EMAILS` environment variable with a comma-separated list:
+
+```bash
+ADMIN_EMAILS=admin@example.com docker compose up -d
+```
+
+Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
+
+### RBAC
+
+| Role             | Access                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| **viewer**       | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings            |
+| **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings         |
+| **admin**        | Everything above + Integrations (trigger email toggles & recipients), User promotion     |
+
+### Alert triggers
+
+Alert triggers define event types that can fire notifications. The system uses a **single alert per failure** model:
+
+- **Node goes down** → 1 auto-alert created with the "Node Offline" trigger
+- **Node recovers** → the auto-alert is resolved automatically
+- **Manual alerts** → users pick a trigger type, which is saved to the alert
+
+#### Email control per trigger
+
+Admins control which triggers send email notifications from the **Integrations** page:
+
+| Trigger              | Auto-created           | Email notification |
+| -------------------- | ---------------------- | ------------------ |
+| Node Offline         | ✅ When node goes down | Togglable          |
+| Critical Errors      | ❌ Manual only         | Togglable          |
+| Degraded Performance | ❌ Manual only         | Togglable          |
+| Security Breach      | ❌ Manual only         | Togglable          |
+| Maintenance Window   | ❌ Manual only         | Togglable          |
+| Custom               | ❌ Manual only         | Togglable          |
+
+Email is sent for a trigger only when its **Email** toggle is enabled on the Integrations page.
+
+## Configuration
+
+### Environment variables
+
+| Variable              | Default               | Description                                                                            |
+| --------------------- | --------------------- | -------------------------------------------------------------------------------------- |
+| `ADMIN_EMAILS`        | —                     | Comma-separated emails granted the admin role on registration                          |
+| `MAIL_PROVIDER`       | —                     | `resend` or `mailgun`. When empty, accounts auto-verify and alert emails are skipped   |
+| `MAIL_FROM`           | `noreply@example.com` | From address for outgoing emails                                                       |
+| `RESEND_API_KEY`      | —                     | Required when `MAIL_PROVIDER=resend`                                                   |
+| `MAILGUN_API_KEY`     | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
+| `MAILGUN_API_HOST`    | `api.mailgun.net`     | Mailgun API hostname (e.g. `api.eu.mailgun.net` for EU region)                         |
+| `MAILGUN_DOMAIN`      | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
+| `APP_HOST`            | `example.com`         | Host used for links in email templates                                                 |
+| `SOLID_QUEUE_IN_PUMA` | —                     | Set to `true` to run the job worker inside Puma (required for single-container deploys) |
+| `RAILS_MAX_THREADS`   | `3`                   | Puma threads and SolidQueue worker threads (DB pool is 2× this value)                  |
+| `JOB_CONCURRENCY`     | `1`                   | Number of SolidQueue worker processes                                                  |
+| `DB_PROVIDER`         | `sqlite`              | `sqlite` or `postgres`. Switches database adapter at runtime                           |
+| `DATABASE_URL`        | —                     | PostgreSQL connection string (`postgres://user:pass@host:5432/dbname`); required when `DB_PROVIDER=postgres` |
+
+> **Note:** the deployment installer additionally generates `POSTGRES_USER` / `POSTGRES_PASSWORD` for its Postgres compose override. The application itself only reads `DATABASE_URL` — see [deploy/README.md](deploy/README.md).
+
+### Thread count
+
+`RAILS_MAX_THREADS` controls the entire thread pool:
+
+| Component           | Threads                 | Config                                                             |
+| ------------------- | ----------------------- | ------------------------------------------------------------------ |
+| Puma web            | `RAILS_MAX_THREADS`     | `config/puma.rb`                                                   |
+| Solid Queue workers | `RAILS_MAX_THREADS`     | `config/queue.yml` (× `JOB_CONCURRENCY` processes)                 |
+| DB connection pool  | `RAILS_MAX_THREADS x 2` | `config/database.yml` (overridden by `DATABASE_URL` when using PG) |
+
+The doubled pool covers both Puma web threads and Solid Queue workers sharing the same database connections. A dedicated `dashboard_broadcast` worker (1 thread / 1 process) is always reserved for real-time broadcasts.
+
+The installer auto-detects a value based on available RAM (shown as hint), but always defaults the prompt to `3`. You can change it manually:
+
+```bash
+# With docker run
+docker run -d -p 3000:80 \
+  -e ADMIN_EMAILS=admin@example.com \
+  -e RAILS_MAX_THREADS=12 \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  binilsn/up-timer:latest
+
+# With docker compose
+echo "RAILS_MAX_THREADS=12" >> .env
+docker compose up -d
+```
+
+Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
+
+## Architecture
+
+### Application overview
+
+```mermaid
+flowchart LR
+    Browser["User Browser"] --> App["Rails Application"]
+    App --> Jobs["SolidQueue Workers"]
+    Jobs --> DB[("Database")]
+    DB -->|"DB_PROVIDER=sqlite"| SQLite["SQLite3"]
+    DB -->|"DB_PROVIDER=postgres"| PG["PostgreSQL"]
+```
+
+### Key design decisions
+
+- **Adapter-based database** — switch between SQLite and PostgreSQL via `DB_PROVIDER` env var. Zero code changes. See [docs/adapter-pattern.md](docs/adapter-pattern.md).
+- **SolidQueue** — database-backed job queue (no Redis dependency). Scheduler and workers run in-process.
+- **Live broadcasting** — dashboard and status page update in real time via Turbo Streams. See [docs/broadcasting-architecture.md](docs/broadcasting-architecture.md).
+- **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
+- **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
+
+## Background jobs
+
+SolidQueue powers all background processing with a recurring schedule defined in `config/recurring.yml`.
+
+### Recurring schedule
+
+| Task                                        | Environment | Frequency               |
+| ------------------------------------------- | ----------- | ----------------------- |
+| `MonitorSchedulerJob`                       | dev + prod  | Every 30 seconds        |
+| `DashboardBroadcastJob`                     | dev + prod  | Every 2 seconds         |
+| `DataRetentionJob`                          | dev + prod  | Every day at 3am        |
+| `SolidQueue::Job.clear_finished_in_batches` | prod only   | Every hour at minute 12 |
+
+### Jobs
+
+| Job                    | Purpose                                                                                                                                                                                                                     |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MonitorSchedulerJob`  | Iterates active monitors and enqueues a `MonitorCheckJob` for any whose last check is older than its configured `check_interval`                                                                                             |
+| `MonitorCheckJob`      | Runs the monitor's HTTP request (GET, HEAD, POST, PUT, PATCH, DELETE, or OPTIONS); records response time, status code, up/down state, and SSL certificate info; updates the incident lifecycle (creates on failure, resolves on recovery, honoring the down-threshold) |
+| `DashboardBroadcastJob`| Pushes dashboard and public status page updates to browsers via Turbo Streams                                                                                                                                                |
+| `GeoLocationJob`       | Resolves a monitor's geographic location from its URL                                                                                                                                                                       |
+| `DataRetentionJob`     | Purges `MonitorCheck` records older than 30 days and resolved `Incident` records older than 90 days                                                                                                                         |
+
+Start the worker with `bin/jobs` (already included in `bin/dev`).
 
 ## Testing
 
@@ -338,7 +366,7 @@ See [DESIGN.md](DESIGN.md) for the full design token specification (colors, typo
 bundle exec rspec
 ```
 
-### Installer Tests
+### Installer tests
 
 The deployment installer has its own test suite (bash-based):
 
@@ -352,26 +380,25 @@ bash spec/installer_integration_test.sh
 
 These run automatically in CI on every pull request.
 
-## Tech Stack
+## Tech stack
 
-| Layer         | Technology                                             |
-| ------------- | ------------------------------------------------------ |
-| Framework     | Rails 8.1                                              |
-| Ruby          | 4.0.5                                                  |
-| Database      | SQLite3 (default) / PostgreSQL (via adapter)           |
-| Auth          | Rodauth with RBAC (viewer / collaborator / admin)      |
-| CSS           | Tailwind CSS v4                                        |
-| JS            | Stimulus + Turbo                                       |
-| Charts        | Chartkick + Chart.js                                   |
-| Jobs          | SolidQueue                                             |
-| Mailer        | letter_opener (dev), Action Mailer with AlertMailer    |
-| Feature Flags | — (removed, toggle moved to per-trigger email control) |
-| Icons         | Lucide                                                 |
-| Tools         | Tippy.js (tooltips), Pagy (pagination)                 |
-| Deployment    | Docker, Kamal, Docker Compose                          |
-| CI            | GitHub Actions (scan, lint, test, deploy_test, PR review) |
+| Layer      | Technology                                        |
+| ---------- | ------------------------------------------------- |
+| Framework  | Rails 8.1                                         |
+| Ruby       | 4.0.5                                             |
+| Database   | SQLite3 (default) / PostgreSQL (via adapter)      |
+| Auth       | Rodauth with RBAC (viewer / collaborator / admin) |
+| CSS        | Tailwind CSS v4                                   |
+| JS         | Stimulus + Turbo                                  |
+| Charts     | Chartkick + Chart.js                              |
+| Jobs       | SolidQueue                                        |
+| Mailer     | Action Mailer + AlertMailer (Resend / Mailgun)    |
+| Icons      | Lucide                                            |
+| Tools      | Tippy.js (tooltips), Pagy (pagination)            |
+| Deployment | Docker, Kamal, Docker Compose                     |
+| CI         | GitHub Actions (scan, lint, test, deploy_test, PR review) |
 
-## Creating a Release
+## Creating a release
 
 ```bash
 # Tag and push — CI builds and pushes to Docker Hub
