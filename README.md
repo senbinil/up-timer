@@ -4,7 +4,7 @@
 
 Having a hard time tracking your services? UpTimer gives you real-time monitoring, instant alerts, and a beautiful dashboard — zero infrastructure overhead.
 
-<img width="1886" height="865" alt="Dashboard screenshot" src="https://github.com/user-attachments/assets/67e747b1-fc2d-4cd7-8f96-e27b6a6c7ad3" />
+<img width="1920" height="946" alt="Screenshot 2026-10-10 190248" src="https://github.com/user-attachments/assets/dcdf8934-7a5e-48cf-a0ca-2bf23ab66cf9" />
 
 ## Features
 
@@ -140,7 +140,7 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 
 ### Public Status Page
 
-<img width="1892" height="860" alt="Public status page screenshot" src="https://github.com/user-attachments/assets/594a8a1d-618d-44e2-b99d-6535942a6709" />
+<img width="1920" height="946" alt="Screenshot 2026-10-10 185810" src="https://github.com/user-attachments/assets/91f022e2-1e3b-4646-8e03-1fa45c89698e" />
 
 ### Application Overview
 
