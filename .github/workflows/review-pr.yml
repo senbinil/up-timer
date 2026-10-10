@@ -1,8 +1,9 @@
 name: PR Review
 
+# Disabled: no longer runs on pull requests. Restore the pull_request trigger to
+# re-enable (the job is PR-only - it reads pull_request context).
 on:
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:
 
 permissions:
   contents: read
