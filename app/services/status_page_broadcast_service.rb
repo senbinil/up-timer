@@ -38,6 +38,6 @@ class StatusPageBroadcastService
   end
 
   def last_resolved
-    Incident.where(resolved_at: ..Time.current).maximum(:resolved_at)
+    Incident.last_significant_resolved_at
   end
 end
