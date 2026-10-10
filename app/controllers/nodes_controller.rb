@@ -12,7 +12,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @node = UptimeMonitor.new(check_interval: 60, timeout: 30, request_type: "GET", down_threshold: 1)
+    @node = UptimeMonitor.new(check_interval: 60, timeout: 30, request_type: "GET", down_threshold: 2)
   end
 
   def create
