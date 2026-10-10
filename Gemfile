@@ -65,7 +65,9 @@ group :development, :test do
   gem "bundler-audit", require: false
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", "~> 8.0.6", require: false
+  # Unpinned so Dependabot keeps the CI scan on the latest release (bin/brakeman
+  # runs with --ensure-latest and fails the scan when Brakeman is outdated).
+  gem "brakeman", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
