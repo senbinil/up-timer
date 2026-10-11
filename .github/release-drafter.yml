@@ -4,7 +4,7 @@
 # be found and updated in place.
 
 name-template: 'Draft Release'
-tag-template: 'v$RESOLVED_VERSION'
+tag-template: '$RESOLVED_VERSION'
 
 categories:
     - title: '🚀 Features'
