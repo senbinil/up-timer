@@ -1,6 +1,6 @@
 # Release Drafter configuration.
-# Draft name is overridden at runtime by the workflow `name` input
-# (draft-release-<short-sha>); keep a stable semver tag so the draft can always
+# The draft name comes from `name-template` ("Draft Release"); the workflow adds
+# the commit SHA as a header. Keep a stable semver tag so the draft can always
 # be found and updated in place.
 
 name-template: 'Draft Release'
