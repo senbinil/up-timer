@@ -5,6 +5,7 @@
 
 name-template: 'Draft Release'
 tag-template: '$RESOLVED_VERSION'
+category-template: '### $TITLE'
 
 categories:
     - title: '🚀 Features'
