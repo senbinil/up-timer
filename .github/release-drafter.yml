@@ -1,0 +1,45 @@
+# Release Drafter configuration.
+# Draft name is overridden at runtime by the workflow `name` input
+# (draft-release-<short-sha>); keep a stable semver tag so the draft can always
+# be found and updated in place.
+
+name-template: 'Draft Release'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+    - title: '🚀 Features'
+      when:
+          labels: ['feature', 'enhancement']
+    - title: '🐛 Fixes'
+      when:
+          labels: ['fix', 'bug', 'bugfix']
+    - title: '🧰 CI & Chore'
+      when:
+          labels: ['ci', 'chore', 'build', 'test', 'refactor']
+    - title: '📝 Docs'
+      when:
+          labels: ['docs', 'documentation']
+    - title: '⬆️ Dependencies'
+      when:
+          labels: ['dependencies']
+    - type: 'pre-exclude'
+      when:
+          label: 'skip-changelog'
+    - type: 'version-resolver'
+      semver-increment: major
+      when:
+          label: 'major'
+    - type: 'version-resolver'
+      semver-increment: minor
+      when:
+          label: 'minor'
+    - type: 'version-resolver'
+      semver-increment: patch
+
+change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
+change-title-escapes: '\<*_&'
+
+template: |
+    ## What's Changed
+
+    $CHANGES
