@@ -42,7 +42,11 @@ categories:
 change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 change-title-escapes: '\<*_&'
 
+# Start with a blank line so the workflow-supplied header (commit SHA) is
+# separated from the body: the `header` action input is whitespace-trimmed, so
+# it cannot carry a trailing newline of its own.
 template: |
+
     ## What's Changed
 
     $CHANGES

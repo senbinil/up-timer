@@ -19,4 +19,4 @@ jobs:
             - name: Update release draft
               uses: release-drafter/release-drafter@v7
               with:
-                  header: "Draft for commit `${{ env.SHORT_SHA }}`\n\n"
+                  header: 'Draft for commit `${{ env.SHORT_SHA }}`'
