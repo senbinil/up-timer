@@ -60,9 +60,6 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "example.com") }
 
-  # Set the default from address for all mailers.
-  config.action_mailer.default_options = { from: ENV.fetch("MAIL_FROM", "noreply@example.com") }
-
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
