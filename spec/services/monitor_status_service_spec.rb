@@ -74,6 +74,22 @@ RSpec.describe MonitorStatusService do
       expect(monitor.alerts.where(resolved: false).count).to eq(0)
     end
 
+    it "does not email recovery when the outage trigger has email notifications disabled" do
+      create(:recipient, email: "ops@example.com")
+      AlertTrigger.find_by(name: "Node Offline").update!(email_notify: false)
+
+      record_check("down", at: 3.minutes.ago)
+      described_class.call(monitor)
+      record_check("down", at: 2.minutes.ago)
+      described_class.call(monitor)
+      record_check("up", at: 1.minute.ago)
+
+      expect { described_class.call(monitor) }.not_to change { ActionMailer::Base.deliveries.count }
+
+      expect(monitor.reload.status).to eq("up")
+      expect(monitor.incidents.where(resolved_at: nil).count).to eq(0)
+    end
+
     it "records a silent blip without emailing" do
       create(:recipient, email: "ops@example.com")
       record_check("down", at: 2.minutes.ago)

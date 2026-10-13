@@ -28,7 +28,8 @@ class MonitorStatusService
   end
 
   # Closes the outage on the first success. Recovery is only announced when the
-  # incident actually alerted, so silent blips never email recipients.
+  # incident actually alerted AND that alert's trigger has email notifications
+  # enabled, so silent blips and muted triggers never email recipients.
   def handle_up
     incidents = @monitor.incidents.where(resolved_at: nil).to_a
     resolved_at = latest_checked_at
@@ -39,7 +40,7 @@ class MonitorStatusService
     incidents.each { |incident| incident.update!(resolved_at: resolved_at) }
     resolve_alerts(incidents, resolved_at)
 
-    notify_recovery if incidents.any? { |incident| incident.alert_id.present? }
+    notify_recovery if incidents.any? { |incident| email_notifiable?(incident) }
   end
 
   def threshold_met_for_down?
@@ -77,6 +78,15 @@ class MonitorStatusService
 
     Alert.where(id: alert_ids, resolved: false)
          .update_all(resolved: true, resolved_at: resolved_at)
+  end
+
+  # Mirrors AlertNotificationJob: an alert is emailable when it has no trigger
+  # (manual) or its trigger has email_notify enabled.
+  def email_notifiable?(incident)
+    alert = incident.alert
+    return false if alert.nil?
+
+    alert.alert_trigger_id.nil? || alert.alert_trigger&.email_notify?
   end
 
   def notify_recovery
