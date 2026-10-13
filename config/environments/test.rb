@@ -36,6 +36,10 @@ Rails.application.configure do
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
 
+  # Tests run without a mail provider, so supply a test-only sender.
+  # Production has no fallback: MAIL_FROM must be set explicitly there.
+  ENV["MAIL_FROM"] ||= "noreply@example.com"
+
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "example.com" }
 

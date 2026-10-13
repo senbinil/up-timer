@@ -38,6 +38,10 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
 
+  # Local dev has no mail provider, so supply a development-only sender.
+  # Production has no fallback: MAIL_FROM must be set explicitly there.
+  ENV["MAIL_FROM"] ||= "noreply@example.com"
+
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
