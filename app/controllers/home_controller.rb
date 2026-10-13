@@ -8,7 +8,7 @@ class HomeController < ApplicationController
 
     @stats = FleetStatsService.call(UptimeMonitor.public_listed)
 
-    @last_resolved = Incident.where(resolved_at: ..Time.current).maximum(:resolved_at)
+    @last_resolved = Incident.last_significant_resolved_at
     @alert_counts = Alert.active.group(:severity).count
     @recent_alerts = Alert.recent.limit(5)
   end

@@ -1,5 +1,92 @@
 # Changelog
 
+## [0.4.4] - 2026-09-05
+
+### CI & Chore
+
+- Add up-reviewer for automated PR code reviews (#128)
+
+### Dependencies
+
+- Bump resend from 1.10.0 to 1.13.0 (#124)
+- Bump thruster from 0.1.25 to 0.1.26 (#125)
+- Bump pagy from 43.6.1 to 43.6.2 (#126)
+- Bump selenium-webdriver from 4.47.0 to 4.48.0 (#127)
+- Bump mission_control-jobs from 1.1.0 to 1.2.0 (#129)
+
+## [0.4.3] - 2026-08-27
+
+### Dependencies
+
+- Bump bootsnap from 1.24.6 to 1.25.0 (#116)
+- Bump rodauth-rails from 2.1.2 to 2.2.2 (#117)
+- Bump thruster from 0.1.22 to 0.1.25 (#118)
+- Bump image_processing from 2.0.2 to 2.0.3 (#119)
+- Bump solid_queue from 1.4.0 to 1.7.0 (#120)
+- Bump selenium-webdriver from 4.46.0 to 4.47.0 (#121)
+- Bump solid_cable from 4.0.0 to 4.0.2 (#122)
+- Bump resend from 1.7.0 to 1.10.0 (#123)
+
+## [0.4.2] - 2026-08-20
+
+### Features
+
+- Switch Active Storage variants to ImageMagick (#115)
+
+### Docs
+
+- Document `/rails/db` volume shadowing fix (#114)
+
+### Dependencies
+
+- Bump image_processing from 1.14.0 to 2.0.2 (#3)
+- Bump tailwindcss-rails from 4.4.0 to 4.6.0 (#37)
+- Bump kamal from 2.11.0 to 2.12.0 (#38)
+- Bump shoulda-matchers from 6.5.0 to 8.0.1 (#53)
+- Bump rspec-rails from 7.1.1 to 8.0.4 (#54)
+- Bump thruster from 0.1.21 to 0.1.22 (#55)
+- Bump resend from 1.3.0 to 1.7.0 (#93)
+- Bump selenium-webdriver from 4.44.0 to 4.46.0 (#94)
+- Bump pagy from 43.5.6 to 43.6.1 (#95)
+- Bump tilt from 2.7.0 to 2.8.0 (#96)
+
+## [0.4.1] - 2026-08-04
+
+### Fixes
+
+- Upgrade Rails to 8.1.3.1 to patch an Active Storage CVE (#113)
+- Stop shadowing the `/rails/db` volume so migrations deploy (#112)
+
+## [0.4.0] - 2026-07-28
+
+### Features
+
+- Add human-friendly check interval input and display (#102)
+- Replace map with geo-location details stored in JSONB (#103)
+
+### Fixes
+
+- Remove duplicate settings link from sidebar (#100)
+- Unify shield icon (#111)
+
+## [0.3.7] - 2026-07-19
+
+### Fixes
+
+- Auth form mobile padding (#99)
+
+## [0.3.6] - 2026-07-19
+
+### Features
+
+- Extract FleetStatsService, switch to httpx, refactor dashboard broadcast (#97)
+
+### Fixes
+
+- Fix Mailgun API host not being forwarded to delivery method (#98)
+
+_Note: tags 0.3.1–0.3.5 were released without changelog entries._
+
 ## [0.3.0] - 2026-07-16
 
 ### Features

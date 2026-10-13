@@ -1,8 +1,12 @@
 require "rails_helper"
 
 RSpec.describe MailAdapter::Mailgun do
+  # configure! assigns to ActionMailer::Base process-wide. Stub those writers so
+  # this spec asserts the interaction without mutating global mail state, which
+  # otherwise leaks :mailgun into unrelated examples (and real API deliveries).
   before do
-    ActionMailer::Base.delivery_method = :test
+    allow(ActionMailer::Base).to receive(:delivery_method=)
+    allow(ActionMailer::Base).to receive(:mailgun_settings=)
   end
 
   describe ".configure!" do
@@ -20,7 +24,7 @@ RSpec.describe MailAdapter::Mailgun do
 
       it "sets mailgun_settings on ActionMailer::Base" do
         described_class.configure!
-        expect(ActionMailer::Base.mailgun_settings).to eq({
+        expect(ActionMailer::Base).to have_received(:mailgun_settings=).with({
           api_key: "key-test-123",
           domain: "mg.example.com",
           api_host: "api.mailgun.net"
@@ -29,7 +33,7 @@ RSpec.describe MailAdapter::Mailgun do
 
       it "sets delivery method to :mailgun" do
         described_class.configure!
-        expect(ActionMailer::Base.delivery_method).to eq(:mailgun)
+        expect(ActionMailer::Base).to have_received(:delivery_method=).with(:mailgun)
       end
 
       it "returns true" do
@@ -41,14 +45,16 @@ RSpec.describe MailAdapter::Mailgun do
 
         it "sets api_host to the custom value" do
           described_class.configure!
-          expect(ActionMailer::Base.mailgun_settings[:api_host]).to eq("api.eu.mailgun.net")
+          expect(ActionMailer::Base).to have_received(:mailgun_settings=)
+            .with(hash_including(api_host: "api.eu.mailgun.net"))
         end
       end
 
       context "without API host" do
         it "defaults api_host to api.mailgun.net" do
           described_class.configure!
-          expect(ActionMailer::Base.mailgun_settings[:api_host]).to eq("api.mailgun.net")
+          expect(ActionMailer::Base).to have_received(:mailgun_settings=)
+            .with(hash_including(api_host: "api.mailgun.net"))
         end
       end
     end

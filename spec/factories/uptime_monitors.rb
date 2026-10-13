@@ -6,7 +6,7 @@ FactoryBot.define do
     timeout { 30 }
     request_type { "GET" }
     status { "unknown" }
-    down_threshold { 1 }
+    down_threshold { 2 }
     position { 0 }
     tags { [] }
   end
