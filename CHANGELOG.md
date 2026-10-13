@@ -1,5 +1,56 @@
 # Changelog
 
+## [0.5.0] - 2026-10-13
+
+### Features
+
+- Track outages as incidents, decoupled from alerts (#155)
+- Add site settings and permissions with a registration toggle (#138)
+- Add fleet status overview card to nodes index (#134, #135)
+
+### Fixes
+
+- Report last resolved incident, ignoring insignificant blips (#155)
+- Rescue `RecordNotUnique` in admin settings update to prevent a 500
+- Remove dead `SiteSetting` caching infrastructure and replace raw SVGs with Lucide
+- Fix release draft tag prefix, header/body formatting, and nesting (#158, #159, #160, #161)
+- Stop mail adapter specs mutating ActionMailer globals (#154)
+- Clean up alert chart and add services empty state (#134, #135)
+
+### ⚠️ Behavior Changes
+
+- Default `down_threshold` for monitors changed from 1 to 2
+- Registration now defaults to disabled (enforced via `site_settings`)
+- Rename `/settings` route to `/profiles`
+
+### CI & Chore
+
+- Add release-drafter draft workflow (#157)
+- Update `AGENTS.md` with installer shell tests
+- Disable PR review workflow
+
+### Docs
+
+- Document registration controls and admin toggle in README (#162)
+- Consolidate `agent.md` into `AGENTS.md` (#137)
+- Restructure README for new users and fix outdated info (#156)
+
+### Dependencies
+
+- Bump rails from 8.1.3.1 to 8.1.4 (#147)
+- Bump pg from 1.6.3 to 1.7.0 (#153)
+- Bump solid_cable from 4.0.2 to 4.1.0 (#145)
+- Bump image_processing from 2.0.3 to 2.2.0 (#130, #149)
+- Bump pagy from 43.6.2 to 43.7.0 (#148)
+- Bump resend from 1.13.0 to 1.17.0 (#132, #141, #144, #146)
+- Bump selenium-webdriver from 4.48.0 to 4.50.0 (#140, #150)
+- Bump mailgun-ruby from 1.4.4 to 1.4.5 (#152)
+- Bump bootsnap from 1.25.0 to 1.26.0 (#133)
+- Bump mini_magick from 5.3.3 to 5.4.0 (#131)
+- Bump net-imap from 0.6.6 to 0.6.7 (#143)
+- Bump mission_control-jobs from 1.2.0 to 1.3.1 (#142)
+- Update brakeman to 8.1.0 and drop the version pin
+
 ## [0.4.4] - 2026-09-05
 
 ### CI & Chore
