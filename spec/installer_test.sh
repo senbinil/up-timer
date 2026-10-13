@@ -269,6 +269,15 @@ test_all_modes_have_rails_max_threads() {
     done
 }
 
+test_all_modes_have_zjit_enable() {
+    for mode in standalone kamal-proxy existing-traefik nginx cloudflare ip-only; do
+        setup; generate "$mode"
+        assert_contains "$COMPOSE_PATH" 'ZJIT_ENABLE' "$mode: has ZJIT_ENABLE env"
+        assert_contains "$COMPOSE_PATH" 'ZJIT_ENABLE:-false}' "$mode: ZJIT_ENABLE defaults to false"
+        teardown
+    done
+}
+
 test_write_env_file_mailgun() {
     setup
     export ENV_FILE="${TEST_DIR}/.env"
@@ -352,6 +361,7 @@ main() {
     test_all_modes_have_healthcheck
     test_all_modes_have_volumes
     test_all_modes_have_rails_max_threads
+    test_all_modes_have_zjit_enable
 
     echo ""; summary
 }

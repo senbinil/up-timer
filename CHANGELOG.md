@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Features
+
+- Add opt-in ZJIT compiler support via the `ZJIT_ENABLE` environment variable
+
 ## [0.5.0] - 2026-10-13
 
 ### Features

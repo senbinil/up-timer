@@ -12,6 +12,7 @@ services:
       - RAILS_ENV=production
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - SOLID_QUEUE_IN_PUMA=true
+      - ZJIT_ENABLE=${ZJIT_ENABLE:-false}
       - APP_HOST=${APP_HOST:-${DOMAIN}}
       - ADMIN_EMAILS=${ADMIN_EMAILS:-}
       - MAIL_PROVIDER=${MAIL_PROVIDER:-}

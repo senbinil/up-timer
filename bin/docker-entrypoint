@@ -11,4 +11,8 @@ if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
+# Opt in to the ZJIT compiler when ZJIT_ENABLE is set (see bin/zjit-env.sh).
+# Applied after db:prepare so migrations run on the stock interpreter.
+. "$(cd "$(dirname "$0")" && pwd)/zjit-env.sh"
+
 exec "${@}"
