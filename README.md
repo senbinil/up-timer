@@ -294,6 +294,7 @@ Email is sent for a trigger only when its **Email** toggle is enabled on the Int
 | `MAILGUN_DOMAIN`      | —                     | Required when `MAIL_PROVIDER=mailgun`                                                  |
 | `APP_HOST`            | `example.com`         | Host used for links in email templates                                                 |
 | `SOLID_QUEUE_IN_PUMA` | —                     | Set to `true` to run the job worker inside Puma (required for single-container deploys) |
+| `ZJIT_ENABLE`         | `false`               | Set to `true` to run with the experimental ZJIT compiler (no-op if unsupported)        |
 | `RAILS_MAX_THREADS`   | `3`                   | Puma threads and SolidQueue worker threads (DB pool is 2× this value)                  |
 | `JOB_CONCURRENCY`     | `1`                   | Number of SolidQueue worker processes                                                  |
 | `DB_PROVIDER`         | `sqlite`              | `sqlite` or `postgres`. Switches database adapter at runtime                           |
@@ -329,6 +330,32 @@ docker compose up -d
 ```
 
 Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
+
+### ZJIT compiler (optional)
+
+Ruby 4.0's experimental ZJIT compiler is opt-in — the default is **off**.
+
+```bash
+# deploy/.env
+ZJIT_ENABLE=true
+```
+
+Then re-create the container (`docker compose --env-file deploy/.env … up -d`). No rebuild or
+image pull is needed: ZJIT is already compiled into the official `ruby:4.0` base image, so only
+the launch flag changes. Set `ZJIT_ENABLE=false` (or remove it) to turn it back off.
+
+While ZJIT is enabled, YJIT is disabled for that deployment — Ruby runs only one JIT at a time.
+
+A `docker exec … ruby -e '…'` shell does not inherit the launch flag and always reports
+`RubyVM::ZJIT.enabled? # => false`. To confirm ZJIT is active, inspect the running process:
+
+```bash
+docker exec up-timer sh -c 'tr "\0" "\n" < /proc/1/environ | grep RUBYOPT'
+# → RUBYOPT=... --zjit
+```
+
+If the interpreter was not built with ZJIT, boot logs `... has no ZJIT support; continuing
+without JIT` and the app runs normally.
 
 ## Architecture
 
