@@ -1,9 +1,10 @@
 # Release Drafter configuration.
-# The draft name comes from `name-template` ("Draft Release"); the workflow adds
-# the commit SHA as a header. Keep a stable semver tag so the draft can always
-# be found and updated in place.
+# The draft name comes from `name-template` and is set to the resolved version
+# (e.g. `0.5.0`), so the draft title matches the release version. Versions have
+# no `v` prefix. Keep a stable semver tag so the draft can always be found and
+# updated in place.
 
-name-template: 'Draft Release'
+name-template: '$RESOLVED_VERSION'
 tag-template: '$RESOLVED_VERSION'
 category-template: '### $TITLE'
 
@@ -42,11 +43,7 @@ categories:
 change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 change-title-escapes: '\<*_&'
 
-# Start with a blank line so the workflow-supplied header (commit SHA) is
-# separated from the body: the `header` action input is whitespace-trimmed, so
-# it cannot carry a trailing newline of its own.
 template: |
-
     ## What's Changed
 
     $CHANGES
