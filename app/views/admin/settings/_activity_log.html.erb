@@ -1,0 +1,30 @@
+<%= turbo_frame_tag "admin_settings_activity_log" do %>
+  <div class="card">
+    <div class="space-y-4">
+      <h2 class="text-lg font-semibold text-navy">Activity Log</h2>
+      <% if @action_logs.any? %>
+        <div class="divide-y divide-divider">
+          <% @action_logs.each do |log| %>
+            <div class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+              <div class="mt-0.5">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full <%= log.metadata&.dig('registration_enabled') == 'true' ? 'bg-success-container text-success' : 'bg-error-container text-error' %>">
+                  <%= lucide_icon "refresh-cw", size: 14 %>
+                </span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-navy">
+                  <span class="font-medium"><%= log.account&.email || "System" %></span>
+                  <span class="text-slate-400">changed registration to</span>
+                  <span class="font-medium <%= log.metadata&.dig('registration_enabled') == 'true' ? 'text-success' : 'text-error' %>"><%= log.metadata&.dig('registration_enabled') == 'true' ? 'enabled' : 'disabled' %></span>
+                </p>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono"><%= log.created_at.strftime("%b %d, %Y %H:%M") %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-xs text-slate-400">No changes recorded yet.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

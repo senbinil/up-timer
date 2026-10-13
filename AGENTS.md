@@ -31,13 +31,13 @@ bin/dev                 # starts Puma + Tailwind watcher + SolidQueue worker
 | Installer unit tests | `bash spec/installer_test.sh` |
 | Installer integration tests | `bash spec/installer_integration_test.sh` |
 
-## CI order (what PRs must pass)
+## CI (what PRs must pass — all run in parallel)
 
-1. `bin/brakeman --no-pager` + `bin/bundler-audit` (security scan)
-2. `bin/importmap audit` (JS deps)
-3. `bin/rubocop -f github` (lint)
-4. `bin/rails db:test:prepare && bundle exec rspec` (tests against **both** SQLite and PostgreSQL)
-5. Installer shell tests
+- `bin/brakeman --no-pager` + `bin/bundler-audit` (security scan)
+- `bin/importmap audit` (JS deps)
+- `bin/rubocop -f github` (lint)
+- `bin/rails db:test:prepare && bundle exec rspec` (matrix: SQLite **and** PostgreSQL)
+- `bash spec/installer_test.sh` + `bash spec/installer_integration_test.sh` (installer shell tests)
 
 ## Architecture
 

@@ -48,3 +48,6 @@ deploy/nginx.conf
 
 # RSpec example status persistence
 /spec/examples.txt
+
+# Playwright MCP debug files
+.playwright-mcp/
