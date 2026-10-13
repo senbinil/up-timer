@@ -5,6 +5,9 @@ if ! gem list foreman -i --silent; then
   gem install foreman
 fi
 
+# Opt in to the ZJIT compiler when ZJIT_ENABLE is set (see bin/zjit-env.sh).
+. "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/zjit-env.sh"
+
 # Default to port 3000 if not specified
 export PORT="${PORT:-3000}"
 
