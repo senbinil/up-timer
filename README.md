@@ -17,6 +17,7 @@ Having a hard time tracking your services? UpTimer gives you real-time monitorin
 - **Incident management** — automatic incident creation on failure, resolution on recovery
 - **Alert emails** — per-trigger email toggles delivered to configured recipients (optional, via Resend or Mailgun)
 - **Role-based access control** — viewer / collaborator / admin roles
+- **Registration control** — admins can enable/disable public self-registration from Site Settings, with an audit log of every change
 - **Data retention** — automatic cleanup of old checks and resolved incidents
 - **Background scheduling** — checks run every 30 seconds via SolidQueue
 - **Organization** — tags, pause/resume, and custom ordering for your monitors
@@ -35,6 +36,7 @@ Having a hard time tracking your services? UpTimer gives you real-time monitorin
   - [Creating monitored endpoints](#creating-monitored-endpoints)
   - [Public status page](#public-status-page)
   - [Authentication](#authentication)
+  - [Registration](#registration)
   - [RBAC](#rbac)
   - [Alert triggers](#alert-triggers)
 - [Configuration](#configuration)
@@ -203,13 +205,13 @@ The public status page lives at the root URL (`/`) and shows a read-only view of
 
 Authentication is handled by Rodauth.
 
-| Route                    | Description            |
-| ------------------------ | ---------------------- |
-| `/login`                 | Sign in                |
-| `/create-account`        | Register new user      |
-| `/reset-password-request` | Request password reset |
-| `/reset-password`        | Set a new password     |
-| `/logout`                | Sign out               |
+| Route                    | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `/login`                 | Sign in                                  |
+| `/create-account`        | Register new user (when registration is enabled) |
+| `/reset-password-request` | Request password reset                  |
+| `/reset-password`        | Set a new password                       |
+| `/logout`                | Sign out                                 |
 
 After login, users are redirected to `/dashboard`.
 
@@ -217,7 +219,7 @@ After login, users are redirected to `/dashboard`.
 
 Email delivery is **optional**. When a mail provider is configured, the full auth flow works as expected — verification emails, password reset emails, and login change confirmations are sent. Without a provider, the app degrades gracefully:
 
-- **Self-registration** works and accounts are auto-verified
+- **Self-registration** works (when registration is enabled) and accounts are auto-verified
 - **Password reset** remains functional (token is generated but not emailed)
 - **Login change** and **email verification** are disabled
 - **Alert emails** are skipped silently
@@ -232,13 +234,27 @@ ADMIN_EMAILS=admin@example.com docker compose up -d
 
 Users registering with those emails get the **admin** role. Everyone else defaults to **viewer**.
 
+### Registration
+
+Self-registration can be turned on or off by an admin from **Site Settings** (`/admin/settings`). The setting is stored in the database (default: **enabled**) and applies immediately across all app instances — no restart required.
+
+When registration is **disabled**:
+
+- The **Create Account** link is hidden on the login page
+- `/create-account` shows a "Registration is currently disabled" message instead of the form
+- The registration endpoint is rejected **server-side** via Rodauth's `before_create_account` hook, so the gate cannot be bypassed by posting directly
+
+The signup form collects **Email**, **Name**, **Password**, and a required **terms of service / privacy policy** acceptance checkbox. Name and compliance are validated on both the client and the server.
+
+Every toggle is recorded in the **action log** (visible on the Site Settings page), noting who made the change and the resulting state.
+
 ### RBAC
 
 | Role             | Access                                                                                   |
 | ---------------- | ---------------------------------------------------------------------------------------- |
 | **viewer**       | Dashboard, Nodes (view), Alerts (view), Public status page, Personal settings            |
 | **collaborator** | Everything viewer can + Nodes (CRUD), Alerts (create/resolve), Personal settings         |
-| **admin**        | Everything above + Integrations (trigger email toggles & recipients), User promotion     |
+| **admin**        | Everything above + Integrations (trigger email toggles & recipients), User promotion, Site Settings (registration toggle) |
 
 ### Alert triggers
 
