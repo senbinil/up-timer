@@ -13,10 +13,5 @@ jobs:
     update_release_draft:
         runs-on: ubuntu-latest
         steps:
-            - name: Compute short commit SHA
-              run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
-
             - name: Update release draft
               uses: release-drafter/release-drafter@v7
-              with:
-                  header: 'Draft for commit `${{ env.SHORT_SHA }}`'
