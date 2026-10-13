@@ -145,6 +145,9 @@ jobs:
       - name: Run installer integration tests (docker compose config)
         run: bash spec/installer_integration_test.sh
 
+      - name: Run ZJIT env tests
+        run: bash spec/zjit_env_test.sh
+
   # system-test:
   #   runs-on: ubuntu-latest
 
