@@ -2,9 +2,28 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-14
+
 ### Features
 
 - Add opt-in ZJIT compiler support via the `ZJIT_ENABLE` environment variable
+  - Set `ZJIT_ENABLE=true` (or `1`, case-insensitive) to launch app processes with Ruby's `--zjit` flag
+  - Requires a Ruby built with `--enable-zjit` (the official `ruby:4.0` images qualify); other builds warn and continue without a JIT
+  - While ZJIT is active, YJIT is disabled for that process — Ruby runs only one JIT at a time
+- Forward `ZJIT_ENABLE` through the generated compose file and installer
+
+### Fixes
+
+- Honour `email_notify` for recovery mail
+- Honour `MAIL_FROM` for outbound mail
+
+### CI & Chore
+
+- Run the ZJIT shell spec in CI
+
+### Docs
+
+- Document the `ZJIT_ENABLE` environment variable
 
 ## [0.5.0] - 2026-10-13
 
