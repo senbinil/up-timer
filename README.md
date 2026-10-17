@@ -333,29 +333,34 @@ Default is `3`. Suggested range for 200 monitors with Solid Queue is 8–16.
 
 ### ZJIT compiler (optional)
 
-Ruby 4.0's experimental ZJIT compiler is opt-in — the default is **off**.
+Ruby 4.0's experimental ZJIT compiler is opt-in — the default is **off**. Requires the
+0.5.1+ image.
 
 ```bash
 # deploy/.env
 ZJIT_ENABLE=true
 ```
 
-Then re-create the container (`docker compose --env-file deploy/.env … up -d`). No rebuild or
-image pull is needed: ZJIT is already compiled into the official `ruby:4.0` base image, so only
-the launch flag changes. Set `ZJIT_ENABLE=false` (or remove it) to turn it back off.
+Then re-create the container (`./deploy/installer.sh` → **Update**). Nothing is rebuilt:
+ZJIT is compiled into the official `ruby:4.0` image, so only the launch flag changes. Set
+`ZJIT_ENABLE=false` (or remove it) to turn it back off.
 
-While ZJIT is enabled, YJIT is disabled for that deployment — Ruby runs only one JIT at a time.
+> **Upgrading an existing install?** Installer **Update** does not regenerate the compose
+> file, so `ZJIT_ENABLE` may not be forwarded yet. See
+> [docs/troubleshooting.md#jit-zjit--yjit](docs/troubleshooting.md#jit-zjit--yjit).
 
-A `docker exec … ruby -e '…'` shell does not inherit the launch flag and always reports
-`RubyVM::ZJIT.enabled? # => false`. To confirm ZJIT is active, inspect the running process:
+While ZJIT is on, YJIT is disabled — Ruby runs only one JIT at a time.
+
+Verify from the boot log — `+ZJIT` appears only when it is enabled:
 
 ```bash
-docker exec up-timer sh -c 'tr "\0" "\n" < /proc/1/environ | grep RUBYOPT'
-# → RUBYOPT=... --zjit
+docker compose … logs | grep 'Ruby version'
+# * Ruby version: ruby 4.0.5 … +ZJIT +PRISM [x86_64-linux]
 ```
 
-If the interpreter was not built with ZJIT, boot logs `... has no ZJIT support; continuing
-without JIT` and the app runs normally.
+A `docker exec … ruby -e 'RubyVM::ZJIT.enabled?'` shell bypasses the entrypoint and always
+reports `false`. If the interpreter lacks ZJIT, boot logs `... has no ZJIT support;
+continuing without JIT` and the app runs normally.
 
 ## Architecture
 

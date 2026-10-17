@@ -90,25 +90,36 @@ Only the surrounding infrastructure differs.
 
 ### ZJIT compiler (optional)
 
-The experimental Ruby 4.0 JIT compiler is opt-in — default is **off** (`ZJIT_ENABLE=false`).
+The experimental Ruby 4.0 JIT compiler is opt-in — default is **off**
+(`ZJIT_ENABLE=false`). Requires the 0.5.1+ image.
 
 ```bash
 # deploy/.env
 ZJIT_ENABLE=true
-
-docker compose --env-file deploy/.env -f <your compose files> up -d   # re-create, no rebuild
 ```
 
-ZJIT is already compiled into the official `ruby:4.0` base image, so no rebuild or image pull is
-required — the container is simply re-created to pick up the new value. While ZJIT is enabled,
-YJIT is disabled for that deployment (Ruby runs one JIT at a time).
-
-A `docker exec … ruby -e '…'` shell does not inherit the launch flag and always reports
-`RubyVM::ZJIT.enabled? # => false`. Verify via the running process instead:
+Then re-create the container:
 
 ```bash
-docker exec up-timer sh -c 'tr "\0" "\n" < /proc/1/environ | grep RUBYOPT'
+./deploy/installer.sh    # choose 1) Update
 ```
+
+No rebuild or pull is needed on 0.5.1+: ZJIT is compiled into the official `ruby:4.0` image,
+so only the launch flag changes. While it is enabled, YJIT is disabled (Ruby runs one JIT at
+a time).
+
+**Upgrading an existing install?** Installer **Update** does not regenerate the compose file,
+so `ZJIT_ENABLE` may not be forwarded. Either run **Reconfigure**, or add
+`- ZJIT_ENABLE=${ZJIT_ENABLE:-false}` under the app's `environment:` block. See
+[docs/troubleshooting.md](../docs/troubleshooting.md#jit-zjit--yjit).
+
+Verify from the boot log — `+ZJIT` appears only when enabled:
+
+```bash
+docker compose … logs | grep 'Ruby version'
+```
+
+A `docker exec … ruby -e '…'` shell bypasses the entrypoint and always reports `false`.
 
 ### Database
 
