@@ -378,6 +378,11 @@ flowchart LR
 - **Immutable Docker image** — same image deployed across all environments. Configuration via environment variables.
 - **Thruster** — production web server wrapper with asset caching, compression, and X-Sendfile support.
 
+### Debugging
+
+See [docs/troubleshooting.md](docs/troubleshooting.md) for common commands, deploy gotchas,
+and JIT checks.
+
 ## Background jobs
 
 SolidQueue powers all background processing with a recurring schedule defined in `config/recurring.yml`.
