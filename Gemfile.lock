@@ -346,14 +346,14 @@ GEM
     resend (1.17.0)
       base64
       httparty (>= 0.22.0)
-    roda (3.107.0)
+    roda (3.109.0)
       rack
-    rodauth (2.47.0)
+    rodauth (2.48.0)
       roda (>= 2.6.0)
       sequel (>= 4)
     rodauth-model (0.5.0)
       rodauth (~> 2.28)
-    rodauth-rails (2.2.2)
+    rodauth-rails (2.2.3)
       railties (>= 5.2)
       roda (~> 3.76)
       rodauth (~> 2.36)
@@ -411,7 +411,7 @@ GEM
       logger (~> 1.4)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
-    sequel (5.107.0)
+    sequel (5.109.0)
       bigdecimal
     sequel-activerecord_connection (2.0.1)
       activerecord (>= 5.1)
@@ -675,10 +675,10 @@ CHECKSUMS
   regexp_parser (2.12.0) sha256=35a916a1d63190ab5c9009457136ae5f3c0c7512d60291d0d1378ba18ce08ebb
   reline (0.7.0) sha256=5b012d8e55dbf9d450f12bde2cf7d15ff546ae80b3f8f3b30e570d431815583d
   resend (1.17.0) sha256=027806958c1ff29ae6b37d66e16e20441bf06607d1718aefbb412e634d5b74c9
-  roda (3.107.0) sha256=bf40c7a0f1fcd037ec10589a1dc98fc52ced1aece803670194ec7af0f0c77c06
-  rodauth (2.47.0) sha256=c655536fd86660848b8254e8b3694d6231d4e673ea1bd745a0a1f51e8b86e86d
+  roda (3.109.0) sha256=470f60355043a7732edb08ece2d12eb2e6912866ac87106c92ded5f6f8a5a8dc
+  rodauth (2.48.0) sha256=14ceb4d48b2c224f9dfe3cfe36b29f4a34c95215c1ea204400f48ee6a39d3c3a
   rodauth-model (0.5.0) sha256=005cd65498c9895ff3c10a44957448ae56d13aea166b5f2b3244062c21094c02
-  rodauth-rails (2.2.2) sha256=73f66ea3fabebfdbcb99e2e373d6919a3f9d9902661ff4f900e1a7d10a3160e6
+  rodauth-rails (2.2.3) sha256=0f367be82d286e72fd8f0a12a849c1cd2acc715e9bbe7fcf88498e1a20ffd92d
   rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
   rspec-expectations (3.13.5) sha256=33a4d3a1d95060aea4c94e9f237030a8f9eae5615e9bd85718fe3a09e4b58836
   rspec-mocks (3.13.8) sha256=086ad3d3d17533f4237643de0b5c42f04b66348c28bf6b9c2d3f4a3b01af1d47
@@ -693,7 +693,7 @@ CHECKSUMS
   rubyzip (3.7.0) sha256=65c19294da75297a939006f3516deacc33185fbd721ff1954f7a231db6d3e121
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   selenium-webdriver (4.51.0) sha256=09edf1b7fc360e0570bac609676f804ed527fe0b2f285e03233561e29b0ec105
-  sequel (5.107.0) sha256=019629313205295b007f6df2c5eab19ddc40710d549fd445ac300f2853a370db
+  sequel (5.109.0) sha256=e0d1d474442d620c8497d7f4851c0cc3a277920519051b8014b2877aa55efffe
   sequel-activerecord_connection (2.0.1) sha256=8a13dc466520788459af18bb267f5e57d37b8764daaa3f6e8bc2932ce2642e15
   shoulda-matchers (8.0.1) sha256=5dbb46e5765b9da225111b085e0819e8c8a121ff94bba430a153eb1ea2c60288
   solid_cable (4.1.0) sha256=828e3d509207b82b4f05f4e9c85f696994710679b52d511aa7f97ebd212d3226
