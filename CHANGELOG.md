@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-10-31
+
 ### Security
 
 - Upgrade Ruby to 4.0.9, which fixes four regexp (Onigmo) compiler bugs
@@ -9,6 +11,48 @@
   - CVE-2026-93577 / CVE-2026-97229: integer overflow in the size of a compiled pattern
   - CVE-2026-110264: overflow of internal IDs in a pattern with many repeats
   - Only reachable when an application compiles attacker-controlled regular expressions; `Regexp.timeout` does not mitigate them
+- Bump indirect `net-ssh` to 7.3.8 for the SSH agent and certificate authentication advisories in GHSAs qpg5-fx6p-8cq3, vxj5-fg65-x765, 3x7f-q7wf-fp73, ggxh-cfwq-5xqc, pfqh-p9vh-wx4p, r75w-7fhp-84w8 and rpq3-v334-f5pm
+
+### Fixes
+
+- Return one generic "invalid email or password" error for every login failure, so the response no longer reveals whether an address is registered
+- Suppress the duplicate login error flash, leaving the form-level alert as the only message shown
+
+### CI & Chore
+
+- Label the signup login field as email and drop the unused master key from `.env.example`
+
+### Docs
+
+- Document the no-prefix release tag convention in the release instructions
+
+### Dependencies
+
+- Bump resend from 1.17.0 to 1.18.0
+- Bump mailgun-ruby from 1.4.5 to 1.4.6
+- Bump sqlite3 from 2.10.0 to 2.10.1
+- Bump chartkick from 5.2.1 to 5.3.0
+- Bump pagy from 43.7.1 to 43.8.1
+
+## [0.5.2] - 2026-10-26
+
+### Fixes
+
+- Bump crass to 1.0.8 for GHSA-pq4g-8rxf-4g29
+
+### Docs
+
+- Add a debugging and deploy runbook to the troubleshooting guide
+- Correct the ZJIT enablement steps for upgrades
+
+### Dependencies
+
+- Bump net-imap from 0.6.7 to 0.6.8
+- Bump pagy from 43.7.0 to 43.7.1
+- Bump sqlite3 from 2.9.6 to 2.10.0
+- Bump rodauth-rails from 2.2.2 to 2.2.3
+- Bump selenium-webdriver from 4.50.0 to 4.51.0
+- Bump thruster from 0.1.26 to 0.1.27
 
 ## [0.5.1] - 2026-10-14
 
