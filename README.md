@@ -455,8 +455,8 @@ These run automatically in CI on every pull request.
 
 ```bash
 # Tag and push — CI builds and pushes to Docker Hub
-git tag v1.0.0
-git push origin v1.0.0
+git tag 1.0.0
+git push origin 1.0.0
 ```
 
 Or create a [GitHub Release](https://github.com/senbinil/up-timer/releases) via the UI — same result.
