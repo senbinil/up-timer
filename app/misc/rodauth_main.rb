@@ -121,6 +121,11 @@ class RodauthMain < Rodauth::Rails::Auth
     # require_login_error_flash "Login is required for accessing this page"
     # login_notice_flash nil
 
+    # rodauth-rails maps this flash to Rails' :alert, which the layout renders
+    # above the form. The login form already renders its own single
+    # #login_credentials_error alert, so suppress the generic banner.
+    login_error_flash nil
+
     # ==> Validation
     # Override default validation error messages.
     # already_an_account_with_this_login_message "user with this email address already exists"
