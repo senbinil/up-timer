@@ -2,12 +2,12 @@
 
 ## Project
 
-UpTimer — a Rails 8.1 uptime monitoring app. Ruby 4.0.5. SQLite default, PostgreSQL via adapter (`DB_PROVIDER` env var). SolidQueue for background jobs (no Redis). Hotwire (Stimulus + Turbo) frontend with Tailwind CSS v4.
+UpTimer — a Rails 8.1 uptime monitoring app. Ruby 4.0.9. SQLite default, PostgreSQL via adapter (`DB_PROVIDER` env var). SolidQueue for background jobs (no Redis). Hotwire (Stimulus + Turbo) frontend with Tailwind CSS v4.
 
 ## Setup
 
 ```bash
-rvm use ruby-4.0.5@up-timer
+rvm use ruby-4.0.9@up-timer
 bundle install
 cp .env.example .env   # set ADMIN_EMAILS for admin access
 bin/rails db:create db:migrate db:seed

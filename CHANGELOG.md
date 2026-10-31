@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Security
+
+- Upgrade Ruby to 4.0.9, which fixes four regexp (Onigmo) compiler bugs
+  - CVE-2026-89078: double free when parsing a pattern fails after an alternation
+  - CVE-2026-93577 / CVE-2026-97229: integer overflow in the size of a compiled pattern
+  - CVE-2026-110264: overflow of internal IDs in a pattern with many repeats
+  - Only reachable when an application compiles attacker-controlled regular expressions; `Regexp.timeout` does not mitigate them
+
 ## [0.5.1] - 2026-10-14
 
 ### Features
