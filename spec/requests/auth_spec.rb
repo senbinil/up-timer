@@ -97,6 +97,40 @@ RSpec.describe "Authentication flows", type: :request do
         post "/login", params: { email: account.email, password: "wrong" }
         expect(response).to have_http_status(:unauthorized)
       end
+
+      # Account enumeration: a wrong password on a registered email must be
+      # indistinguishable from an email that has no account at all.
+      it "does not reveal that the email exists when the password is wrong" do
+        post "/login", params: { email: account.email, password: "wrong" }
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(login_error_text).to eq("invalid email or password")
+        expect(response.body).not_to include("invalid password")
+        expect(response.body).not_to include(%(id="password_error_message"))
+      end
+
+      it "returns the same generic error for an unknown email" do
+        post "/login", params: { email: "unknown@example.com", password: "wrong" }
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(login_error_text).to eq("invalid email or password")
+        expect(response.body).not_to include("no matching login")
+        expect(response.body).not_to include(%(id="login_error_message"))
+      end
+
+      it "renders identical error markup for an unknown email and a wrong password" do
+        post "/login", params: { email: account.email, password: "wrong" }
+        wrong_password_error = Nokogiri::HTML(response.body).at_css("#login_credentials_error").to_html
+
+        post "/login", params: { email: "someone-else@example.com", password: "wrong" }
+        unknown_email_error = Nokogiri::HTML(response.body).at_css("#login_credentials_error").to_html
+
+        expect(unknown_email_error).to eq(wrong_password_error)
+      end
+
+      def login_error_text
+        Nokogiri::HTML(response.body).at_css("#login_credentials_error")&.text&.strip
+      end
     end
 
     describe "POST /logout" do
