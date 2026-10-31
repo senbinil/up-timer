@@ -15,7 +15,7 @@
     <%= form_with url: rodauth.create_account_path, method: :post, data: { turbo: false }, class: "space-y-8" do |form| %>
       <%# ── Email Field ── %>
       <div class="space-y-1.5">
-        <%= form.label rodauth.login_param, "Username", class: "input-label block" %>
+        <%= form.label rodauth.login_param, "Email", class: "input-label block" %>
         <div class="relative">
           <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
             <%= lucide_icon "user", size: 16 %>
