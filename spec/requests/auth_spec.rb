@@ -128,6 +128,15 @@ RSpec.describe "Authentication flows", type: :request do
         expect(unknown_email_error).to eq(wrong_password_error)
       end
 
+      it "shows exactly one error message when login fails" do
+        [ { email: account.email, password: "wrong" }, { email: "unknown@example.com", password: "wrong" } ].each do |params|
+          post "/login", params: params
+
+          expect(response.body.scan("invalid email or password").size).to eq(1)
+          expect(response.body).not_to include("There was an error logging in")
+        end
+      end
+
       def login_error_text
         Nokogiri::HTML(response.body).at_css("#login_credentials_error")&.text&.strip
       end
