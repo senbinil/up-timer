@@ -195,7 +195,7 @@ Verify — the Puma boot line is definitive (`+ZJIT` appears only when enabled):
 
 ```bash
 $COMPOSE logs | grep 'Ruby version'
-# * Ruby version: ruby 4.0.5 … +ZJIT +PRISM [x86_64-linux]
+# * Ruby version: ruby 4.0.9 … +ZJIT +PRISM [x86_64-linux]
 
 $COMPOSE exec up-timer sh -c 'tr "\0" "\n" < /proc/1/environ | grep RUBYOPT'
 # RUBYOPT=... --zjit

@@ -1,6 +1,6 @@
 # UpTimer
 
-[![CI](https://img.shields.io/github/actions/workflow/status/senbinil/up-timer/ci.yml)](https://github.com/senbinil/up-timer/actions) [![Docker Pulls](https://img.shields.io/docker/pulls/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer) [![Docker Image Size](https://img.shields.io/docker/image-size/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer) [![Docker Version](https://img.shields.io/docker/v/binilsn/up-timer?sort=semver)](https://hub.docker.com/r/binilsn/up-timer) [![License](https://img.shields.io/github/license/senbinil/up-timer)](https://github.com/senbinil/up-timer/blob/main/LICENSE) [![Ruby](https://img.shields.io/badge/Ruby-4.0.5-red)](https://www.ruby-lang.org)
+[![CI](https://img.shields.io/github/actions/workflow/status/senbinil/up-timer/ci.yml)](https://github.com/senbinil/up-timer/actions) [![Docker Pulls](https://img.shields.io/docker/pulls/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer) [![Docker Image Size](https://img.shields.io/docker/image-size/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer) [![Docker Version](https://img.shields.io/docker/v/binilsn/up-timer?sort=semver)](https://hub.docker.com/r/binilsn/up-timer) [![License](https://img.shields.io/github/license/senbinil/up-timer)](https://github.com/senbinil/up-timer/blob/main/LICENSE) [![Ruby](https://img.shields.io/badge/Ruby-4.0.9-red)](https://www.ruby-lang.org)
 
 Having a hard time tracking your services? UpTimer gives you real-time monitoring, instant alerts, and a beautiful dashboard — zero infrastructure overhead.
 
@@ -149,7 +149,7 @@ If Kamal is already running on the VPS, the installer auto-detects the `kamal-pr
 
 #### Prerequisites
 
-- Ruby 4.0.5 (see `.ruby-version`)
+- Ruby 4.0.9 (see `.ruby-version`)
 - SQLite3
 - [RVM](https://rvm.io) (recommended for Ruby version management)
 
@@ -355,7 +355,7 @@ Verify from the boot log — `+ZJIT` appears only when it is enabled:
 
 ```bash
 docker compose … logs | grep 'Ruby version'
-# * Ruby version: ruby 4.0.5 … +ZJIT +PRISM [x86_64-linux]
+# * Ruby version: ruby 4.0.9 … +ZJIT +PRISM [x86_64-linux]
 ```
 
 A `docker exec … ruby -e 'RubyVM::ZJIT.enabled?'` shell bypasses the entrypoint and always
@@ -438,7 +438,7 @@ These run automatically in CI on every pull request.
 | Layer      | Technology                                        |
 | ---------- | ------------------------------------------------- |
 | Framework  | Rails 8.1                                         |
-| Ruby       | 4.0.5                                             |
+| Ruby       | 4.0.9                                             |
 | Database   | SQLite3 (default) / PostgreSQL (via adapter)      |
 | Auth       | Rodauth with RBAC (viewer / collaborator / admin) |
 | CSS        | Tailwind CSS v4                                   |
