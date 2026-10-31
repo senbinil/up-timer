@@ -121,12 +121,24 @@ class RodauthMain < Rodauth::Rails::Auth
     # require_login_error_flash "Login is required for accessing this page"
     # login_notice_flash nil
 
+    # rodauth-rails maps this flash to Rails' :alert, which the layout renders
+    # above the form. The login form already renders its own single
+    # #login_credentials_error alert, so suppress the generic banner.
+    login_error_flash nil
+
     # ==> Validation
     # Override default validation error messages.
-    # no_matching_login_message "user with this email address doesn't exist"
     # already_an_account_with_this_login_message "user with this email address already exists"
     # password_too_short_message { "needs to have at least #{password_minimum_length} characters" }
     # login_does_not_meet_requirements_message { "invalid email#{", #{login_requirement_message}" if login_requirement_message}" }
+
+    # Report a missing account and a wrong password identically. Rodauth raises
+    # :no_matching_login (rendered under the email field) and :invalid_password
+    # (rendered under the password field); the login view collapses both into one
+    # form-level alert, so the form never confirms whether an email is registered.
+    # NOTE: no_matching_login_message is shared with reset_password_request.
+    no_matching_login_message "invalid email or password"
+    invalid_password_message "invalid email or password"
 
     # Passwords shorter than 8 characters are considered weak according to OWASP.
     password_minimum_length 8
