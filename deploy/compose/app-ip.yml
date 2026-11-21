@@ -6,7 +6,7 @@
 
 services:
   up-timer:
-    image: binilsn/up-timer:${TAG:-latest}
+    image: senbinil/up-timer:${TAG:-latest}
     ports:
       - "${APP_PORT:-80}:80"
     environment:

@@ -7,7 +7,7 @@
 
 services:
   up-timer:
-    image: binilsn/up-timer:${TAG:-latest}
+    image: senbinil/up-timer:${TAG:-latest}
     environment:
       - RAILS_ENV=production
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}

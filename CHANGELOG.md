@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Docker images now publish to `senbinil/up-timer`; the old `binilsn/up-timer`
+  namespace stays available but no longer receives updates
+
 ## [0.5.3] - 2026-10-31
 
 ### Security
