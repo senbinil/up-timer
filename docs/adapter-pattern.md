@@ -11,7 +11,7 @@ Two adapters use this pattern:
 
 ## How It Works
 
-```
+```text
 Boot → config/initializers/<adapter>.rb
          │
          ├─ Reads ENV["PROVIDER_KEY"]
@@ -38,7 +38,7 @@ Switches email delivery provider at runtime.
 
 ### Environment Variable
 
-```
+```text
 MAIL_PROVIDER=resend | mailgun | (unset)
 ```
 
@@ -79,7 +79,7 @@ Switches the database provider at runtime. Routes Solid Queue and Solid Cache co
 
 ### Environment Variable
 
-```
+```text
 DB_PROVIDER=postgres | sqlite | (unset)
 ```
 

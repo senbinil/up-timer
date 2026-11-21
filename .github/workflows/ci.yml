@@ -46,6 +46,21 @@ jobs:
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: bin/importmap audit
 
+  lint_markdown:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v25
+        with:
+          globs: |
+            **/*.md
+            !vendor/**
+            !node_modules/**
+
   lint:
     runs-on: ubuntu-latest
     env:

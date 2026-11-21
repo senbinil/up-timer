@@ -226,23 +226,28 @@ Soft (`0.25rem` / 4px) — modern but professional.
 ## Components
 
 ### Buttons
+
 - **Primary:** `bg-[#2563eb] text-white font-medium`
 - **Secondary:** `border border-[#1e293b] text-[#1e293b]`
 - **Ghost:** `text-[#1e293b]` no bg/border until hover
 
 ### Input Fields
+
 - **Default:** `bg-white border border-[#e2e8f0]`
 - **Label:** JetBrains Mono, uppercase, `#64748b`
 - **Focus:** 2px `#2563eb` border
 
 ### Cards
+
 - `bg-white border border-[#e2e8f0]` padding 24px, radius 8px, no shadow
 
 ### Status Chips
+
 - Uppercase JetBrains Mono label with 8px colored dot prefix
 - Fully rounded pill shape
 
 ### Lists
+
 - 1px `#f1f5f9` dividers
 - `#f8fafc` hover background on interactive rows
 
@@ -285,6 +290,7 @@ A class-based dark mode is supported via the `dark` class on `<html>`, persisted
 ### Usage in Templates
 
 Use semantic tokens instead of hardcoded colors:
+
 - `bg-surface-container-lowest` instead of `bg-white`
 - `border-border` instead of `border-[#e2e8f0]`
 - `text-on-surface-variant` instead of `text-slate-600`

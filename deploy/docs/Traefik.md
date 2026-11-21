@@ -63,14 +63,18 @@ The installer checks for running Traefik containers and their networks:
 ### Troubleshooting
 
 **Certificate not issued:**
+
 ```bash
 docker compose logs traefik | grep -i error
 ```
+
 Common issues:
+
 - DNS not pointing to server
 - `CF_DNS_API_TOKEN` missing DNS:Edit permission
 - Rate limiting (5 certs/week per domain with Let's Encrypt staging)
 
 **Route not working (existing Traefik):**
+
 - Verify both containers are on the same Docker network: `docker network inspect <name>`
 - Check Traefik dashboard to see if the router was discovered

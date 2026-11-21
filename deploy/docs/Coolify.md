@@ -80,7 +80,7 @@ Click **Deploy**. Coolify pulls the image, starts the container, provisions SSL,
 
 ### Minimal (testing)
 
-```
+```text
 ADMIN_EMAILS=you@example.com
 ```
 
@@ -88,7 +88,7 @@ ADMIN_EMAILS=you@example.com
 
 ### With Email (Resend)
 
-```
+```text
 ADMIN_EMAILS=admin@example.com
 APP_HOST=uptime.example.com
 MAIL_PROVIDER=resend
@@ -107,17 +107,21 @@ Or enable **Auto-Deploy** on new Docker Hub tags in Coolify's source settings.
 ## Troubleshooting
 
 **Service not starting:**
+
 - Check Coolify logs in the service view
 - Verify the health check endpoint is correct: `http://localhost/up`
 
 **Domain not routing:**
+
 - Verify DNS points to your Coolify server's IP
 - Check Coolify's proxy logs
 
 **Database resets on redeploy:**
+
 - You forgot to add persistent storage volumes
 - Add them and redeploy
 
 **Session/cookie issues after redeploy:**
+
 - `SECRET_KEY_BASE` changes each deploy when auto-generated
 - Set a fixed `SECRET_KEY_BASE` env var in Coolify for persistent sessions

@@ -54,7 +54,7 @@ docker compose \
 
 ### How it works
 
-```
+```text
 Internet → Cloudflare (TLS) → cloudflared (outbound tunnel) → up-timer:80
 ```
 
@@ -66,17 +66,22 @@ Internet → Cloudflare (TLS) → cloudflared (outbound tunnel) → up-timer:80
 ## Troubleshooting
 
 **Tunnel not connecting:**
+
 ```bash
 docker compose logs cloudflared
 ```
+
 Common causes:
+
 - Invalid tunnel token (regenerate from Cloudflare dashboard)
 - VPS can't reach Cloudflare (check outbound internet)
 
 **Tunnel connected but 502:**
+
 - Verify the public hostname URL is `up-timer:80` (not localhost)
 - Check UpTimer container is running: `docker compose ps`
 
 **Cloudflare SSL mode:**
+
 - Set SSL/TLS mode to **Full** or **Full (strict)** in Cloudflare dashboard
 - Flexible SSL may cause redirect loops

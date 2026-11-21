@@ -39,7 +39,7 @@ Coolify is deployed through its own web dashboard, not the installer. See [docs/
 
 ## Directory Structure
 
-```
+```text
 deploy/
 ├── installer.sh              # Interactive CLI wizard
 ├── .env.example              # All environment variables documented

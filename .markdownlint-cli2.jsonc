@@ -1,0 +1,13 @@
+{
+  // Project Markdown style: long badge/table/code lines are intentional,
+  // legacy tables use compact pipe spacing, and release sections repeat
+  // headings (e.g. "### Fixes") under each version in CHANGELOG.md.
+  "config": {
+    "MD013": false,
+    "MD060": false,
+    "MD010": { "spaces_per_tab": 2 },
+    "MD024": { "siblings_only": true },
+    "MD033": false,
+    "MD041": { "front_matter_title": "^\\s*name\\s*:" }
+  }
+}

@@ -140,7 +140,7 @@ $COMPOSE exec up-timer sh -c 'ls -l /rails/storage'
 
 Adapter status appears in the logs:
 
-```
+```text
 DbAdapter: using SQLite          # or: using PostgreSQL
 MailAdapter: MAIL_PROVIDER not set — email delivery disabled
 ```
