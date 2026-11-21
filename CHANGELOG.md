@@ -2,10 +2,54 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-21
+
+### Security
+
+- Upgrade Ruby to 4.0.10, which fixes a critical remote code execution vulnerability
+  - CVE-2026-132825: remote code execution in Ruby 4.0.9 and earlier
+- Bump `addressable` from 2.9.0 to 2.9.2, fixing seven advisories:
+  - ReDoS in URI templates with multiple variables (CVE-2026-126352 / GHSA-9f42-57jx-vpp3)
+  - ReDoS in URI templates with several exploded variables (GHSA-4w5q-wg7v-w6gp)
+  - ReDoS in URI templates with certain exploded expressions (CVE-2026-126350 / GHSA-j82w-28jv-3pmj)
+  - Denial of service in URI path normalization (CVE-2026-126351 / GHSA-qq38-m9mg-xjj5)
+  - URI normalization resolving some dotted path segments to the wrong path (GHSA-8gmh-2hhj-2hv9)
+  - `display_uri` showing misleading hosts with invalid Punycode A-labels (GHSA-9crm-g4mf-wc5j)
+  - `display_uri` showing misleading hosts containing bidi and invisible characters (GHSA-539f-xcgw-2gjg)
+- Bump `rodauth` from 2.48.0 to 2.51.0, fixing:
+  - WebAuthn authentication challenges not bound to a session or single-use, allowing a captured assertion to be replayed (High) (GHSA-jv3v-q542-9c26)
+  - OTP codes replayed on a later time step due to drift (GHSA-26qw-xq5q-hv9w)
+- Bump `brakeman` from 8.1.0 to 8.1.1
+
 ### Changed
 
 - Docker images now publish to `senbinil/up-timer`; the old `binilsn/up-timer`
   namespace stays available but no longer receives updates
+  - Update image references in `docker-compose.yml`, installer-generated compose
+    files, and deployment docs
+
+### CI & Chore
+
+- Add a `lint_markdown` CI job and `.markdownlint-cli2.jsonc` so Markdown is
+  checked on every pull request
+
+### Docs
+
+- Fix all markdownlint findings across the documentation set (fence languages,
+  blank lines around headings, lists and fences, hard tabs)
+
+### Dependencies
+
+- Bump tailwindcss-rails from 4.6.0 to 4.7.0
+- Bump bootsnap from 1.26.0 to 1.26.1
+- Bump selenium-webdriver from 4.51.0 to 4.52.0
+- Bump sqlite3 from 2.10.1 to 2.10.2
+- Bump rspec-rails from 8.0.4 to 8.1.0
+- Bump resend from 1.18.0 to 1.19.0
+- Bump solid_queue from 1.7.0 to 1.7.2
+- Bump rails from 8.1.4 to 8.1.4.1
+- Bump pagy from 43.8.1 to 43.8.2
+- Bump puma from 8.0.2 to 8.0.3
 
 ## [0.5.3] - 2026-10-31
 
