@@ -165,13 +165,13 @@ summary() {
 
 test_image_tag_resolved_from_env() {
     setup; generate "kamal-proxy" "TAG=v2.0.0"
-    assert_resolved "image tag resolves to v2.0.0" "image: binilsn/up-timer:v2.0.0"
+    assert_resolved "image tag resolves to v2.0.0" "image: senbinil/up-timer:v2.0.0"
     teardown
 }
 
 test_image_tag_default_latest() {
     setup; generate "kamal-proxy"
-    assert_resolved "image tag defaults to latest" "image: binilsn/up-timer:latest"
+    assert_resolved "image tag defaults to latest" "image: senbinil/up-timer:latest"
     teardown
 }
 

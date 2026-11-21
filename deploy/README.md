@@ -71,7 +71,7 @@ deploy/
     └── Cloudflare.md
 ```
 
-The application image (`binilsn/up-timer`) never changes across scenarios.
+The application image (`senbinil/up-timer`) never changes across scenarios.
 Only the surrounding infrastructure differs.
 
 ## Environment Variables
@@ -357,7 +357,7 @@ run. The files are in the image; the container just can't see them.
 
 ```bash
 # File present in the image…
-docker run --rm binilsn/up-timer:latest ls /rails/db/migrate | grep <migration>
+docker run --rm senbinil/up-timer:latest ls /rails/db/migrate | grep <migration>
 
 # …but missing inside the running container
 # (this mismatch is the signature of volume shadowing)

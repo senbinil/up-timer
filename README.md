@@ -1,6 +1,6 @@
 # UpTimer
 
-[![CI](https://img.shields.io/github/actions/workflow/status/senbinil/up-timer/ci.yml)](https://github.com/senbinil/up-timer/actions) [![Docker Pulls](https://img.shields.io/docker/pulls/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer) [![Docker Image Size](https://img.shields.io/docker/image-size/binilsn/up-timer)](https://hub.docker.com/r/binilsn/up-timer) [![Docker Version](https://img.shields.io/docker/v/binilsn/up-timer?sort=semver)](https://hub.docker.com/r/binilsn/up-timer) [![License](https://img.shields.io/github/license/senbinil/up-timer)](https://github.com/senbinil/up-timer/blob/main/LICENSE) [![Ruby](https://img.shields.io/badge/Ruby-4.0.10-red)](https://www.ruby-lang.org)
+[![CI](https://img.shields.io/github/actions/workflow/status/senbinil/up-timer/ci.yml)](https://github.com/senbinil/up-timer/actions) [![Docker Pulls](https://img.shields.io/docker/pulls/senbinil/up-timer)](https://hub.docker.com/r/senbinil/up-timer) [![Docker Image Size](https://img.shields.io/docker/image-size/senbinil/up-timer)](https://hub.docker.com/r/senbinil/up-timer) [![Docker Version](https://img.shields.io/docker/v/senbinil/up-timer?sort=semver)](https://hub.docker.com/r/senbinil/up-timer) [![License](https://img.shields.io/github/license/senbinil/up-timer)](https://github.com/senbinil/up-timer/blob/main/LICENSE) [![Ruby](https://img.shields.io/badge/Ruby-4.0.10-red)](https://www.ruby-lang.org)
 
 Having a hard time tracking your services? UpTimer gives you real-time monitoring, instant alerts, and a beautiful dashboard — zero infrastructure overhead.
 
@@ -55,7 +55,7 @@ Having a hard time tracking your services? UpTimer gives you real-time monitorin
 docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
   -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
+  senbinil/up-timer:latest
 ```
 
 Opens at [http://localhost:3000](http://localhost:3000). Register with `admin@example.com` to get the admin role.
@@ -65,10 +65,10 @@ Opens at [http://localhost:3000](http://localhost:3000). Register with `admin@ex
 ### Docker
 
 ```bash
-docker pull binilsn/up-timer:latest
+docker pull senbinil/up-timer:latest
 ```
 
-[Docker Hub](https://hub.docker.com/r/binilsn/up-timer) · [docker-compose.yml](docker-compose.yml) for local/test runs.
+[Docker Hub](https://hub.docker.com/r/senbinil/up-timer) · [docker-compose.yml](docker-compose.yml) for local/test runs.
 
 #### With email (Resend)
 
@@ -78,7 +78,7 @@ docker run -d -p 3000:80 \
   -e MAIL_PROVIDER=resend \
   -e RESEND_API_KEY=re_xxxxxx \
   -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
+  senbinil/up-timer:latest
 ```
 
 #### With email (Mailgun)
@@ -91,7 +91,7 @@ docker run -d -p 3000:80 \
   -e MAILGUN_API_HOST=api.mailgun.net \
   -e MAILGUN_DOMAIN=mg.example.com \
   -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
+  senbinil/up-timer:latest
 ```
 
 See [Environment variables](#environment-variables) for the full reference.
@@ -322,7 +322,7 @@ docker run -d -p 3000:80 \
   -e ADMIN_EMAILS=admin@example.com \
   -e RAILS_MAX_THREADS=12 \
   -e SOLID_QUEUE_IN_PUMA=true \
-  binilsn/up-timer:latest
+  senbinil/up-timer:latest
 
 # With docker compose
 echo "RAILS_MAX_THREADS=12" >> .env

@@ -99,7 +99,7 @@ summary() {
 
 test_image_tag_is_template() {
     setup; generate "kamal-proxy" "TAG=v2.0.0"
-    assert_contains "$COMPOSE_PATH" 'binilsn/up-timer:${TAG:-latest}' \
+    assert_contains "$COMPOSE_PATH" 'senbinil/up-timer:${TAG:-latest}' \
         "kamal-proxy: image uses template variable"
     teardown
 }

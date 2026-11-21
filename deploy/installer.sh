@@ -576,7 +576,7 @@ write_app_service() {
     # Usage: write_app_service [with_ports] [with_labels]
     cat << 'END_APP'
   up-timer:
-    image: binilsn/up-timer:${TAG:-latest}
+    image: senbinil/up-timer:${TAG:-latest}
 END_APP
     if [ "${1:-}" = "with_ports" ]; then
         cat << 'END_PORTS'
