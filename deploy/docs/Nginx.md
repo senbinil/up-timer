@@ -67,21 +67,23 @@ server {
 }
 ```
 
-2. Deploy UpTimer in IP-only mode with a custom port:
+1. Deploy UpTimer in IP-only mode with a custom port:
 
 ```bash
 APP_PORT=8080 docker compose -f deploy/compose/app-ip.yml -f deploy/networking/standalone.yml --env-file deploy/.env up -d
 ```
 
-3. Reload Nginx: `sudo nginx -s reload`
+1. Reload Nginx: `sudo nginx -s reload`
 
 ## Troubleshooting
 
 **502 Bad Gateway:**
+
 - UpTimer container not running: `docker compose ps`
 - Nginx can't resolve `up-timer`: check they're on the same Docker network
 
 **Nginx config not loading:**
+
 ```bash
 docker compose exec nginx nginx -t   # Test config
 docker compose restart nginx          # Apply changes

@@ -8,7 +8,7 @@
 
 UpTimer uses **Hotwire's Turbo Streams** over **Action Cable** (backed by Solid Cable) to push live updates to connected browsers. Two channels — `"dashboard"` and `"public_status"` — keep the UI in sync as monitors are checked, statuses change, and alerts fire.
 
-```
+```text
                   ┌─────────────────┐
                   │  Recurring Jobs │
                   │  (every 2s)     │
@@ -136,7 +136,7 @@ A single `DashboardBroadcastJob` tick broadcasts to **both** channels:
 
 **What gets updated:**
 
-```
+```text
 alerts (prepend new alert rows)
   ↓
 node cards (replace each updated node's card)
@@ -153,7 +153,7 @@ Updates are ordered so that alert counts flow correctly into the fleet status pa
 
 **What gets updated:**
 
-```
+```text
 fleet status (replace public system status card)
   ↓
 node detail elements (replace each public node's <details>)
@@ -167,7 +167,7 @@ Only **public-listed** monitors are broadcast to this channel. The `StatusPageBr
 
 ## Broadcast Flow (Detailed)
 
-```
+```text
 Timer tick (every 2s)
   │
   ├─ DashboardBroadcastJob#perform
@@ -264,20 +264,20 @@ Both views subscribe via the `turbo_stream_from` helper, which establishes an Ac
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-	connect() {
-		this.boundRedraw = this.redrawCharts.bind(this);
-		document.addEventListener("turbo:render", this.boundRedraw);
-	}
+  connect() {
+    this.boundRedraw = this.redrawCharts.bind(this);
+    document.addEventListener("turbo:render", this.boundRedraw);
+  }
 
-	disconnect() {
-		document.removeEventListener("turbo:render", this.boundRedraw);
-	}
+  disconnect() {
+    document.removeEventListener("turbo:render", this.boundRedraw);
+  }
 
-	redrawCharts() {
-		if (window.Chartkick) {
-			window.Chartkick.charts = {}; // Clear stale chart instances
-		}
-	}
+  redrawCharts() {
+    if (window.Chartkick) {
+      window.Chartkick.charts = {}; // Clear stale chart instances
+    }
+  }
 }
 ```
 
@@ -312,7 +312,7 @@ The cursor is stored in `Rails.cache`. In development, this defaults to `:memory
 
 ## Data Flow Diagram (Complete)
 
-```
+```text
 ┌──────────────┐     ┌──────────────────┐
 │  User Action  │     │  Recurring Timer  │
 │  (pause,      │     │  (every 2s)      │
