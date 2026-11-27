@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Security
+
+- Bump `net-ssh` from 7.3.8 to 7.3.10 (transitive via `kamal`), fixing:
+  - `@revoked` known_hosts entries treated as valid pinned host keys (High) (GHSA-hjwv-j52r-xcg7)
+  - `Net::SSH::Proxy::HTTPS` disabling TLS certificate verification by default (GHSA-qcf4-j55x-72hv)
+
 ## [0.6.0] - 2026-11-21
 
 ### Security
