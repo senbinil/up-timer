@@ -2,11 +2,22 @@
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-28
+
 ### Security
 
 - Bump `net-ssh` from 7.3.8 to 7.3.10 (transitive via `kamal`), fixing:
   - `@revoked` known_hosts entries treated as valid pinned host keys (High) (GHSA-hjwv-j52r-xcg7)
   - `Net::SSH::Proxy::HTTPS` disabling TLS certificate verification by default (GHSA-qcf4-j55x-72hv)
+
+### Dependencies
+
+- Bump bootsnap from 1.26.1 to 1.26.2
+- Bump pagy from 43.8.2 to 43.8.5
+- Bump puma from 8.0.3 to 8.1.2
+- Bump resend from 1.19.0 to 1.20.0
+- Bump selenium-webdriver from 4.52.0 to 4.53.0
+- Bump thruster from 0.1.27 to 0.1.28
 
 ## [0.6.0] - 2026-11-21
 

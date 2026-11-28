@@ -17,7 +17,7 @@ In your Coolify dashboard:
 
 1. Go to your project → **New Service**
 2. Choose **Docker Image** as the source
-3. Image: `senbinil/up-timer:latest` (or pin a version like `senbinil/up-timer:v1.0.0`)
+3. Image: `senbinil/up-timer:latest` (or pin a version like `senbinil/up-timer:0.6.1` — image tags match release tags, with no `v` prefix)
 
 ### 2. Configure Networking
 
