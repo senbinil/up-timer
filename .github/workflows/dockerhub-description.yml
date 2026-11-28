@@ -1,0 +1,26 @@
+name: Docker Hub Description
+
+on:
+    push:
+        branches: [main]
+        paths: ['DOCKERHUB.md']
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    update-description:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Update Docker Hub description
+              uses: peter-evans/dockerhub-description@v4
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+                  repository: ${{ vars.DOCKER_USERNAME || github.repository_owner }}/up-timer
+                  short-description: 'Self-hosted uptime monitoring with real-time dashboards, instant alerts, and public status pages.'
+                  readme-filepath: ./DOCKERHUB.md
