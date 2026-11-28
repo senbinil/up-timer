@@ -37,6 +37,38 @@ docker compose up -d
 
 The container listens on port `80` and expects persistent data in `/rails/storage` — always mount a volume there, or your monitors, incidents, and users disappear on the next deploy.
 
+## Production install (guided)
+
+For a real deployment, the shell installer wires up the container, TLS, and persistence for you — no repo clone required:
+
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh)
+```
+
+Prefer to inspect it first:
+
+```bash
+curl -sSLO https://raw.githubusercontent.com/senbinil/up-timer/main/deploy/installer.sh
+chmod +x installer.sh && ./installer.sh
+```
+
+It checks for Docker and the Compose plugin, then asks about domain, SSL, database, and email before writing `deploy/.env` and `docker-compose.generated.yml`. Running it again detects an existing install and offers an update path.
+
+Supported modes:
+
+| Mode                   | Approach                     | TLS                 |
+| ---------------------- | ---------------------------- | ------------------- |
+| **Standalone Traefik** | Bundled Traefik container    | Auto Let's Encrypt  |
+| **Kamal Proxy**        | Existing kamal-proxy         | Let's Encrypt (opt) |
+| **Existing Traefik**   | Your own Traefik             | Handled by yours    |
+| **Nginx**              | Your own Nginx               | Handled by yours    |
+| **Cloudflare Tunnel**  | cloudflared, no open ports   | Cloudflare          |
+| **IP-only**            | Direct port binding          | None                |
+
+Coolify is deployed from its own web dashboard rather than the installer.
+
+Full guide, upgrade notes, and troubleshooting: [deploy/README.md](https://github.com/senbinil/up-timer/blob/main/deploy/README.md).
+
 ## Environment variables
 
 | Variable               | Required | Default             | Description                                                       |
